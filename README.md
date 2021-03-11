@@ -11,6 +11,3 @@ This project aims at improving the navigation experience in universities.
 6. Log.
 ## Credits
 amap
-
-v1.1 
-last editor：ElemenTP
