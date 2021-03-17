@@ -7,7 +7,7 @@ This project aims at improving the navigation experience in universities.
 2. Multi-campus support.
 3. Realtime navigation.
 4. Destination search.
-5. Logical destination and schedule reminder.
+5. Logical destination.
 6. Log.
 ## Getting Started
 
