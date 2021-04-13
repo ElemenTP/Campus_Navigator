@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:amap_flutter_base/amap_flutter_base.dart';
+//import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
+//import 'package:amap_flutter_location/amap_flutter_location.dart';
+//import 'package:amap_flutter_location/amap_location_option.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,15 +15,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'CampNavi',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blueGrey,
       ),
       home: MyHomePage(title: 'Campus Navigator'),
@@ -34,15 +25,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
@@ -50,10 +32,36 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final AMapApiKey amapApiKeys = AMapApiKey(
-      androidKey: '6fbf5df93d3d619836904e7efc0e3ab2',
-      iosKey: '6fbf5df93d3d619836904e7efc0e3ab2');
+  //高德地图widget的回调
   AMapController _mapController;
+  //LatLng _location = LatLng(39.909187, 116.397451);
+  //测试用，地图指南针开关
+  bool _compassEnabled = true;
+  //卫星地图审图号
+  String satelliteImageApprovalNumber;
+  //文字风格
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  //当前所选页面，默认为第二页
+  int _selectedpage = 1;
+  //底栏项目List
+  List<BottomNavigationBarItem> _navbaritems = [
+    //搜索标志
+    BottomNavigationBarItem(
+      icon: Icon(Icons.search),
+      label: 'Search',
+    ),
+    //地图标志
+    BottomNavigationBarItem(
+      icon: Icon(Icons.map),
+      label: 'Map',
+    ),
+    //设置标志
+    BottomNavigationBarItem(
+      icon: Icon(Icons.settings),
+      label: 'Settings',
+    )
+  ];
 
   void onMapCreated(AMapController controller) {
     setState(() {
@@ -63,42 +71,75 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void getApprovalNumber() async {
-    //普通地图审图号
-    String mapContentApprovalNumber =
-        await _mapController?.getMapContentApprovalNumber();
-    //卫星地图审图号
-    String satelliteImageApprovalNumber =
+    //按要求卫星地图审图号
+    satelliteImageApprovalNumber =
         await _mapController?.getSatelliteImageApprovalNumber();
+    setState(() {});
   }
 
   void _refreashMap() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
+      //反转指南针开关并通知重新绘制界面
+      _compassEnabled = _compassEnabled ^ true;
+    });
+  }
+
+  void _onBarItemTapped(int index) {
+    setState(() {
+      //按所低栏所选项目改变页面并通知重新绘制界面
+      _selectedpage = index;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    ///创建一个地图
     final AMapWidget map = AMapWidget(
-      apiKey: amapApiKeys,
+      //apiKey: amapApiKeys,
       onMapCreated: onMapCreated,
+      compassEnabled: _compassEnabled,
+      mapType: MapType.satellite,
     );
+    //不同页面的widget列表
+    final List<Widget> _wigetpages = [
+      Text(
+        'No items yet!',
+        style: optionStyle,
+      ),
+      map,
+      Text(
+        '卫星地图审图号：' + '$satelliteImageApprovalNumber',
+        style: optionStyle,
+      )
+    ];
 
+    //final AMapFlutterLocation locate = AMapFlutterLocation();
     return Scaffold(
+      //顶栏
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Flexible(child: map),
+      //中央内容区
+      body: Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: _wigetpages[_selectedpage],
+      ),
+      //底导航栏
+      bottomNavigationBar: BottomNavigationBar(
+        items: _navbaritems,
+        currentIndex: _selectedpage,
+        selectedItemColor: Colors.blueGrey,
+        onTap: _onBarItemTapped,
+      ),
+      //悬浮按键
       floatingActionButton: FloatingActionButton(
         onPressed: _refreashMap,
-        tooltip: 'Refreash',
-        child: Icon(Icons.add),
+        tooltip: 'Navigation Start',
+        child: Icon(Icons.play_arrow),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      //悬浮按键位置
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

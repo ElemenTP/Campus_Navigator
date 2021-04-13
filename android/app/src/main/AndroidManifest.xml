@@ -3,6 +3,9 @@
    <application
         android:label="CampNavi"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="6fbf5df93d3d619836904e7efc0e3ab2"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
