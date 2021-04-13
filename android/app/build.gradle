@@ -52,12 +52,6 @@ android {
     }
     signingConfigs {
         //add debug & release config
-       debug{
-            keyAlias 'key'
-            keyPassword 'android'
-            storeFile file('/home/caixukun/.android/debug.keystore')//use your debug.keystore dir
-            storePassword 'android'
-       }
        release {
            keyAlias keystoreProperties['keyAlias']
            keyPassword keystoreProperties['keyPassword']
