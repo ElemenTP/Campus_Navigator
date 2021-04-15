@@ -12,15 +12,14 @@ map mapvertex
 int : LatLng  
 编号对应坐标
 ***
-class edge
+class edge  
 double length  
-边长度
+边长度  
 int availmthod  
 边适应性  
 0是仅步行  
 1可骑车  
--1仅公交/校车  
-double crowding
+double crowding  
 边拥挤度
 ***
 map mapbuilding  
