@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:amap_flutter_base/amap_flutter_base.dart';
+//import 'package:amap_flutter_base/amap_flutter_base.dart';//LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 //import 'package:amap_flutter_location/amap_flutter_location.dart';
 //import 'package:amap_flutter_location/amap_location_option.dart';
