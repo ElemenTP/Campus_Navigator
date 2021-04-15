@@ -4,7 +4,7 @@
 
 参数：List<String> mapdata
 
-返回值：List<List<edge>> mapmatrix, Map<int:LatLng> mapvertex, List<Building> mapbuilding, Map<int:String> mapcampus
+返回值：List<List<edge>> mapmatrix, Map<int:LatLng> mapvertex, List<Building> mapbuilding, Map<int:String> mapcampus, List<schoolbus> bustimelist
 
 ## 导航函数 途径多点 最短时间
 
