@@ -32,7 +32,7 @@ class Edge {
     this.availmthod = availmthod;
   }
 //随机函数
-  RandomCrowding() {
+  toRandomCrowding() {
     crowding = Random().nextDouble();
   }
 }
@@ -52,9 +52,14 @@ class BusTimeTable {
 }
 
 class MapData {
+  //校区与编号的对应表
   Map<int, String> mapcampus;
+  //建筑列表
   List<Building> mapbuilding;
+  //点与编号对应表
   Map<int, LatLng> mapvertex;
+  //边与地图结构数据，按校区分成多个
   List<List<List<Edge>>> mapedge;
+  //校车时间表
   List<BusTimeTable> mapbustimetable;
 }
