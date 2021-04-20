@@ -1,7 +1,10 @@
-import 'header.dart';
+//import 'header.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
-//import 'package:amap_flutter_base/amap_flutter_base.dart';//LatLng 类型在这里面
+import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
+
+import 'amapapikey.dart'; //高德apikey所在文件
 //import 'package:amap_flutter_location/amap_flutter_location.dart';
 //import 'package:amap_flutter_location/amap_location_option.dart';
 
@@ -96,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     ///创建一个地图
     final AMapWidget map = AMapWidget(
-      //apiKey: amapApiKeys,
+      apiKey: amapApiKeys,
       onMapCreated: onMapCreated,
       compassEnabled: _compassEnabled,
       mapType: MapType.satellite,
