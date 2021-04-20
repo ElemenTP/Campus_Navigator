@@ -36,18 +36,17 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     /*-------------------------------------------------------------------*/
     List<int> points =
         List.filled(mapmatrix.length, -1); //节点集，存放已经决定的最短路径的节点号,初始全为-1
-    List<double> dist = List(mapmatrix.length); //记录各点到起点的距离
-    List<int> path = List(mapmatrix.length); //存放各个节点到起点的路径的前驱。
+    List<double> dist = List.generate(mapmatrix.length, (_) => maxnum,
+        growable: false); //记录各点到起点的距离
+    List<int> path = List.generate(mapmatrix.length, (_) => -1,
+        growable: false); //存放各个节点到起点的路径的前驱。
     double min; //最小值，之后计算使用
     int pointTemp;
     for (int i = 0; i < mapmatrix.length; i++) {
-      if (mapmatrix[startvertexID][i] == null)
+      if (mapmatrix[startvertexID][i] != null)
 
       ///这里要注意的是dart是否允许这种类型的比较,后续debug注意（类型安全问题）
       {
-        dist[i] = maxnum;
-        path[i] = -1;
-      } else {
         dist[i] = pathlength(mapmatrix, startvertexID, i, transmethod);
         path[i] = startvertexID;
       }
