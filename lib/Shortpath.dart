@@ -1,9 +1,9 @@
-import 'dart:html';
-import 'dart:math';
-import 'dart:ui';
+//import 'dart:html';
+//import 'dart:math';
+//import 'dart:ui';
 
 import 'header.dart';
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 
 class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
@@ -27,7 +27,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       for (int i = 0; i < mapmatrix.length; i++) {
         for (int j = 0; j < mapmatrix[i].length; j++) {
           if (mapmatrix[i][j].availmthod == 0) {
-            mapmatrix[i][j] == null;
+            mapmatrix[i][j] = null;
           }
         }
       }
@@ -39,7 +39,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     List<double> dist = List(mapmatrix.length); //记录各点到起点的距离
     List<int> path = List(mapmatrix.length); //存放各个节点到起点的路径的前驱。
     double min; //最小值，之后计算使用
-    int point_temp;
+    int pointTemp;
     for (int i = 0; i < mapmatrix.length; i++) {
       if (mapmatrix[startvertexID][i] == null)
 
@@ -60,22 +60,22 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       for (int j = 0; j < mapmatrix.length; j++) {
         if ((points[j] == -1) && (dist[j] < min)) {
           min = dist[j];
-          point_temp = j;
+          pointTemp = j;
         }
       }
-      points[point_temp] = 1;
+      points[pointTemp] = 1;
       for (int j = 0; j < mapmatrix.length; j++) {
         //重新调成起点到各个节点间的最短距离
         if ((points[j] == -1) &&
             (dist[j] >
-                dist[point_temp] +
-                    pathlength(mapmatrix, point_temp, j, transmethod))) {
-          dist[j] = dist[point_temp] +
-              pathlength(mapmatrix, point_temp, j, transmethod);
-          path[j] = point_temp;
+                dist[pointTemp] +
+                    pathlength(mapmatrix, pointTemp, j, transmethod))) {
+          dist[j] = dist[pointTemp] +
+              pathlength(mapmatrix, pointTemp, j, transmethod);
+          path[j] = pointTemp;
         }
       }
-      if (point_temp == endvertexID) {
+      if (pointTemp == endvertexID) {
         break; //如果已经到达出口，则退出循环
       }
     }
@@ -84,19 +84,19 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       relativelen = double.infinity;
     } //发现如何都到不了终点。
     else {
-      relativelen = dist[point_temp];
-      List<int> route_temp;
-      route_temp.add(endvertexID);
+      relativelen = dist[pointTemp];
+      List<int> routeTemp;
+      routeTemp.add(endvertexID);
       int pre = path[endvertexID];
       while (pre != startvertexID) {
-        route_temp.add(pre);
+        routeTemp.add(pre);
         pre = path[pre];
       }
-      route_temp.add(startvertexID);
+      routeTemp.add(startvertexID);
       //通过前缀把路径从终点到起点加入
-      for (int i = route_temp.length - 1; i <= 0; i--) {
-        route.add(route_temp[i]);
-      }//将route设为正序
+      for (int i = routeTemp.length - 1; i <= 0; i--) {
+        route.add(routeTemp[i]);
+      } //将route设为正序
     }
   }
 }
