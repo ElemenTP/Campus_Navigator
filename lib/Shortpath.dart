@@ -10,15 +10,15 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
   final double maxnum = double.infinity;
   final double onBike = 0.5; //骑车使得道路打折的倍数（小于一）
   int startvertexID; //起始点ID
-  int endvertexID; //终点点ID
+  int endvertexID; //终点ID
   int transmethod; //运动方式
   List<int> route; //路径集
   double relativelen; //路径的相对长度
-  double pathlength(List<List<Edge>> mapmatrix, int i, int j, int transmethod) {
-    return (mapmatrix[startvertexID][i].length -
-            mapmatrix[startvertexID][i].length * (transmethod * this.onBike)) /
-        mapmatrix[startvertexID][i].crowding;
-  } //给出矩阵上的一个边，计算它的长度，受拥挤度和出行方式的影响
+  double pathlength(Edge edge ,int transmethod) {
+    return (edge.length -
+            edge.length * (transmethod * this.onBike)) /
+        edge.crowding;
+  } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
 
   //距离等于实际距离乘上骑车加速系数的积除以拥挤度
   Shortpath(List<List<Edge>> mapmatrix, int startvertexID, int endvertexID,
@@ -47,7 +47,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
 
       ///这里要注意的是dart是否允许这种类型的比较,后续debug注意（类型安全问题）
       {
-        dist[i] = pathlength(mapmatrix, startvertexID, i, transmethod);
+        dist[i] = pathlength(mapmatrix[startvertexID][i], transmethod);
         path[i] = startvertexID;
       }
     } //初始化各节点到起点的距离
@@ -68,9 +68,9 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
         if ((points[j] == -1) &&
             (dist[j] >
                 dist[pointTemp] +
-                    pathlength(mapmatrix, pointTemp, j, transmethod))) {
+                    pathlength(mapmatrix[pointTemp][j], transmethod))) {
           dist[j] = dist[pointTemp] +
-              pathlength(mapmatrix, pointTemp, j, transmethod);
+              pathlength(mapmatrix[pointTemp][j], transmethod);
           path[j] = pointTemp;
         }
       }
@@ -97,5 +97,12 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
         route.add(routeTemp[i]);
       } //将route设为正序
     }
+  }
+  getroute() {
+    return this.route;
+  }
+
+  getrelativelen() {
+    return this.relativelen;
   }
 }
