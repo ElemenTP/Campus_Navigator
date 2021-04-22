@@ -129,6 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
           points: points,
           joinType: JoinType.round,
           capType: CapType.arrow,
+          color: Color(0xCC2196F3),
         );
         _mapPolylines[polyline.id] = polyline;
         Fluttertoast.showToast(
@@ -301,8 +302,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-//*TODO 中期检查
-//*TODO 测试地图widget自带的定位功能
-//*TODO 将SDK更换为lite版
-//
