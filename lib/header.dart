@@ -33,7 +33,7 @@ class Edge {
     this.availmthod = availmthod;
   }
 //随机函数
-  RandomCrowding() {
+  toRandomCrowding() {
     crowding = Random().nextDouble();
   }
 }
@@ -53,10 +53,15 @@ class BusTimeTable {
 }
 
 class MapData {
+  //校区与编号的对应表
   Map<int, String> mapcampus;
+  //建筑列表
   List<Building> mapbuilding;
+  //点与编号对应表
   List<Map<int, LatLng>> mapvertex;
+  //边与地图结构数据，按校区分成多个
   List<List<List<Edge>>> mapedge;
+  //校车时间表
   List<BusTimeTable> mapbustimetable;
 }
 
@@ -66,10 +71,11 @@ MapData dataInput(String path) {
   MapData inputData = new MapData();
   inputData.mapcampus = campusInput(lines[0]);
   inputData.mapvertex = pointsInput(lines[1]);
-  inputData.mapedge = null;
   inputData.mapbustimetable = bustableInput(lines[3]);
+  inputData.mapedge = edgesInput(lines[2], inputData.mapvertex);
   List<String> tmp_lines = [lines[4], lines[5], lines[6]];
   inputData.mapbuilding = buildingInput(tmp_lines);
+  return inputData;
 }
 
 //校区数据导入
@@ -100,28 +106,46 @@ List<Map<int, LatLng>> pointsInput(String line) {
 }
 
 //边集导入
-List<List<Edge>> edgesInput(String line, Map<int, LatLng> latlngs_map) {
+List<List<List<Edge>>> edgesInput(
+    String line, List<Map<int, LatLng>> latlngs_map) {
   List<String> tmp_str = line.split(';');
-  List<List<Edge>> edges = [];
+  List<List<List<Edge>>> edge_matrix = [];
+  LatLng testpoint = new LatLng(-1, -1);
+  for (int i = 0; i < tmp_str.length; i++) {
+    List<List<Edge>> tmp_list = [];
+    List<String> tmp_str2 = tmp_str[i].split(',');
+    for (int j = 0; j < tmp_str2.length; j++) {
+      List<Edge> tmp = [];
+      for (int k = 0; k < tmp_str2.length; k++) {
+        tmp.add(Edge(testpoint, testpoint));
+      }
+      tmp_list.add(tmp);
+    }
+    edge_matrix.add(tmp_list);
+  }
+  print(edge_matrix[0].length);
+  print(edge_matrix[1].length);
+
   for (int i = 0; i < tmp_str.length; i++) {
     List<String> edges_str = tmp_str[i].split(',');
-    List<Edge> edges_list = [];
     LatLng xpoint = new LatLng(-1, -1);
     for (int j = 0; j < edges_str.length ~/ 2; j++) {
-      LatLng point1 = latlngs_map[int.parse(edges_str[j * 2])] ?? xpoint;
-      LatLng point2 = latlngs_map[int.parse(edges_str[j * 2 + 1])] ?? xpoint;
+      LatLng point1 = latlngs_map[i][int.parse(edges_str[j * 2])] ?? xpoint;
+      LatLng point2 = latlngs_map[i][int.parse(edges_str[j * 2 + 1])] ?? xpoint;
 
       if (point1 == xpoint || point2 == xpoint) {
         //throw an exception
       }
       Edge tmp = new Edge(point1, point2);
-      edges_list.add(tmp);
+      //print(int.parse(edges_str[j * 2]));
+      //print(int.parse(edges_str[j * 2 + 1]));
+      edge_matrix[i][int.parse(edges_str[j * 2])]
+          [int.parse(edges_str[j * 2 + 1])] = tmp;
     }
-    edges.add(edges_list);
   }
-  return edges;
-}
 
+  return edge_matrix;
+}
 //校车数据导入
 
 List<BusTimeTable> bustableInput(String line) {
