@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'CampNavi',
+      title: '校园导航',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
@@ -243,6 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Scaffold(
         body: map,
         floatingActionButton: FloatingActionButton(
+          heroTag: 'locatebtn',
           onPressed: _setCamUserLoaction,
           tooltip: '回到当前位置' /*'Locate'*/,
           child: Icon(Icons.location_searching),
@@ -257,6 +258,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       //悬浮按键
       floatingActionButton: FloatingActionButton(
+        heroTag: 'navibtn',
         onPressed: _setNavigation,
         tooltip: _navistate
             ? '停止导航'
