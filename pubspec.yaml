@@ -23,9 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  amap_flutter_map: ^1.0.2
+  amap_flutter_map: ^2.0.1
   path_provider: ^2.0.1
-  permission_handler: ^5.0.1+1
+  permission_handler: ^7.0.0
   fluttertoast: ^7.1.8
 
   # The following adds the Cupertino Icons font to your application.
