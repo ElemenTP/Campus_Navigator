@@ -1,9 +1,16 @@
-//import 'header.dart';
+import 'dart:async';
+//import 'dart:io';
+
 //import 'package:path_provider/path_provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:amap_flutter_location/amap_flutter_location.dart';
+import 'package:amap_flutter_location/amap_location_option.dart';
 
+//import 'header.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
@@ -42,23 +49,15 @@ class _MyHomePageState extends State<MyHomePage> {
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
   //卫星地图审图号
-  String satelliteImageApprovalNumber;
-  //文字风格
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  //当前所选页面，默认为第二页
-  int _selectedpage = 1;
+  String _satelliteImageApprovalNumber;
+  //导航状态
+  bool _navistate = false;
   //底栏项目List
-  List<BottomNavigationBarItem> _navbaritems = [
+  static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
     BottomNavigationBarItem(
       icon: Icon(Icons.search),
       label: '搜索' /*'Search'*/,
-    ),
-    //地图标志
-    BottomNavigationBarItem(
-      icon: Icon(Icons.map),
-      label: 'Map',
     ),
     //设置标志
     BottomNavigationBarItem(
@@ -105,13 +104,11 @@ class _MyHomePageState extends State<MyHomePage> {
     //按要求获取卫星地图审图号
     _satelliteImageApprovalNumber =
         await _mapController?.getSatelliteImageApprovalNumber();
-    setState(() {});
   }
 
-  void _refreashMap() {
+  void _setNavigation() {
     setState(() {
-      //反转指南针开关并通知重新绘制界面
-      _compassEnabled = _compassEnabled ^ true;
+      _navistate = !_navistate;
     });
   }
 
@@ -200,12 +197,32 @@ class _MyHomePageState extends State<MyHomePage> {
         _mapMarkers['userMarker'] = Marker(position: _userPosition);
       });
     });
+
+    //开始定位
+    _startLocation();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    //停止定位
+    _stopLocation();
+
+    //移除定位监听
+    if (null != _locationListener) {
+      _locationListener.cancel();
+    }
+
+    //销毁定位
+    if (null != _locationPlugin) {
+      _locationPlugin.destroy();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    ///创建一个地图
-    final AMapWidget map = AMapWidget(
+    AMapWidget map = AMapWidget(
       apiKey: amapApiKeys,
       onMapCreated: _onMapCreated,
       onTap: _onMapTapped,
@@ -216,6 +233,7 @@ class _MyHomePageState extends State<MyHomePage> {
       mapType: MapType.satellite,
       markers: Set<Marker>.of(_mapMarkers.values),
     );
+
     return Scaffold(
       //顶栏
       appBar: AppBar(
@@ -235,8 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //底导航栏
       bottomNavigationBar: BottomNavigationBar(
         items: _navbaritems,
-        currentIndex: _selectedpage,
-        selectedItemColor: Colors.blueGrey,
+        unselectedItemColor: Colors.blueGrey,
         onTap: _onBarItemTapped,
       ),
       //悬浮按键
@@ -249,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: _navistate ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
