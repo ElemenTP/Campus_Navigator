@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
-      home: MyHomePage(title: 'Campus Navigator'),
+      home: MyHomePage(title: '校园导航' /*'Campus Navigator'*/),
     );
   }
 }
@@ -57,12 +57,12 @@ class _MyHomePageState extends State<MyHomePage> {
     //搜索标志
     BottomNavigationBarItem(
       icon: Icon(Icons.search),
-      label: 'Search',
+      label: '搜索' /*'Search'*/,
     ),
     //设置标志
     BottomNavigationBarItem(
       icon: Icon(Icons.settings),
-      label: 'Settings',
+      label: '设置' /*'Setting'*/,
     )
   ];
   //定位数据监听类
@@ -143,7 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
       status = await Permission.location.request();
     if (status != PermissionStatus.granted)
       Fluttertoast.showToast(
-        msg: 'This application needs location permission to work properly!',
+        msg:
+            '大部分功能需要定位权限才能正常工作！' /*'This application needs location permission to work properly!'*/,
         backgroundColor: Colors.black,
         textColor: Colors.white,
         fontSize: 16,
@@ -243,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: map,
         floatingActionButton: FloatingActionButton(
           onPressed: _setCamUserLoaction,
-          tooltip: 'Locate',
+          tooltip: '回到当前位置' /*'Locate'*/,
           child: Icon(Icons.location_searching),
           mini: true,
         ),
@@ -257,7 +258,9 @@ class _MyHomePageState extends State<MyHomePage> {
       //悬浮按键
       floatingActionButton: FloatingActionButton(
         onPressed: _setNavigation,
-        tooltip: _navistate ? 'Stop Navigation' : 'Start Navigation',
+        tooltip: _navistate
+            ? '停止导航'
+            : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
         child: _navistate ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置

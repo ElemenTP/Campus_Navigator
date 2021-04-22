@@ -17,12 +17,12 @@ class _MySearchPageState extends State<MySearchPage> {
     return Scaffold(
         //顶栏
         appBar: AppBar(
-          title: Text('Search'),
+          title: Text('搜索'),
         ),
         //中央内容区
         body: Center(
           child: Text(
-            'No items yet!',
+            '施工中',
             style: _optionStyle,
           ),
         ));

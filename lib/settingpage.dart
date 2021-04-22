@@ -20,7 +20,7 @@ class _MySettingPageState extends State<MySettingPage> {
     return Scaffold(
         //顶栏
         appBar: AppBar(
-          title: Text('Setting'),
+          title: Text('设置'),
         ),
         //中央内容区
         body: Center(
