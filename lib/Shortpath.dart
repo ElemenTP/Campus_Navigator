@@ -10,7 +10,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
   final double maxnum = double.infinity;
   final double onBike = 0.5; //骑车使得道路打折的倍数（小于一）
   int startvertexID; //起始点ID
-  int endvertexID; //终点ID
+  int endvertexID; //终点点ID
   int transmethod; //运动方式
   List<int> route; //路径集
   double relativelen; //路径的相对长度
@@ -43,7 +43,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     double min; //最小值，之后计算使用
     int pointTemp;
     for (int i = 0; i < mapmatrix.length; i++) {
-      if (mapmatrix[startvertexID][i] != null)
+      if (mapmatrix[startvertexID][i] == null)
 
       ///这里要注意的是dart是否允许这种类型的比较,后续debug注意（类型安全问题）
       {
