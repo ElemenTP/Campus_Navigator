@@ -81,6 +81,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //add 3D地图so及jar
     implementation 'com.amap.api:3dmap:latest.integration'
-    //add 定位功能
-    implementation 'com.amap.api:location:latest.integration'
 }

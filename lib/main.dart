@@ -1,4 +1,3 @@
-import 'dart:async';
 //import 'dart:io';
 
 //import 'package:path_provider/path_provider.dart';
@@ -7,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:amap_flutter_location/amap_flutter_location.dart';
-import 'package:amap_flutter_location/amap_location_option.dart';
 
 //import 'header.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
@@ -65,10 +62,6 @@ class _MyHomePageState extends State<MyHomePage> {
       label: '设置' /*'Setting'*/,
     )
   ];
-  //定位数据监听类
-  StreamSubscription<Map<String, Object>> _locationListener;
-  //初始化高德地图定位组件
-  AMapFlutterLocation _locationPlugin = new AMapFlutterLocation();
 
   void _onMapCreated(AMapController controller) {
     setState(() {
@@ -98,6 +91,10 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _mapMarkers.remove('onTapMarker');
     });
+  }
+
+  void _onLocationChanged(AMapLocation aMapLocation) {
+    _userPosition = aMapLocation.latLng;
   }
 
   void _getApprovalNumber() async {
@@ -151,73 +148,11 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
-  //开始定位
-  void _startLocation() {
-    if (null != _locationPlugin) {
-      //开始定位之前设置定位参数
-      _setLocationOption();
-      _locationPlugin.startLocation();
-    }
-  }
-
-  //停止定位
-  void _stopLocation() {
-    if (null != _locationPlugin) {
-      _locationPlugin.stopLocation();
-    }
-  }
-
-  void _setLocationOption() {
-    if (null != _locationPlugin) {
-      AMapLocationOption locationOption = new AMapLocationOption();
-      //设置Android端连续定位的定位间隔
-      locationOption.locationInterval = 1000;
-      locationOption.needAddress = false;
-      //将定位参数设置给定位插件
-      _locationPlugin.setLocationOption(locationOption);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
 
-    AMapFlutterLocation.setApiKey(amapApiKeys.androidKey, '');
-
-    // 动态申请定位权限
     _requestlocationPermission();
-
-    //注册定位结果监听
-    _locationListener = _locationPlugin
-        .onLocationChanged()
-        .listen((Map<String, Object> result) {
-      setState(() {
-        //_locationResult = result;
-        _userPosition = LatLng(result['latitude'], result['longitude']);
-        _mapMarkers['userMarker'] = Marker(position: _userPosition);
-      });
-    });
-
-    //开始定位
-    _startLocation();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-
-    //停止定位
-    _stopLocation();
-
-    //移除定位监听
-    if (null != _locationListener) {
-      _locationListener.cancel();
-    }
-
-    //销毁定位
-    if (null != _locationPlugin) {
-      _locationPlugin.destroy();
-    }
   }
 
   @override
@@ -227,9 +162,11 @@ class _MyHomePageState extends State<MyHomePage> {
       onMapCreated: _onMapCreated,
       onTap: _onMapTapped,
       onCameraMove: _onMapCamMoved,
+      onLocationChanged: _onLocationChanged,
       initialCameraPosition:
           CameraPosition(target: LatLng(39.909187, 116.397451), zoom: 17.5),
-      compassEnabled: true, //_compassEnabled,
+      compassEnabled: true,
+      myLocationStyleOptions: MyLocationStyleOptions(true),
       mapType: MapType.satellite,
       markers: Set<Marker>.of(_mapMarkers.values),
     );
