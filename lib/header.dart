@@ -123,8 +123,8 @@ List<List<List<Edge>>> edgesInput(
     }
     edgeMatrix.add(tmpList);
   }
-  print(edgeMatrix[0].length);
-  print(edgeMatrix[1].length);
+  //print(edgeMatrix[0].length);
+  //print(edgeMatrix[1].length);
 
   for (int i = 0; i < tmpStr.length; i++) {
     List<String> edgesStr = tmpStr[i].split(',');
