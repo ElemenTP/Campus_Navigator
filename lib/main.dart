@@ -12,15 +12,14 @@ import 'package:amap_flutter_location/amap_location_option.dart';
 
 //import 'header.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
-import 'searchpage.dart';
-import 'settingpage.dart'; //搜索界面
+import 'searchpage.dart'; //搜索界面
+import 'settingpage.dart'; //设置界面
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -46,7 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
   //高德地图widget的回调
   AMapController _mapController;
   //用户位置
-  LatLng userPosition;
+  LatLng _userPosition = LatLng(39.909187, 116.397451);
+  //地图Marker
+  Map<String, Marker> _mapMarkers = {};
   //卫星地图审图号
   String _satelliteImageApprovalNumber;
   //导航状态
@@ -64,20 +65,43 @@ class _MyHomePageState extends State<MyHomePage> {
       label: 'Settings',
     )
   ];
-
   //定位数据监听类
   StreamSubscription<Map<String, Object>> _locationListener;
   //初始化高德地图定位组件
   AMapFlutterLocation _locationPlugin = new AMapFlutterLocation();
 
-  void onMapCreated(AMapController controller) {
+  void _onMapCreated(AMapController controller) {
     setState(() {
       _mapController = controller;
+      _getApprovalNumber();
     });
   }
 
-  void getApprovalNumber() async {
-    //按要求卫星地图审图号
+  void _onMapTapped(LatLng taplocation) {
+    setState(() {
+      _mapMarkers['onTapMarker'] =
+          Marker(position: taplocation, onTap: _onTapMarkerTapped);
+    });
+  }
+
+  void _onTapMarkerTapped(String markerid) {
+    Fluttertoast.showToast(
+      msg:
+          '${_mapMarkers['onTapMarker'].position.latitude} + ${_mapMarkers['onTapMarker'].position.longitude}',
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      fontSize: 16,
+    );
+  }
+
+  void _onMapCamMoved(CameraPosition newposition) {
+    setState(() {
+      _mapMarkers.remove('onTapMarker');
+    });
+  }
+
+  void _getApprovalNumber() async {
+    //按要求获取卫星地图审图号
     _satelliteImageApprovalNumber =
         await _mapController?.getSatelliteImageApprovalNumber();
   }
@@ -88,7 +112,14 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _setCamUserLoaction() async {
+    await _mapController.moveCamera(
+        CameraUpdate.newLatLngZoom(_userPosition, 17.5),
+        animated: true);
+  }
+
   void _onBarItemTapped(int index) {
+    //按点击的底栏项目调出对应activity
     switch (index) {
       case 0:
         Navigator.push(
@@ -105,14 +136,14 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void requestlocationPermission() async {
+  void _requestlocationPermission() async {
     // 申请位置权限
     var status = await Permission.location.status;
     if (status != PermissionStatus.granted)
       status = await Permission.location.request();
     if (status != PermissionStatus.granted)
       Fluttertoast.showToast(
-        msg: '大部分功能需要定位权限才能正常工作！',
+        msg: 'This application needs location permission to work properly!',
         backgroundColor: Colors.black,
         textColor: Colors.white,
         fontSize: 16,
@@ -153,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
     AMapFlutterLocation.setApiKey(amapApiKeys.androidKey, '');
 
     // 动态申请定位权限
-    requestlocationPermission();
+    _requestlocationPermission();
 
     //注册定位结果监听
     _locationListener = _locationPlugin
@@ -161,7 +192,8 @@ class _MyHomePageState extends State<MyHomePage> {
         .listen((Map<String, Object> result) {
       setState(() {
         //_locationResult = result;
-        userPosition = LatLng(result['latitude'], result['longitude']);
+        _userPosition = LatLng(result['latitude'], result['longitude']);
+        _mapMarkers['userMarker'] = Marker(position: _userPosition);
       });
     });
 
@@ -191,13 +223,15 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     AMapWidget map = AMapWidget(
       apiKey: amapApiKeys,
-      onMapCreated: onMapCreated,
+      onMapCreated: _onMapCreated,
+      onTap: _onMapTapped,
+      onCameraMove: _onMapCamMoved,
       initialCameraPosition:
           CameraPosition(target: LatLng(39.909187, 116.397451), zoom: 17.5),
       compassEnabled: true, //_compassEnabled,
       mapType: MapType.satellite,
+      markers: Set<Marker>.of(_mapMarkers.values),
     );
-    getApprovalNumber();
 
     return Scaffold(
       //顶栏
@@ -205,8 +239,14 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       //中央内容区
-      body: Center(
-        child: map,
+      body: Scaffold(
+        body: map,
+        floatingActionButton: FloatingActionButton(
+          onPressed: _setCamUserLoaction,
+          tooltip: 'Locate',
+          child: Icon(Icons.location_searching),
+          mini: true,
+        ),
       ),
       //底导航栏
       bottomNavigationBar: BottomNavigationBar(
