@@ -73,8 +73,8 @@ MapData dataInput(String path) {
   inputData.mapvertex = pointsInput(lines[1]);
   inputData.mapbustimetable = bustableInput(lines[3]);
   inputData.mapedge = edgesInput(lines[2], inputData.mapvertex);
-  List<String> tmp_lines = [lines[4], lines[5], lines[6]];
-  inputData.mapbuilding = buildingInput(tmp_lines);
+  List<String> tmpLines = [lines[4], lines[5], lines[6]];
+  inputData.mapbuilding = buildingInput(tmpLines);
   return inputData;
 }
 
@@ -82,56 +82,56 @@ MapData dataInput(String path) {
 Map<int, String> campusInput(String line) {
   List<String> name = line.split(',');
   List<int> number = List.generate(name.length, (index) => index);
-  Map<int, String> campus_map = Map.fromIterables(number, name);
-  return campus_map;
+  Map<int, String> campusMap = Map.fromIterables(number, name);
+  return campusMap;
 }
 
 //点集导入
 List<Map<int, LatLng>> pointsInput(String line) {
-  List<String> tmp_str = line.split(';');
-  List<Map<int, LatLng>> points_list = [];
-  for (int i = 0; i < tmp_str.length; i++) {
-    List<String> points = tmp_str[i].split(',');
-    List<LatLng> latlngs_list = [];
+  List<String> tmpStr = line.split(';');
+  List<Map<int, LatLng>> pointsList = [];
+  for (int i = 0; i < tmpStr.length; i++) {
+    List<String> points = tmpStr[i].split(',');
+    List<LatLng> latlngsList = [];
     for (int j = 0; j < points.length / 2; j++) {
       LatLng tmp = new LatLng(
           double.parse((points[j * 2])), double.parse((points[j * 2 + 1])));
-      latlngs_list.add(tmp);
+      latlngsList.add(tmp);
     }
-    List<int> number = List.generate(latlngs_list.length, (index) => index);
-    Map<int, LatLng> latlngs_map = Map.fromIterables(number, latlngs_list);
-    points_list.add(latlngs_map);
+    List<int> number = List.generate(latlngsList.length, (index) => index);
+    Map<int, LatLng> latlngsMap = Map.fromIterables(number, latlngsList);
+    pointsList.add(latlngsMap);
   }
-  return points_list;
+  return pointsList;
 }
 
 //边集导入
 List<List<List<Edge>>> edgesInput(
-    String line, List<Map<int, LatLng>> latlngs_map) {
-  List<String> tmp_str = line.split(';');
-  List<List<List<Edge>>> edge_matrix = [];
+    String line, List<Map<int, LatLng>> latlngsMap) {
+  List<String> tmpStr = line.split(';');
+  List<List<List<Edge>>> edgeMatrix = [];
   LatLng testpoint = new LatLng(-1, -1);
-  for (int i = 0; i < tmp_str.length; i++) {
-    List<List<Edge>> tmp_list = [];
-    List<String> tmp_str2 = tmp_str[i].split(',');
-    for (int j = 0; j < tmp_str2.length; j++) {
+  for (int i = 0; i < tmpStr.length; i++) {
+    List<List<Edge>> tmpList = [];
+    List<String> tmpStr2 = tmpStr[i].split(',');
+    for (int j = 0; j < tmpStr2.length; j++) {
       List<Edge> tmp = [];
-      for (int k = 0; k < tmp_str2.length; k++) {
+      for (int k = 0; k < tmpStr2.length; k++) {
         tmp.add(Edge(testpoint, testpoint));
       }
-      tmp_list.add(tmp);
+      tmpList.add(tmp);
     }
-    edge_matrix.add(tmp_list);
+    edgeMatrix.add(tmpList);
   }
-  print(edge_matrix[0].length);
-  print(edge_matrix[1].length);
+  print(edgeMatrix[0].length);
+  print(edgeMatrix[1].length);
 
-  for (int i = 0; i < tmp_str.length; i++) {
-    List<String> edges_str = tmp_str[i].split(',');
+  for (int i = 0; i < tmpStr.length; i++) {
+    List<String> edgesStr = tmpStr[i].split(',');
     LatLng xpoint = new LatLng(-1, -1);
-    for (int j = 0; j < edges_str.length ~/ 2; j++) {
-      LatLng point1 = latlngs_map[i][int.parse(edges_str[j * 2])] ?? xpoint;
-      LatLng point2 = latlngs_map[i][int.parse(edges_str[j * 2 + 1])] ?? xpoint;
+    for (int j = 0; j < edgesStr.length ~/ 2; j++) {
+      LatLng point1 = latlngsMap[i][int.parse(edgesStr[j * 2])] ?? xpoint;
+      LatLng point2 = latlngsMap[i][int.parse(edgesStr[j * 2 + 1])] ?? xpoint;
 
       if (point1 == xpoint || point2 == xpoint) {
         //throw an exception
@@ -139,75 +139,75 @@ List<List<List<Edge>>> edgesInput(
       Edge tmp = new Edge(point1, point2);
       //print(int.parse(edges_str[j * 2]));
       //print(int.parse(edges_str[j * 2 + 1]));
-      edge_matrix[i][int.parse(edges_str[j * 2])]
-          [int.parse(edges_str[j * 2 + 1])] = tmp;
+      edgeMatrix[i][int.parse(edgesStr[j * 2])]
+          [int.parse(edgesStr[j * 2 + 1])] = tmp;
     }
   }
 
-  return edge_matrix;
+  return edgeMatrix;
 }
 //校车数据导入
 
 List<BusTimeTable> bustableInput(String line) {
-  List<String> bustable_str = line.split(',');
-  List<BusTimeTable> bustable_list = [];
-  for (int i = 0; i < bustable_str.length ~/ 3; i++) {
+  List<String> bustableStr = line.split(',');
+  List<BusTimeTable> bustableList = [];
+  for (int i = 0; i < bustableStr.length ~/ 3; i++) {
     BusTimeTable tmp = new BusTimeTable();
-    tmp.campusfrom = int.parse(bustable_str[i * 3]);
+    tmp.campusfrom = int.parse(bustableStr[i * 3]);
     //*TODO exception
-    tmp.campusto = int.parse(bustable_str[i * 3 + 1]);
-    int timeinfo = int.parse(bustable_str[i * 3 + 2]);
+    tmp.campusto = int.parse(bustableStr[i * 3 + 1]);
+    int timeinfo = int.parse(bustableStr[i * 3 + 2]);
     tmp.dayofweek = timeinfo ~/ 10000;
     //*TODO exception
     tmp.setoutminute = timeinfo % 100;
     tmp.setouthour = timeinfo ~/ 100 % 100;
-    bustable_list.add(tmp);
+    bustableList.add(tmp);
   }
-  return bustable_list;
+  return bustableList;
 }
 
 //建筑集导入
 List<Building> buildingInput(List<String> line) {
-  List<String> descrip_str = line[0].split(';');
-  List<List<String>> descrip_list = [];
-  for (int i = 0; i < descrip_str.length; i++) {
-    List<String> tmp_str = descrip_str[i].split(',');
-    List<String> tmp_list = [];
-    for (int j = 0; j < tmp_str.length; j++) {
-      tmp_list.add(tmp_str[j]);
+  List<String> descripStr = line[0].split(';');
+  List<List<String>> descripList = [];
+  for (int i = 0; i < descripStr.length; i++) {
+    List<String> tmpStr = descripStr[i].split(',');
+    List<String> tmpList = [];
+    for (int j = 0; j < tmpStr.length; j++) {
+      tmpList.add(tmpStr[j]);
     }
-    descrip_list.add(tmp_list);
+    descripList.add(tmpList);
   }
   //print(descrip_list);
-  List<String> entry_str = line[1].split(';');
-  List<List<int>> entry_list = [];
-  for (int i = 0; i < entry_str.length; i++) {
-    List<String> tmp_str = entry_str[i].split(',');
-    List<int> tmp_list = [];
-    for (int j = 0; j < tmp_str[j].length; j++) {
-      tmp_list.add(int.parse(tmp_str[j]));
+  List<String> entryStr = line[1].split(';');
+  List<List<int>> entryList = [];
+  for (int i = 0; i < entryStr.length; i++) {
+    List<String> tmpStr = entryStr[i].split(',');
+    List<int> tmpList = [];
+    for (int j = 0; j < tmpStr[j].length; j++) {
+      tmpList.add(int.parse(tmpStr[j]));
     }
-    entry_list.add(tmp_list);
+    entryList.add(tmpList);
   }
 
   //print(entry_list);
 
-  List<String> number_str = line[2].split(',');
-  List<int> number_list = [];
-  for (int i = 0; i < number_str.length; i++) {
-    number_list.add(int.parse(number_str[i]));
+  List<String> numberStr = line[2].split(',');
+  List<int> numberList = [];
+  for (int i = 0; i < numberStr.length; i++) {
+    numberList.add(int.parse(numberStr[i]));
   }
 
   //print(number_list);
-  List<Building> build_list = [];
-  for (int i = 0; i < descrip_str.length; i++) {
+  List<Building> buildList = [];
+  for (int i = 0; i < descripStr.length; i++) {
     Building tmp = new Building();
-    tmp.doors = entry_list[i];
-    tmp.description = descrip_list[i];
-    tmp.incampus = number_list[i];
+    tmp.doors = entryList[i];
+    tmp.description = descripList[i];
+    tmp.incampus = numberList[i];
 
-    build_list.add(tmp);
+    buildList.add(tmp);
   }
 
-  return build_list;
+  return buildList;
 }
