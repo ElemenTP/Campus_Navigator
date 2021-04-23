@@ -96,7 +96,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onLocationChanged(AMapLocation aMapLocation) {
-    _userPosition = aMapLocation.latLng;
+    if (aMapLocation.time != 0) {
+      _userPosition = aMapLocation.latLng;
+    }
   }
 
   void _getApprovalNumber() async {
