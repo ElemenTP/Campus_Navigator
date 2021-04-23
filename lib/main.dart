@@ -45,6 +45,8 @@ class _MyHomePageState extends State<MyHomePage> {
   LatLng _userPosition = LatLng(39.909187, 116.397451);
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
+  //地图直线
+  Map<String, Polyline> _mapPolylines = {};
   //卫星地图审图号
   String _satelliteImageApprovalNumber;
   //导航状态
@@ -105,6 +107,35 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _setNavigation() {
     setState(() {
+      if (_navistate) {
+        _mapPolylines.clear();
+        Fluttertoast.showToast(
+          msg: '导航结束',
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+      } else {
+        List<LatLng> points = [
+          LatLng(40.15680947715327, 116.2841939815524),
+          LatLng(40.15775245451647, 116.2877612783767),
+          LatLng(40.15814809111908, 116.2892995252204),
+          LatLng(40.15674285325732, 116.2899499608954),
+        ];
+        Polyline polyline = Polyline(
+          points: points,
+          joinType: JoinType.round,
+          capType: CapType.arrow,
+          color: Color(0xCC2196F3),
+        );
+        _mapPolylines[polyline.id] = polyline;
+        Fluttertoast.showToast(
+          msg: '导航开始',
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
+      }
       _navistate = !_navistate;
     });
   }
@@ -169,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
       myLocationStyleOptions: MyLocationStyleOptions(true),
       mapType: MapType.satellite,
       markers: Set<Marker>.of(_mapMarkers.values),
+      polylines: Set<Polyline>.of(_mapPolylines.values),
     );
 
     return Scaffold(
