@@ -1,6 +1,7 @@
 //import 'dart:io';
 
 //import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
@@ -41,6 +42,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   //高德地图widget的回调
   AMapController _mapController;
+  //地图初始视角
+  CameraPosition _initCameraPosition;
   //用户位置
   AMapLocation _userPosition =
       AMapLocation(latLng: LatLng(39.909187, 116.397451));
@@ -67,6 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
       label: '设置' /*'Setting'*/,
     )
   ];
+
   //地图widget创建时的回调函数，获得controller并获得审图号。
   void _onMapCreated(AMapController controller) {
     setState(() {
@@ -95,10 +99,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //地图视角改变回调函数，移除所有点击添加的标志。
-  void _onMapCamMoved(CameraPosition newposition) {
+  void _onMapCamMoved(CameraPosition newPosition) {
     setState(() {
       _mapMarkers.remove('onTapMarker');
     });
+  }
+
+  //地图视角改变结束回调函数，将视角信息记录在NVM中。
+  void _onCameraMoveEnd(CameraPosition endPosition) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('lastCamPositionbearing', endPosition.bearing);
+    prefs.setDouble('lastCamPositionLat', endPosition.target.latitude);
+    prefs.setDouble('lastCamPositionLng', endPosition.target.longitude);
+    prefs.setDouble('lastCamPositionzoom', endPosition.zoom);
   }
 
   //用户位置改变回调函数，记录用户位置。
@@ -194,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //位置权限申请函数
+  //定位权限申请函数
   void _requestlocationPermission() async {
     // 申请位置权限
     _locatePermissionStatus = await Permission.location.status;
@@ -210,12 +223,25 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
+  //获得最后一次地图视角
+  void _getLastCameraPosition() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _initCameraPosition = CameraPosition(
+      bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
+      target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
+          prefs.getDouble('lastCamPositionLng') ?? 116.397451),
+      zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
+    );
+  }
+
   //State创建时执行一次
   @override
   void initState() {
     super.initState();
-
+    //检测并申请定位权限
     _requestlocationPermission();
+    //获取最后一次地图视角
+    _getLastCameraPosition();
   }
 
   //State的build函数
@@ -230,11 +256,12 @@ class _MyHomePageState extends State<MyHomePage> {
       onTap: _onMapTapped,
       //地图视角移动回调函数
       onCameraMove: _onMapCamMoved,
+      //地图视角移动结束回调函数
+      onCameraMoveEnd: _onCameraMoveEnd,
       //用户位置移动回调函数
       onLocationChanged: _onLocationChanged,
-      //地图初始视角，设置为天安门广场
-      initialCameraPosition:
-          CameraPosition(target: LatLng(39.909187, 116.397451), zoom: 17.5),
+      //地图初始视角，为最后一次的视角，默认为天安门广场
+      initialCameraPosition: _initCameraPosition,
       //开启指南针
       compassEnabled: true,
       //开启显示用户位置功能
