@@ -42,8 +42,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   //高德地图widget的回调
   AMapController _mapController;
-  //地图初始视角
-  CameraPosition _initCameraPosition;
   //用户位置
   AMapLocation _userPosition =
       AMapLocation(latLng: LatLng(39.909187, 116.397451));
@@ -73,10 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //地图widget创建时的回调函数，获得controller并获得审图号。
   void _onMapCreated(AMapController controller) {
-    setState(() {
-      _mapController = controller;
-      _getApprovalNumber();
-    });
+    _mapController = controller;
+    _getApprovalNumber();
+    _getLastCameraPosition();
   }
 
   //地图点击回调函数，在被点击处创建标志。
@@ -184,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       await _mapController.moveCamera(
           CameraUpdate.newLatLngZoom(_userPosition.latLng, 17.5),
-          animated: true);
+          duration: 500);
     }
   }
 
@@ -226,12 +223,13 @@ class _MyHomePageState extends State<MyHomePage> {
   //获得最后一次地图视角
   void _getLastCameraPosition() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _initCameraPosition = CameraPosition(
+    await _mapController
+        .moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
       bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
       target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
           prefs.getDouble('lastCamPositionLng') ?? 116.397451),
       zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
-    );
+    )));
   }
 
   //State创建时执行一次
@@ -240,8 +238,6 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     //检测并申请定位权限
     _requestlocationPermission();
-    //获取最后一次地图视角
-    _getLastCameraPosition();
   }
 
   //State的build函数
@@ -260,8 +256,6 @@ class _MyHomePageState extends State<MyHomePage> {
       onCameraMoveEnd: _onCameraMoveEnd,
       //用户位置移动回调函数
       onLocationChanged: _onLocationChanged,
-      //地图初始视角，为最后一次的视角，默认为天安门广场
-      initialCameraPosition: _initCameraPosition,
       //开启指南针
       compassEnabled: true,
       //开启显示用户位置功能
