@@ -42,7 +42,10 @@ class _MyHomePageState extends State<MyHomePage> {
   //高德地图widget的回调
   AMapController _mapController;
   //用户位置
-  LatLng _userPosition = LatLng(39.909187, 116.397451);
+  AMapLocation _userPosition =
+      AMapLocation(latLng: LatLng(39.909187, 116.397451));
+  //定位权限状态
+  PermissionStatus _locatePermissionStatus;
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
   //地图直线
@@ -64,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       label: '设置' /*'Setting'*/,
     )
   ];
-
+  //地图widget创建时的回调函数，获得controller并获得审图号。
   void _onMapCreated(AMapController controller) {
     setState(() {
       _mapController = controller;
@@ -72,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //地图点击回调函数，在被点击处创建标志。
   void _onMapTapped(LatLng taplocation) {
     setState(() {
       _mapMarkers['onTapMarker'] =
@@ -79,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //标志点击回调函数，显示该标志的坐标。
   void _onTapMarkerTapped(String markerid) {
     Fluttertoast.showToast(
       msg:
@@ -89,24 +94,26 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  //地图视角改变回调函数，移除所有点击添加的标志。
   void _onMapCamMoved(CameraPosition newposition) {
     setState(() {
       _mapMarkers.remove('onTapMarker');
     });
   }
 
+  //用户位置改变回调函数，记录用户位置。
   void _onLocationChanged(AMapLocation aMapLocation) {
-    if (aMapLocation.time != 0) {
-      _userPosition = aMapLocation.latLng;
-    }
+    _userPosition = aMapLocation;
   }
 
+  //获取审图号函数
   void _getApprovalNumber() async {
     //按要求获取卫星地图审图号
     _satelliteImageApprovalNumber =
         await _mapController?.getSatelliteImageApprovalNumber();
   }
 
+  //导航按钮功能函数
   void _setNavigation() {
     setState(() {
       if (_navistate) {
@@ -138,16 +145,37 @@ class _MyHomePageState extends State<MyHomePage> {
           fontSize: 16,
         );
       }
+      //翻转导航状态
       _navistate = !_navistate;
     });
   }
 
+  //定位按钮按下回调函数，将地图widget视角调整至用户位置。
   void _setCamUserLoaction() async {
-    await _mapController.moveCamera(
-        CameraUpdate.newLatLngZoom(_userPosition, 17.5),
-        animated: true);
+    //没有定位权限，提示用户授予权限
+    if (_locatePermissionStatus != PermissionStatus.granted)
+      Fluttertoast.showToast(
+        msg: '欲使用此功能，请授予定位权限。',
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+    //定位不正常（时间time为0），提示用户打开定位开关
+    else if (_userPosition.time == 0) {
+      Fluttertoast.showToast(
+        msg: '欲使用此功能，请打开系统定位开关。',
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16,
+      );
+    } else {
+      await _mapController.moveCamera(
+          CameraUpdate.newLatLngZoom(_userPosition.latLng, 17.5),
+          animated: true);
+    }
   }
 
+  //底栏按钮点击回调函数
   void _onBarItemTapped(int index) {
     //按点击的底栏项目调出对应activity
     switch (index) {
@@ -166,12 +194,13 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //位置权限申请函数
   void _requestlocationPermission() async {
     // 申请位置权限
-    var status = await Permission.location.status;
-    if (status != PermissionStatus.granted)
-      status = await Permission.location.request();
-    if (status != PermissionStatus.granted)
+    _locatePermissionStatus = await Permission.location.status;
+    if (_locatePermissionStatus != PermissionStatus.granted)
+      _locatePermissionStatus = await Permission.location.request();
+    if (_locatePermissionStatus != PermissionStatus.granted)
       Fluttertoast.showToast(
         msg:
             '大部分功能需要定位权限才能正常工作！' /*'This application needs location permission to work properly!'*/,
@@ -181,6 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
   }
 
+  //State创建时执行一次
   @override
   void initState() {
     super.initState();
@@ -188,20 +218,32 @@ class _MyHomePageState extends State<MyHomePage> {
     _requestlocationPermission();
   }
 
+  //State的build函数
   @override
   Widget build(BuildContext context) {
     AMapWidget map = AMapWidget(
+      //高德api Key
       apiKey: amapApiKeys,
+      //创建地图回调函数
       onMapCreated: _onMapCreated,
+      //地图点击回调函数
       onTap: _onMapTapped,
+      //地图视角移动回调函数
       onCameraMove: _onMapCamMoved,
+      //用户位置移动回调函数
       onLocationChanged: _onLocationChanged,
+      //地图初始视角，设置为天安门广场
       initialCameraPosition:
           CameraPosition(target: LatLng(39.909187, 116.397451), zoom: 17.5),
+      //开启指南针
       compassEnabled: true,
+      //开启显示用户位置功能
       myLocationStyleOptions: MyLocationStyleOptions(true),
+      //地图类型，使用卫星地图
       mapType: MapType.satellite,
+      //地图上的标志
       markers: Set<Marker>.of(_mapMarkers.values),
+      //地图上的线
       polylines: Set<Polyline>.of(_mapPolylines.values),
     );
 
