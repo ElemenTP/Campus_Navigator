@@ -8,10 +8,6 @@ class MySearchPage extends StatefulWidget {
 }
 
 class _MySearchPageState extends State<MySearchPage> {
-  //文字风格
-  static const TextStyle _optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +19,7 @@ class _MySearchPageState extends State<MySearchPage> {
         body: Center(
           child: Text(
             '施工中',
-            style: _optionStyle,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
         ));
   }

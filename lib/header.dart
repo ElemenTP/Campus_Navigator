@@ -22,14 +22,7 @@ class Edge {
   double crowding = 1;
   //构造函数
   Edge(LatLng pointa, LatLng pointb, {int availmthod = 1}) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    this.length = 0.5 -
-        c((pointb.latitude - pointa.latitude) * p) / 2 +
-        c(pointa.latitude * p) *
-            c(pointb.latitude * p) *
-            (1 - c((pointb.longitude - pointa.longitude) * p)) /
-            2;
+    this.length = AMapTools.distanceBetween(pointa, pointb);
     this.availmthod = availmthod;
   }
 //随机函数
