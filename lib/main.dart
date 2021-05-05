@@ -51,8 +51,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, Marker> _mapMarkers = {};
   //地图直线
   Map<String, Polyline> _mapPolylines = {};
-  //卫星地图审图号
-  String _satelliteImageApprovalNumber;
   //导航状态
   bool _navistate = false;
   //底栏项目List
@@ -69,10 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
     )
   ];
 
-  //地图widget创建时的回调函数，获得controller并获得审图号。
+  //地图widget创建时的回调函数，获得controller并将调节视角。
   void _onMapCreated(AMapController controller) {
     _mapController = controller;
-    _getApprovalNumber();
     _getLastCameraPosition();
   }
 
@@ -114,13 +111,6 @@ class _MyHomePageState extends State<MyHomePage> {
   //用户位置改变回调函数，记录用户位置。
   void _onLocationChanged(AMapLocation aMapLocation) {
     _userPosition = aMapLocation;
-  }
-
-  //获取审图号函数
-  void _getApprovalNumber() async {
-    //按要求获取卫星地图审图号
-    _satelliteImageApprovalNumber =
-        await _mapController?.getSatelliteImageApprovalNumber();
   }
 
   //导航按钮功能函数
@@ -186,20 +176,22 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //底栏按钮点击回调函数
-  void _onBarItemTapped(int index) {
+  void _onBarItemTapped(int index) async {
     //按点击的底栏项目调出对应activity
     switch (index) {
       case 0:
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => MySearchPage()));
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MySearchPage()),
+        );
         break;
       case 1:
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MySettingPage(
-                    satelliteImageApprovalNumber:
-                        _satelliteImageApprovalNumber)));
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  MySettingPage(mapController: _mapController)),
+        );
         break;
     }
   }
