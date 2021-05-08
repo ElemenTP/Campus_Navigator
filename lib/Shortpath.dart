@@ -4,6 +4,7 @@
 
 import 'header.dart';
 //import 'package:flutter/material.dart';
+//Edge invalidEdge = Edge(LatLng(0,0), LatLng(0,90));
 
 class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
@@ -12,11 +13,10 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
   int startvertexID; //起始点ID
   int endvertexID; //终点ID
   int transmethod; //运动方式
-  List<int> route; //路径集
+  List<int> route = []; //路径集
   double relativelen; //路径的相对长度
-  double pathlength(Edge edge ,int transmethod) {
-    return (edge.length -
-            edge.length * (transmethod * this.onBike)) /
+  double pathlength(Edge edge, int transmethod) {
+    return (edge.length - edge.length * (transmethod * this.onBike)) /
         edge.crowding;
   } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
 
@@ -27,7 +27,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       for (int i = 0; i < mapmatrix.length; i++) {
         for (int j = 0; j < mapmatrix[i].length; j++) {
           if (mapmatrix[i][j].availmthod == 0) {
-            mapmatrix[i][j] = null;
+            mapmatrix[i][j] = invalidEdge;
           }
         }
       }
@@ -41,9 +41,9 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     List<int> path = List.generate(mapmatrix.length, (_) => -1,
         growable: false); //存放各个节点到起点的路径的前驱。
     double min; //最小值，之后计算使用
-    int pointTemp;
+    int pointTemp = -1; //不确定赋值
     for (int i = 0; i < mapmatrix.length; i++) {
-      if (mapmatrix[startvertexID][i] != null)
+      if (mapmatrix[startvertexID][i] != invalidEdge)
 
       ///这里要注意的是dart是否允许这种类型的比较,后续debug注意（类型安全问题）
       {
@@ -79,27 +79,25 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       }
     }
     if (path[endvertexID] == -1) {
-      route = null;
+      route.clear(); //清空
       relativelen = double.infinity;
     } //发现如何都到不了终点。
     else {
       relativelen = dist[pointTemp];
-      List<int> routeTemp;
-      routeTemp.add(endvertexID);
+      //List<int> route = [];
+      route.add(endvertexID);
       int pre = path[endvertexID];
       while (pre != startvertexID) {
-        routeTemp.add(pre);
+        route.add(pre);
         pre = path[pre];
       }
-      routeTemp.add(startvertexID);
+      route.add(startvertexID);
       //通过前缀把路径从终点到起点加入
-      for (int i = routeTemp.length - 1; i <= 0; i--) {
-        route.add(routeTemp[i]);
-      } //将route设为正序
+      //将route设为正序
     }
   }
   getroute() {
-    return this.route;
+    return this.route.reversed.toList();
   }
 
   getrelativelen() {

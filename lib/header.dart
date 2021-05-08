@@ -1,6 +1,18 @@
-import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'dart:math';
 import 'dart:io';
+
+LatLng zeropoint = new LatLng(0, 0);
+LatLng limitpoint = new LatLng(0, 90);
+Edge invalidEdge = Edge(zeropoint, limitpoint);
+
+class LatLng {
+  double latitude = 0;
+  double longitude = 0;
+  LatLng(double la, double lo) {
+    this.latitude = la;
+    this.longitude = lo;
+  }
+}
 
 //建筑类定义
 class Building {
@@ -22,7 +34,14 @@ class Edge {
   double crowding = 1;
   //构造函数
   Edge(LatLng pointa, LatLng pointb, {int availmthod = 1}) {
-    this.length = AMapTools.distanceBetween(pointa, pointb);
+    var p = 0.017453292519943295;
+    var c = cos;
+    this.length = 0.5 -
+        c((pointb.latitude - pointa.latitude) * p) / 2 +
+        c(pointa.latitude * p) *
+            c(pointb.latitude * p) *
+            (1 - c((pointb.longitude - pointa.longitude) * p)) /
+            2;
     this.availmthod = availmthod;
   }
 //随机函数
@@ -34,28 +53,28 @@ class Edge {
 //校车时间表类
 class BusTimeTable {
   //始发校区编号
-  int campusfrom;
+  int campusfrom = 0;
   //目的校区编号
-  int campusto;
+  int campusto = 0;
   //出发时间的时
-  int setouthour;
+  int setouthour = 0;
   //出发时间的分
-  int setoutminute;
+  int setoutminute = 0;
   //星期几？0-6，0是周日
-  int dayofweek;
+  int dayofweek = 0;
 }
 
 class MapData {
   //校区与编号的对应表
-  Map<int, String> mapcampus;
+  Map<int, String> mapcampus = {};
   //建筑列表
-  List<Building> mapbuilding;
+  List<Building> mapbuilding = [];
   //点与编号对应表
-  List<Map<int, LatLng>> mapvertex;
+  List<Map<int, LatLng>> mapvertex = [];
   //边与地图结构数据，按校区分成多个
-  List<List<List<Edge>>> mapedge;
+  List<List<List<Edge>>> mapedge = [];
   //校车时间表
-  List<BusTimeTable> mapbustimetable;
+  List<BusTimeTable> mapbustimetable = [];
 }
 
 MapData dataInput(String path) {
@@ -103,14 +122,13 @@ List<List<List<Edge>>> edgesInput(
     String line, List<Map<int, LatLng>> latlngsMap) {
   List<String> tmpStr = line.split(';');
   List<List<List<Edge>>> edgeMatrix = [];
-  LatLng testpoint = new LatLng(-1, -1);
   for (int i = 0; i < tmpStr.length; i++) {
     List<List<Edge>> tmpList = [];
     List<String> tmpStr2 = tmpStr[i].split(',');
-    for (int j = 0; j < tmpStr2.length; j++) {
+    for (int j = 0; j < latlngsMap[i].length; j++) {
       List<Edge> tmp = [];
-      for (int k = 0; k < tmpStr2.length; k++) {
-        tmp.add(Edge(testpoint, testpoint));
+      for (int k = 0; k < latlngsMap[i].length; k++) {
+        tmp.add(invalidEdge);
       }
       tmpList.add(tmp);
     }
@@ -121,17 +139,26 @@ List<List<List<Edge>>> edgesInput(
 
   for (int i = 0; i < tmpStr.length; i++) {
     List<String> edgesStr = tmpStr[i].split(',');
+    //print(edgesStr.length);
     LatLng xpoint = new LatLng(-1, -1);
     for (int j = 0; j < edgesStr.length ~/ 2; j++) {
       LatLng point1 = latlngsMap[i][int.parse(edgesStr[j * 2])] ?? xpoint;
       LatLng point2 = latlngsMap[i][int.parse(edgesStr[j * 2 + 1])] ?? xpoint;
 
+      //if (i == 0) {
+      //print(edgesStr.length);
+      //print('${point1.latitude}, ${point1.longitude}');
+      //print('${point2.latitude}, ${point2.longitude}');
+      //}
+
       if (point1 == xpoint || point2 == xpoint) {
         //throw an exception
       }
       Edge tmp = new Edge(point1, point2);
-      //print(int.parse(edges_str[j * 2]));
-      //print(int.parse(edges_str[j * 2 + 1]));
+
+      //print(int.parse(edgesStr[j * 2]));
+      //print(int.parse(edgesStr[j * 2 + 1]));
+
       edgeMatrix[i][int.parse(edgesStr[j * 2])]
           [int.parse(edgesStr[j * 2 + 1])] = tmp;
     }
