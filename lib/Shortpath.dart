@@ -1,39 +1,23 @@
-//import 'dart:html';
-//import 'dart:math';
-//import 'dart:ui';
-
 import 'header.dart';
-//import 'package:flutter/material.dart';
-//Edge invalidEdge = Edge(LatLng(0,0), LatLng(0,90));
 
 class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
   final double maxnum = double.infinity;
   final double onBike = 0.5; //骑车使得道路打折的倍数（小于一）
-  int startvertexID; //起始点ID
-  int endvertexID; //终点ID
-  int transmethod; //运动方式
+  final int startvertexID; //起始点ID
+  final int endvertexID; //终点ID
+  final int transmethod; //运动方式
   List<int> route = []; //路径集
-  double relativelen; //路径的相对长度
+  late double relativelen; //路径的相对长度
+
   double pathlength(Edge edge, int transmethod) {
     return (edge.length - edge.length * (transmethod * this.onBike)) /
         edge.crowding;
   } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
 
   //距离等于实际距离乘上骑车加速系数的积除以拥挤度
-  Shortpath(List<List<Edge>> mapmatrix, int startvertexID, int endvertexID,
-      int transmethod) {
-    if (transmethod == 1) {
-      for (int i = 0; i < mapmatrix.length; i++) {
-        for (int j = 0; j < mapmatrix[i].length; j++) {
-          if (mapmatrix[i][j].availmthod == 0) {
-            mapmatrix[i][j] = invalidEdge;
-          }
-        }
-      }
-    } //如果运动方式是骑车的话，就遍历一遍矩阵，把仅能步行的边全部去除。
-
-    /*-------------------------------------------------------------------*/
+  Shortpath(List<List<Edge>> mapmatrix, this.startvertexID, this.endvertexID,
+      this.transmethod) {
     List<int> points =
         List.filled(mapmatrix.length, -1); //节点集，存放已经决定的最短路径的节点号,初始全为-1
     List<double> dist = List.generate(mapmatrix.length, (_) => maxnum,
@@ -43,10 +27,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     double min; //最小值，之后计算使用
     int pointTemp = -1; //不确定赋值
     for (int i = 0; i < mapmatrix.length; i++) {
-      if (mapmatrix[startvertexID][i] != invalidEdge)
-
-      ///这里要注意的是dart是否允许这种类型的比较,后续debug注意（类型安全问题）
-      {
+      if (mapmatrix[startvertexID][i].availmthod >= transmethod) {
         dist[i] = pathlength(mapmatrix[startvertexID][i], transmethod);
         path[i] = startvertexID;
       }
