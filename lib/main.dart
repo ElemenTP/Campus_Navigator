@@ -1,16 +1,14 @@
-//import 'dart:io';
+import 'dart:io';
+import 'dart:convert';
 
-//import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-//import 'header.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
-import 'searchpage.dart'; //搜索界面
-import 'settingpage.dart'; //设置界面
 
 void main() {
   runApp(MyApp());
@@ -53,17 +51,19 @@ class _MyHomePageState extends State<MyHomePage> {
   Map<String, Polyline> _mapPolylines = {};
   //导航状态
   NaviState _navistate = NaviState();
+  //采集的地图点集数据
+  MapVertex _mapVertex = MapVertex();
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
     BottomNavigationBarItem(
-      icon: Icon(Icons.search),
-      label: '搜索' /*'Search'*/,
+      icon: Icon(Icons.save),
+      label: '保存' /*'Search'*/,
     ),
     //设置标志
     BottomNavigationBarItem(
-      icon: Icon(Icons.settings),
-      label: '设置' /*'Setting'*/,
+      icon: Icon(Icons.delete),
+      label: '回退' /*'Setting'*/,
     )
   ];
 
@@ -81,8 +81,29 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  //标志点击回调函数，显示该标志的坐标。
-  void _onTapMarkerTapped(String markerid) {}
+  //标志点击回调函数，记录该标志的坐标。
+  void _onTapMarkerTapped(String markerid) async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('提示'),
+              content: Text('要记录该点吗？已有 ${_mapVertex.listVertex.length} 个点。'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () {
+                    LatLng? tmp = _mapMarkers['onTapMarker']?.position;
+                    if (tmp != null) _mapVertex.listVertex.add(tmp);
+                    Navigator.of(context).pop();
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+  }
 
   //地图视角改变回调函数，移除所有点击添加的标志。
   void _onMapCamMoved(CameraPosition newPosition) {
@@ -217,18 +238,53 @@ class _MyHomePageState extends State<MyHomePage> {
     //按点击的底栏项目调出对应activity
     switch (index) {
       case 0:
-        await Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MySearchPage()),
-        );
+        await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content:
+                      Text('保存点到硬盘吗？已有 ${_mapVertex.listVertex.length} 个点。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () async {
+                        Directory? toStore =
+                            await getExternalStorageDirectory();
+                        if (toStore != null) {
+                          File vtxdata = File(toStore.path + '/optvertex.json');
+                          await vtxdata.writeAsString(_mapVertex.toJson());
+                        }
+                        Navigator.of(context).pop();
+                      }, //关闭对话框
+                    ),
+                  ],
+                ));
         break;
       case 1:
-        await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  MySettingPage(mapController: _mapController)),
-        );
+        await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content:
+                      Text('删除最后一个点吗？已有 ${_mapVertex.listVertex.length} 个点。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () {
+                        _mapVertex.listVertex.removeLast();
+                        Navigator.of(context).pop();
+                      }, //关闭对话框
+                    ),
+                  ],
+                ));
         break;
     }
   }
@@ -273,11 +329,22 @@ class _MyHomePageState extends State<MyHomePage> {
     )));
   }
 
+//读取已保存的点
+  void _getStoredVertex() async {
+    Directory? toStore = await getExternalStorageDirectory();
+    if (toStore != null) {
+      File vtxdata = File(toStore.path + '/optvertex.json');
+      if (await vtxdata.exists())
+        _mapVertex = MapVertex.fromJson(await vtxdata.readAsString());
+    }
+  }
+
   //State创建时执行一次
   @override
   void initState() {
     super.initState();
     //检测并申请定位权限
+    _getStoredVertex();
     _requestlocationPermission();
   }
 
@@ -356,5 +423,23 @@ class NaviState {
 
   reverseState() {
     naviStatus = !naviStatus;
+  }
+}
+
+class MapVertex {
+  List<LatLng> listVertex = [];
+
+  MapVertex();
+
+  MapVertex.fromList(this.listVertex);
+
+  dynamic toJson() => jsonEncode(listVertex);
+
+  MapVertex.fromJson(dynamic json) {
+    List tmp = jsonDecode(json);
+    tmp.forEach((element) {
+      LatLng? point = LatLng.fromJson(element);
+      if (point != null) listVertex.add(point);
+    });
   }
 }
