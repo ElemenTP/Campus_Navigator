@@ -1,7 +1,26 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:io';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+
+class MapVertex {
+  List<LatLng> listVertex = [];
+
+  MapVertex();
+
+  MapVertex.fromList(this.listVertex);
+
+  dynamic toJson() => jsonEncode(listVertex);
+
+  MapVertex.fromJson(dynamic json) {
+    List tmp = jsonDecode(json);
+    tmp.forEach((element) {
+      LatLng? point = LatLng.fromJson(element);
+      if (point != null) listVertex.add(point);
+    });
+  }
+}
 
 //建筑类定义
 class Building {

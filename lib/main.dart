@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //地图直线
   Map<String, Polyline> _mapPolylines = {};
   //导航状态
-  bool _navistate = false;
+  NaviState _navistate = NaviState();
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -107,8 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //导航按钮功能函数
   void _setNavigation() async {
-    if (_navistate) {
-      if (await showDialog(
+    if (_navistate.naviStatus) {
+      await showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
@@ -116,32 +116,51 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  ),
+                  TextButton(
+                    child: Text('确定'),
+                    onPressed: () {
+                      _mapPolylines.clear();
+                      _navistate.reverseState();
+                      Navigator.of(context).pop();
+                    }, //关闭对话框
+                  ),
+                ],
+              ));
+    } else {
+      await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('提示'),
+                content: Text('要开始导航吗？'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
                     onPressed: () => Navigator.of(context).pop(false), //关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(true), //关闭对话框
+                    onPressed: () {
+                      _navistate.reverseState();
+                      Navigator.of(context).pop(true);
+                    }, //关闭对话框
                   ),
                 ],
-              ))) {
-        _mapPolylines.clear();
-        _navistate = !_navistate;
-      }
-    } else {
-      List<LatLng> points = [
-        LatLng(40.15680947715327, 116.2841939815524),
-        LatLng(40.15775245451647, 116.2877612783767),
-        LatLng(40.15814809111908, 116.2892995252204),
-        LatLng(40.15674285325732, 116.2899499608954),
-      ];
-      Polyline polyline = Polyline(
-        points: points,
-        joinType: JoinType.round,
-        capType: CapType.arrow,
-        color: Color(0xCC2196F3),
-      );
-      _mapPolylines[polyline.id] = polyline;
-      _navistate = !_navistate;
+              ));
+      /*List<LatLng> points = [
+          LatLng(40.15680947715327, 116.2841939815524),
+          LatLng(40.15775245451647, 116.2877612783767),
+          LatLng(40.15814809111908, 116.2892995252204),
+          LatLng(40.15674285325732, 116.2899499608954),
+        ];
+        Polyline polyline = Polyline(
+          points: points,
+          joinType: JoinType.round,
+          capType: CapType.arrow,
+          color: Color(0xCC2196F3),
+        );
+        _mapPolylines[polyline.id] = polyline;*/
     }
     //翻转导航状态
     setState(() {});
@@ -151,7 +170,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _setCamUserLoaction() async {
     //没有定位权限，提示用户授予权限
     if (_locatePermissionStatus != PermissionStatus.granted) {
-      if (await showDialog(
+      await showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
@@ -159,16 +178,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(true), //关闭对话框
+                    onPressed: () async {
+                      _locatePermissionStatus =
+                          await Permission.location.request();
+                      Navigator.of(context).pop();
+                    }, //关闭对话框
                   ),
                 ],
-              ))) {
-        _locatePermissionStatus = await Permission.location.request();
-      }
+              ));
     }
     //定位不正常（时间time为0），提示用户打开定位开关
     else if (_userPosition.time == 0) {
@@ -180,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(true), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
                   ),
                 ],
               ));
@@ -217,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // 申请位置权限
     _locatePermissionStatus = await Permission.location.status;
     if (_locatePermissionStatus != PermissionStatus.granted) {
-      if (await showDialog(
+      await showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
@@ -229,12 +250,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   TextButton(
                     child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(true), //关闭对话框
+                    onPressed: () async {
+                      _locatePermissionStatus =
+                          await Permission.location.request();
+                      Navigator.of(context).pop(true);
+                    }, //关闭对话框
                   ),
                 ],
-              ))) {
-        _locatePermissionStatus = await Permission.location.request();
-      }
+              ));
     }
   }
 
@@ -312,13 +335,26 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'navibtn',
         onPressed: _setNavigation,
-        tooltip: _navistate
+        tooltip: _navistate.naviStatus
             ? '停止导航'
             : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
-        child: _navistate ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+        child:
+            _navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+}
+
+class NaviState {
+  bool naviStatus = false;
+  int? startVertex;
+  List endVertex = [];
+
+  NaviState();
+
+  reverseState() {
+    naviStatus = !naviStatus;
   }
 }
