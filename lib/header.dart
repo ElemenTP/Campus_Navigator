@@ -1,6 +1,26 @@
-import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+import 'dart:convert';
 import 'dart:math';
 import 'dart:io';
+
+import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+
+class MapVertex {
+  List<LatLng> listVertex = [];
+
+  MapVertex();
+
+  MapVertex.fromList(this.listVertex);
+
+  dynamic toJson() => jsonEncode(listVertex);
+
+  MapVertex.fromJson(dynamic json) {
+    List tmp = jsonDecode(json);
+    tmp.forEach((element) {
+      LatLng? point = LatLng.fromJson(element);
+      if (point != null) listVertex.add(point);
+    });
+  }
+}
 
 //建筑类定义
 class Building {
@@ -16,52 +36,54 @@ class Building {
 class Edge {
   //边长度，建造函数自动生成
   double length = double.infinity;
-  //边适应性，默认可骑车
-  int availmthod = 1;
+  //边适应性，默认不通（<0），仅可步行(0)，可使用自行车(1)
+  int availmthod = -1;
   //边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
-  //构造函数
-  Edge(LatLng pointa, LatLng pointb, {int availmthod = 1}) {
+  //构造可用的边函数，默认可通行自行车
+  Edge.avail(LatLng pointa, LatLng pointb, {int availmthod = 1}) {
     this.length = AMapTools.distanceBetween(pointa, pointb);
     this.availmthod = availmthod;
   }
-//随机函数
-  toRandomCrowding() {
-    crowding = Random().nextDouble();
+  //默认构造函数，将生成不通的边
+  Edge();
+  //随机拥挤度函数
+  randomCrowding() {
+    this.crowding = Random().nextDouble();
   }
 }
 
 //校车时间表类
 class BusTimeTable {
   //始发校区编号
-  int campusfrom;
+  int campusfrom = 0;
   //目的校区编号
-  int campusto;
+  int campusto = 0;
   //出发时间的时
-  int setouthour;
+  int setouthour = 0;
   //出发时间的分
-  int setoutminute;
+  int setoutminute = 0;
   //星期几？0-6，0是周日
-  int dayofweek;
+  int dayofweek = 0;
 }
 
 class MapData {
   //校区与编号的对应表
-  Map<int, String> mapcampus;
+  Map<int, String> mapcampus = {};
   //建筑列表
-  List<Building> mapbuilding;
+  List<Building> mapbuilding = [];
   //点与编号对应表
-  List<Map<int, LatLng>> mapvertex;
+  List<Map<int, LatLng>> mapvertex = [];
   //边与地图结构数据，按校区分成多个
-  List<List<List<Edge>>> mapedge;
+  List<List<List<Edge>>> mapedge = [];
   //校车时间表
-  List<BusTimeTable> mapbustimetable;
+  List<BusTimeTable> mapbustimetable = [];
 }
 
 MapData dataInput(String path) {
   final inputfile = File(path);
   List<String> lines = inputfile.readAsLinesSync();
-  MapData inputData = new MapData();
+  MapData inputData = MapData();
   inputData.mapcampus = campusInput(lines[0]);
   inputData.mapvertex = pointsInput(lines[1]);
   inputData.mapbustimetable = bustableInput(lines[3]);
@@ -87,7 +109,7 @@ List<Map<int, LatLng>> pointsInput(String line) {
     List<String> points = tmpStr[i].split(',');
     List<LatLng> latlngsList = [];
     for (int j = 0; j < points.length / 2; j++) {
-      LatLng tmp = new LatLng(
+      LatLng tmp = LatLng(
           double.parse((points[j * 2])), double.parse((points[j * 2 + 1])));
       latlngsList.add(tmp);
     }
@@ -103,14 +125,13 @@ List<List<List<Edge>>> edgesInput(
     String line, List<Map<int, LatLng>> latlngsMap) {
   List<String> tmpStr = line.split(';');
   List<List<List<Edge>>> edgeMatrix = [];
-  LatLng testpoint = new LatLng(-1, -1);
   for (int i = 0; i < tmpStr.length; i++) {
     List<List<Edge>> tmpList = [];
     List<String> tmpStr2 = tmpStr[i].split(',');
-    for (int j = 0; j < tmpStr2.length; j++) {
+    for (int j = 0; j < latlngsMap[i].length; j++) {
       List<Edge> tmp = [];
-      for (int k = 0; k < tmpStr2.length; k++) {
-        tmp.add(Edge(testpoint, testpoint));
+      for (int k = 0; k < latlngsMap[i].length; k++) {
+        tmp.add(Edge());
       }
       tmpList.add(tmp);
     }
@@ -121,17 +142,26 @@ List<List<List<Edge>>> edgesInput(
 
   for (int i = 0; i < tmpStr.length; i++) {
     List<String> edgesStr = tmpStr[i].split(',');
-    LatLng xpoint = new LatLng(-1, -1);
+    //print(edgesStr.length);
+    LatLng xpoint = LatLng(-1, -1);
     for (int j = 0; j < edgesStr.length ~/ 2; j++) {
       LatLng point1 = latlngsMap[i][int.parse(edgesStr[j * 2])] ?? xpoint;
       LatLng point2 = latlngsMap[i][int.parse(edgesStr[j * 2 + 1])] ?? xpoint;
 
+      //if (i == 0) {
+      //print(edgesStr.length);
+      //print('${point1.latitude}, ${point1.longitude}');
+      //print('${point2.latitude}, ${point2.longitude}');
+      //}
+
       if (point1 == xpoint || point2 == xpoint) {
         //throw an exception
       }
-      Edge tmp = new Edge(point1, point2);
-      //print(int.parse(edges_str[j * 2]));
-      //print(int.parse(edges_str[j * 2 + 1]));
+      Edge tmp = Edge.avail(point1, point2);
+
+      //print(int.parse(edgesStr[j * 2]));
+      //print(int.parse(edgesStr[j * 2 + 1]));
+
       edgeMatrix[i][int.parse(edgesStr[j * 2])]
           [int.parse(edgesStr[j * 2 + 1])] = tmp;
     }
@@ -145,7 +175,7 @@ List<BusTimeTable> bustableInput(String line) {
   List<String> bustableStr = line.split(',');
   List<BusTimeTable> bustableList = [];
   for (int i = 0; i < bustableStr.length ~/ 3; i++) {
-    BusTimeTable tmp = new BusTimeTable();
+    BusTimeTable tmp = BusTimeTable();
     tmp.campusfrom = int.parse(bustableStr[i * 3]);
     //*TODO exception
     tmp.campusto = int.parse(bustableStr[i * 3 + 1]);
@@ -194,7 +224,7 @@ List<Building> buildingInput(List<String> line) {
   //print(number_list);
   List<Building> buildList = [];
   for (int i = 0; i < descripStr.length; i++) {
-    Building tmp = new Building();
+    Building tmp = Building();
     tmp.doors = entryList[i];
     tmp.description = descripList[i];
     tmp.incampus = numberList[i];
