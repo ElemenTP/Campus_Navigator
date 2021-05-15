@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //导航状态
   NaviState _navistate = NaviState();
   //采集的地图点集数据
-  MapVertex _mapVertex = MapVertex();
+  MapVertex _mapVertex = MapVertex.empty();
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -96,8 +96,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    LatLng? tmp = _mapMarkers['onTapMarker']?.position;
-                    if (tmp != null) _mapVertex.listVertex.add(tmp);
+                    //LatLng? tmp1 = _mapMarkers['onTapMarker']?.position;
+                    LatLngjs tmp1 =
+                        LatLngjs(_mapMarkers['onTapMarker']?.position);
+                    _mapVertex.listVertex.add(tmp1);
                     Navigator.of(context).pop();
                   }, //关闭对话框
                 ),
@@ -256,7 +258,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             await getExternalStorageDirectory();
                         if (toStore != null) {
                           File vtxdata = File(toStore.path + '/optvertex.json');
-                          await vtxdata.writeAsString(_mapVertex.toJson());
+                          await vtxdata
+                              .writeAsString(jsonEncode(_mapVertex.toJson()));
                         }
                         Navigator.of(context).pop();
                       }, //关闭对话框
@@ -334,8 +337,10 @@ class _MyHomePageState extends State<MyHomePage> {
     Directory? toStore = await getExternalStorageDirectory();
     if (toStore != null) {
       File vtxdata = File(toStore.path + '/optvertex.json');
-      if (await vtxdata.exists())
-        _mapVertex = MapVertex.fromJson(await vtxdata.readAsString());
+      if (await vtxdata.exists()) {
+        var jsonMap = await vtxdata.readAsString();
+        _mapVertex = MapVertex.fromJson(jsonDecode(jsonMap));
+      }
     }
   }
 
@@ -426,6 +431,7 @@ class NaviState {
   }
 }
 
+/*
 class MapVertex {
   List<LatLng> listVertex = [];
 
@@ -443,3 +449,49 @@ class MapVertex {
     });
   }
 }
+*/
+
+class LatLngjs {
+  LatLng? latlng;
+  LatLngjs(this.latlng);
+  static LatLngjs fromJson(Map<String, dynamic> json) =>
+      _$LatLngjsFromJson(json);
+  Map<String, dynamic> toJson() => _$LatLngjsToJson(this.latlng);
+}
+
+LatLngjs _$LatLngjsFromJson(Map<String, dynamic> json) {
+  return LatLngjs(
+      LatLng(json['latitude'] as double, json['longitude'] as double));
+}
+
+Map<String, dynamic> _$LatLngjsToJson(LatLng? instance) => <String, dynamic>{
+      'latitude': instance?.latitude,
+      'longitude': instance?.longitude,
+    };
+
+class MapVertex {
+  List<LatLngjs> listVertex = [];
+  MapVertex.empty();
+  MapVertex(List<LatLngjs> latlngjs) {
+    listVertex = List.from(latlngjs);
+  }
+  factory MapVertex.fromJson(Map<String, dynamic> json) =>
+      _$MapVertexFromJson(json);
+  Map<String, dynamic> toJson() => _$MapVertexToJson(this);
+  LatLngjs getLatLng(int id) {
+    return listVertex[id];
+  }
+}
+
+MapVertex _$MapVertexFromJson(Map<String, dynamic> json) {
+  var listVertexJson = json['listVertex'] as List;
+  List<LatLngjs> latlngList =
+      listVertexJson.map((i) => LatLngjs.fromJson(i)).toList();
+  return MapVertex(
+    latlngList,
+  );
+}
+
+Map<String, dynamic> _$MapVertexToJson(MapVertex instance) => <String, dynamic>{
+      'listVertex': instance.listVertex,
+    };
