@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //导航状态
   NaviState _navistate = NaviState();
   //采集的地图点集数据
-  MapVertex _mapVertex = MapVertex.empty();
+  MapVertex _mapVertex = MapVertex();
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -96,15 +96,40 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    //LatLng? tmp1 = _mapMarkers['onTapMarker']?.position;
-                    LatLngjs tmp1 =
-                        LatLngjs(_mapMarkers['onTapMarker']?.position);
-                    _mapVertex.listVertex.add(tmp1);
+                    LatLng tmp = _mapMarkers['onTapMarker']!.position;
+                    _mapVertex.listVertex.add(tmp);
+                    _mapMarkers.remove('onTapMarker');
                     Navigator.of(context).pop();
                   }, //关闭对话框
                 ),
               ],
             ));
+    setState(() {});
+  }
+
+  void _onStoredVertexMarkerTapped(String markerid) async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('提示'),
+              content: Text('要删除该点吗？已有 ${_mapVertex.listVertex.length} 个点。'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () {
+                    _mapVertex.listVertex
+                        .remove(_mapMarkers[markerid]!.position);
+                    _mapMarkers.remove(markerid);
+                    Navigator.of(context).pop();
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+    setState(() {});
   }
 
   //地图视角改变回调函数，移除所有点击添加的标志。
@@ -135,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
-                content: Text('要停止导航吗？'),
+                content: Text('取消显示所有点吗？'),
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
@@ -144,7 +169,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   TextButton(
                     child: Text('确定'),
                     onPressed: () {
-                      _mapPolylines.clear();
+                      _mapMarkers
+                          .removeWhere((key, value) => key != 'onTapMarker');
                       _navistate.reverseState();
                       Navigator.of(context).pop();
                     }, //关闭对话框
@@ -152,38 +178,52 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ));
     } else {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('提示'),
-                content: Text('要开始导航吗？'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: () {
-                      _navistate.reverseState();
-                      Navigator.of(context).pop(true);
-                    }, //关闭对话框
-                  ),
-                ],
-              ));
-      /*List<LatLng> points = [
-          LatLng(40.15680947715327, 116.2841939815524),
-          LatLng(40.15775245451647, 116.2877612783767),
-          LatLng(40.15814809111908, 116.2892995252204),
-          LatLng(40.15674285325732, 116.2899499608954),
-        ];
-        Polyline polyline = Polyline(
-          points: points,
-          joinType: JoinType.round,
-          capType: CapType.arrow,
-          color: Color(0xCC2196F3),
-        );
-        _mapPolylines[polyline.id] = polyline;*/
+      if (_mapVertex.listVertex.isEmpty) {
+        await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('没有点可以显示。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+      } else {
+        await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('要显示所有点吗？'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () {
+                        int counter = 0;
+                        _mapVertex.listVertex.forEach((element) {
+                          Marker tmp = Marker(
+                            position: element,
+                            onTap: _onStoredVertexMarkerTapped,
+                            infoWindow: InfoWindow(title: counter.toString()),
+                            icon: BitmapDescriptor.defaultMarkerWithHue(
+                                BitmapDescriptor.hueGreen),
+                          );
+                          _mapMarkers[tmp.id] = tmp;
+                          counter++;
+                        });
+                        _navistate.reverseState();
+                        Navigator.of(context).pop();
+                      }, //关闭对话框
+                    ),
+                  ],
+                ));
+      }
     }
     //翻转导航状态
     setState(() {});
@@ -240,54 +280,84 @@ class _MyHomePageState extends State<MyHomePage> {
     //按点击的底栏项目调出对应activity
     switch (index) {
       case 0:
-        await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('提示'),
-                  content:
-                      Text('保存点到硬盘吗？已有 ${_mapVertex.listVertex.length} 个点。'),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('取消'),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                    ),
-                    TextButton(
-                      child: Text('确定'),
-                      onPressed: () async {
-                        Directory? toStore =
-                            await getExternalStorageDirectory();
-                        if (toStore != null) {
-                          File vtxdata = File(toStore.path + '/optvertex.json');
-                          await vtxdata
-                              .writeAsString(jsonEncode(_mapVertex.toJson()));
-                        }
-                        Navigator.of(context).pop();
-                      }, //关闭对话框
-                    ),
-                  ],
-                ));
+        if (_mapVertex.listVertex.isEmpty) {
+          await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('没有点可以保存。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+        } else {
+          await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content:
+                        Text('保存点到硬盘吗？已有 ${_mapVertex.listVertex.length} 个点。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                      TextButton(
+                        child: Text('确定'),
+                        onPressed: () async {
+                          Directory? toStore =
+                              await getExternalStorageDirectory();
+                          if (toStore != null) {
+                            File vtxdata =
+                                File(toStore.path + '/optvertex.json');
+                            await vtxdata.writeAsString(jsonEncode(_mapVertex));
+                          }
+                          Navigator.of(context).pop();
+                        }, //关闭对话框
+                      ),
+                    ],
+                  ));
+        }
         break;
       case 1:
-        await showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-                  title: Text('提示'),
-                  content:
-                      Text('删除最后一个点吗？已有 ${_mapVertex.listVertex.length} 个点。'),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('取消'),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                    ),
-                    TextButton(
-                      child: Text('确定'),
-                      onPressed: () {
-                        _mapVertex.listVertex.removeLast();
-                        Navigator.of(context).pop();
-                      }, //关闭对话框
-                    ),
-                  ],
-                ));
+        if (_mapVertex.listVertex.isEmpty) {
+          await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('没有点可以删除。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+        } else {
+          await showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content:
+                        Text('删除最后一个点吗？已有 ${_mapVertex.listVertex.length} 个点。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                      TextButton(
+                        child: Text('确定'),
+                        onPressed: () {
+                          _mapVertex.listVertex.removeLast();
+                          Navigator.of(context).pop();
+                        }, //关闭对话框
+                      ),
+                    ],
+                  ));
+        }
         break;
     }
   }
@@ -305,14 +375,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
                     onPressed: () async {
                       _locatePermissionStatus =
                           await Permission.location.request();
-                      Navigator.of(context).pop(true);
+                      Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],
@@ -431,67 +501,30 @@ class NaviState {
   }
 }
 
-/*
 class MapVertex {
   List<LatLng> listVertex = [];
-
   MapVertex();
 
   MapVertex.fromList(this.listVertex);
 
-  dynamic toJson() => jsonEncode(listVertex);
-
-  MapVertex.fromJson(dynamic json) {
-    List tmp = jsonDecode(json);
-    tmp.forEach((element) {
-      LatLng? point = LatLng.fromJson(element);
-      if (point != null) listVertex.add(point);
+  MapVertex.fromJson(Map<String, dynamic> json) {
+    List listVertexJson = json['listVertex'] as List;
+    listVertexJson.forEach((element) {
+      listVertex.add(LatLng(
+          element['latitude'] as double, element['longitude'] as double));
     });
   }
-}
-*/
 
-class LatLngjs {
-  LatLng? latlng;
-  LatLngjs(this.latlng);
-  static LatLngjs fromJson(Map<String, dynamic> json) =>
-      _$LatLngjsFromJson(json);
-  Map<String, dynamic> toJson() => _$LatLngjsToJson(this.latlng);
-}
-
-LatLngjs _$LatLngjsFromJson(Map<String, dynamic> json) {
-  return LatLngjs(
-      LatLng(json['latitude'] as double, json['longitude'] as double));
-}
-
-Map<String, dynamic> _$LatLngjsToJson(LatLng? instance) => <String, dynamic>{
-      'latitude': instance?.latitude,
-      'longitude': instance?.longitude,
+  Map<String, dynamic> toJson() {
+    List listVertexJson = [];
+    listVertex.forEach((element) {
+      listVertexJson.add(<String, dynamic>{
+        'latitude': element.latitude,
+        'longitude': element.longitude,
+      });
+    });
+    return <String, dynamic>{
+      'listVertex': listVertexJson,
     };
-
-class MapVertex {
-  List<LatLngjs> listVertex = [];
-  MapVertex.empty();
-  MapVertex(List<LatLngjs> latlngjs) {
-    listVertex = List.from(latlngjs);
-  }
-  factory MapVertex.fromJson(Map<String, dynamic> json) =>
-      _$MapVertexFromJson(json);
-  Map<String, dynamic> toJson() => _$MapVertexToJson(this);
-  LatLngjs getLatLng(int id) {
-    return listVertex[id];
   }
 }
-
-MapVertex _$MapVertexFromJson(Map<String, dynamic> json) {
-  var listVertexJson = json['listVertex'] as List;
-  List<LatLngjs> latlngList =
-      listVertexJson.map((i) => LatLngjs.fromJson(i)).toList();
-  return MapVertex(
-    latlngList,
-  );
-}
-
-Map<String, dynamic> _$MapVertexToJson(MapVertex instance) => <String, dynamic>{
-      'listVertex': instance.listVertex,
-    };
