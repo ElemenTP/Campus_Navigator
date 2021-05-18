@@ -73,7 +73,7 @@ class MapData {
   //建筑列表
   List<Building> mapbuilding = [];
   //点与编号对应表
-  List<List<LatLng>> mapvertex = [];
+  List<Map<int, LatLng>> mapvertex = [];
   //边与地图结构数据，按校区分成多个
   List<List<List<Edge>>> mapedge = [];
   //校车时间表
@@ -233,13 +233,4 @@ List<Building> buildingInput(List<String> line) {
   }
 
   return buildList;
-}
-
-int campusLocate(MapData mapdata, LatLng point) {
-  if (AMapTools.latLngIsInPolygon(point, mapdata.mapvertex[0]) == true) {
-    return 0;
-  } else if (AMapTools.latLngIsInPolygon(point, mapdata.mapvertex[1]) == true) {
-    return 1;
-  }
-  return -1;
 }
