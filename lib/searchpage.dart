@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'header.dart';
+
 class MySearchPage extends StatefulWidget {
   MySearchPage({Key key = const Key('search')}) : super(key: key);
 

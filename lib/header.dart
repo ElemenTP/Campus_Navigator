@@ -1,8 +1,9 @@
-import 'dart:convert';
+//mport 'dart:convert';
 import 'dart:math';
-import 'dart:io';
+//import 'dart:io';
 
-import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+import 'package:amap_flutter_base/amap_flutter_base.dart';
+import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面
 
 class MapVertex {
   List<LatLng> listVertex = [];
@@ -11,14 +12,25 @@ class MapVertex {
 
   MapVertex.fromList(this.listVertex);
 
-  dynamic toJson() => jsonEncode(listVertex);
-
-  MapVertex.fromJson(dynamic json) {
-    List tmp = jsonDecode(json);
-    tmp.forEach((element) {
-      LatLng? point = LatLng.fromJson(element);
-      if (point != null) listVertex.add(point);
+  MapVertex.fromJson(Map<String, dynamic> json) {
+    List listVertexJson = json['listVertex'] as List;
+    listVertexJson.forEach((element) {
+      listVertex.add(LatLng(
+          element['latitude'] as double, element['longitude'] as double));
     });
+  }
+
+  Map<String, dynamic> toJson() {
+    List listVertexJson = [];
+    listVertex.forEach((element) {
+      listVertexJson.add(<String, dynamic>{
+        'latitude': element.latitude,
+        'longitude': element.longitude,
+      });
+    });
+    return <String, dynamic>{
+      'listVertex': listVertexJson,
+    };
   }
 }
 
@@ -30,10 +42,21 @@ class Building {
   List<String> description = [];
   //校区编号
   int incampus = 0;
+  //*TODO
+}
+
+class MapCampus {
+  List<LatLng> campusShape = [];
+  int gate = 0;
+  int busstop = 0;
+  String name = 'My Campus';
+  //*TODO
 }
 
 //边类及构造函数
 class Edge {
+  int pointa = -1;
+  int pointb = -1;
   //边长度，建造函数自动生成
   double length = double.infinity;
   //边适应性，默认不通（<0），仅可步行(0)，可使用自行车(1)
@@ -41,15 +64,47 @@ class Edge {
   //边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
   //构造可用的边函数，默认可通行自行车
-  Edge.avail(LatLng pointa, LatLng pointb, {int availmthod = 1}) {
-    this.length = AMapTools.distanceBetween(pointa, pointb);
-    this.availmthod = availmthod;
+  Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
+      {int iptavailmthod = 1})
+      : pointa = (iptpointa < 0
+            ? 0
+            : (iptpointa > listVertex.length ? listVertex.length : iptpointa)),
+        pointb = (iptpointb < 0
+            ? 0
+            : (iptpointb > listVertex.length ? listVertex.length : iptpointb)),
+        availmthod =
+            (iptavailmthod < 0 ? 0 : (iptavailmthod > 1 ? 1 : iptavailmthod)) {
+    if (pointa == pointb)
+      availmthod = pointa = pointb = -1;
+    else {
+      this.length =
+          AMapTools.distanceBetween(listVertex[pointa], listVertex[pointb]);
+    }
   }
   //默认构造函数，将生成不通的边
   Edge();
   //随机拥挤度函数
   randomCrowding() {
     this.crowding = Random().nextDouble();
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'pointa': pointa,
+      'pointb': pointb,
+      'length': length,
+      'availmthod': availmthod,
+    };
+  }
+
+  Edge.fromJson(Map<String, dynamic> json) {
+    pointa = json['pointa'] ?? -1;
+    pointb = json['pointb'] ?? -1;
+    length = json['length'] ?? double.infinity;
+    if (pointa == -1 || pointb == -1 || length == double.infinity)
+      availmthod = -1;
+    else
+      availmthod = json['availmthod'] ?? -1;
   }
 }
 
@@ -63,183 +118,49 @@ class BusTimeTable {
   int setouthour = 0;
   //出发时间的分
   int setoutminute = 0;
-  //星期几？0-6，0是周日
-  int dayofweek = 0;
+  //星期几？1-7，7是周日
+  int dayofweek = 1;
+  BusTimeTable();
+  //Map<String, dynamic> toJson() {
+  //return
+  //}
+  //*TODO
 }
 
 class MapData {
   //校区与编号的对应表
-  Map<int, String> mapcampus = {};
+  List<MapCampus> listCampus = [];
   //建筑列表
-  List<Building> mapbuilding = [];
+  List<Building> listbuilding = [];
   //点与编号对应表
-  List<List<LatLng>> mapvertex = [];
+  List<Map<int, LatLng>> mapvertex = [];
   //边与地图结构数据，按校区分成多个
   List<List<List<Edge>>> mapedge = [];
   //校车时间表
-  List<BusTimeTable> mapbustimetable = [];
+  BusTimeTable busTimeTable = BusTimeTable();
+  //*TODO
 }
 
-MapData dataInput(String path) {
-  final inputfile = File(path);
-  List<String> lines = inputfile.readAsLinesSync();
-  MapData inputData = MapData();
-  inputData.mapcampus = campusInput(lines[0]);
-  inputData.mapvertex = pointsInput(lines[1]);
-  inputData.mapbustimetable = bustableInput(lines[3]);
-  inputData.mapedge = edgesInput(lines[2], inputData.mapvertex);
-  List<String> tmpLines = [lines[4], lines[5], lines[6]];
-  inputData.mapbuilding = buildingInput(tmpLines);
-  return inputData;
+class NaviState {
+  bool naviStatus = false;
+  int? startVertex;
+  List<int> endVertex = [];
+
+  NaviState();
+
+  reverseState() {
+    naviStatus = !naviStatus;
+  }
 }
 
-//校区数据导入
-Map<int, String> campusInput(String line) {
-  List<String> name = line.split(',');
-  List<int> number = List.generate(name.length, (index) => index);
-  Map<int, String> campusMap = Map.fromIterables(number, name);
-  return campusMap;
-}
+//地图数据
+late MapData mapData;
 
-//点集导入
-List<Map<int, LatLng>> pointsInput(String line) {
-  List<String> tmpStr = line.split(';');
-  List<Map<int, LatLng>> pointsList = [];
-  for (int i = 0; i < tmpStr.length; i++) {
-    List<String> points = tmpStr[i].split(',');
-    List<LatLng> latlngsList = [];
-    for (int j = 0; j < points.length / 2; j++) {
-      LatLng tmp = LatLng(
-          double.parse((points[j * 2])), double.parse((points[j * 2 + 1])));
-      latlngsList.add(tmp);
-    }
-    List<int> number = List.generate(latlngsList.length, (index) => index);
-    Map<int, LatLng> latlngsMap = Map.fromIterables(number, latlngsList);
-    pointsList.add(latlngsMap);
-  }
-  return pointsList;
-}
+//导航状态
+NaviState navistate = NaviState();
 
-//边集导入
-List<List<List<Edge>>> edgesInput(
-    String line, List<Map<int, LatLng>> latlngsMap) {
-  List<String> tmpStr = line.split(';');
-  List<List<List<Edge>>> edgeMatrix = [];
-  for (int i = 0; i < tmpStr.length; i++) {
-    List<List<Edge>> tmpList = [];
-    List<String> tmpStr2 = tmpStr[i].split(',');
-    for (int j = 0; j < latlngsMap[i].length; j++) {
-      List<Edge> tmp = [];
-      for (int k = 0; k < latlngsMap[i].length; k++) {
-        tmp.add(Edge());
-      }
-      tmpList.add(tmp);
-    }
-    edgeMatrix.add(tmpList);
-  }
-  //print(edgeMatrix[0].length);
-  //print(edgeMatrix[1].length);
+//地图控制器
+AMapController? mapController;
 
-  for (int i = 0; i < tmpStr.length; i++) {
-    List<String> edgesStr = tmpStr[i].split(',');
-    //print(edgesStr.length);
-    LatLng xpoint = LatLng(-1, -1);
-    for (int j = 0; j < edgesStr.length ~/ 2; j++) {
-      LatLng point1 = latlngsMap[i][int.parse(edgesStr[j * 2])] ?? xpoint;
-      LatLng point2 = latlngsMap[i][int.parse(edgesStr[j * 2 + 1])] ?? xpoint;
-
-      //if (i == 0) {
-      //print(edgesStr.length);
-      //print('${point1.latitude}, ${point1.longitude}');
-      //print('${point2.latitude}, ${point2.longitude}');
-      //}
-
-      if (point1 == xpoint || point2 == xpoint) {
-        //throw an exception
-      }
-      Edge tmp = Edge.avail(point1, point2);
-
-      //print(int.parse(edgesStr[j * 2]));
-      //print(int.parse(edgesStr[j * 2 + 1]));
-
-      edgeMatrix[i][int.parse(edgesStr[j * 2])]
-          [int.parse(edgesStr[j * 2 + 1])] = tmp;
-    }
-  }
-
-  return edgeMatrix;
-}
-//校车数据导入
-
-List<BusTimeTable> bustableInput(String line) {
-  List<String> bustableStr = line.split(',');
-  List<BusTimeTable> bustableList = [];
-  for (int i = 0; i < bustableStr.length ~/ 3; i++) {
-    BusTimeTable tmp = BusTimeTable();
-    tmp.campusfrom = int.parse(bustableStr[i * 3]);
-    //*TODO exception
-    tmp.campusto = int.parse(bustableStr[i * 3 + 1]);
-    int timeinfo = int.parse(bustableStr[i * 3 + 2]);
-    tmp.dayofweek = timeinfo ~/ 10000;
-    //*TODO exception
-    tmp.setoutminute = timeinfo % 100;
-    tmp.setouthour = timeinfo ~/ 100 % 100;
-    bustableList.add(tmp);
-  }
-  return bustableList;
-}
-
-//建筑集导入
-List<Building> buildingInput(List<String> line) {
-  List<String> descripStr = line[0].split(';');
-  List<List<String>> descripList = [];
-  for (int i = 0; i < descripStr.length; i++) {
-    List<String> tmpStr = descripStr[i].split(',');
-    List<String> tmpList = [];
-    for (int j = 0; j < tmpStr.length; j++) {
-      tmpList.add(tmpStr[j]);
-    }
-    descripList.add(tmpList);
-  }
-  //print(descrip_list);
-  List<String> entryStr = line[1].split(';');
-  List<List<int>> entryList = [];
-  for (int i = 0; i < entryStr.length; i++) {
-    List<String> tmpStr = entryStr[i].split(',');
-    List<int> tmpList = [];
-    for (int j = 0; j < tmpStr[j].length; j++) {
-      tmpList.add(int.parse(tmpStr[j]));
-    }
-    entryList.add(tmpList);
-  }
-
-  //print(entry_list);
-
-  List<String> numberStr = line[2].split(',');
-  List<int> numberList = [];
-  for (int i = 0; i < numberStr.length; i++) {
-    numberList.add(int.parse(numberStr[i]));
-  }
-
-  //print(number_list);
-  List<Building> buildList = [];
-  for (int i = 0; i < descripStr.length; i++) {
-    Building tmp = Building();
-    tmp.doors = entryList[i];
-    tmp.description = descripList[i];
-    tmp.incampus = numberList[i];
-
-    buildList.add(tmp);
-  }
-
-  return buildList;
-}
-
-int campusLocate(MapData mapdata, LatLng point) {
-  if (AMapTools.latLngIsInPolygon(point, mapdata.mapvertex[0]) == true) {
-    return 0;
-  } else if (AMapTools.latLngIsInPolygon(point, mapdata.mapvertex[1]) == true) {
-    return 1;
-  }
-  return -1;
-}
+//用户位置
+AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));

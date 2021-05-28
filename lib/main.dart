@@ -7,7 +7,7 @@ import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-//import 'header.dart';
+import 'header.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
@@ -40,19 +40,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //高德地图widget的回调
-  AMapController? _mapController;
-  //用户位置
-  AMapLocation _userPosition =
-      AMapLocation(latLng: LatLng(39.909187, 116.397451));
   //定位权限状态
   PermissionStatus _locatePermissionStatus = PermissionStatus.denied;
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
   //地图直线
   Map<String, Polyline> _mapPolylines = {};
-  //导航状态
-  NaviState _navistate = NaviState();
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -69,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //地图widget创建时的回调函数，获得controller并将调节视角。
   void _onMapCreated(AMapController controller) {
-    _mapController = controller;
+    mapController = controller;
     _getLastCameraPosition();
   }
 
@@ -102,12 +95,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //用户位置改变回调函数，记录用户位置。
   void _onLocationChanged(AMapLocation aMapLocation) {
-    _userPosition = aMapLocation;
+    userPosition = aMapLocation;
   }
 
   //导航按钮功能函数
   void _setNavigation() async {
-    if (_navistate.naviStatus) {
+    if (navistate.naviStatus) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -122,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('确定'),
                     onPressed: () {
                       _mapPolylines.clear();
-                      _navistate.reverseState();
+                      navistate.reverseState();
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -142,25 +135,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   TextButton(
                     child: Text('确定'),
                     onPressed: () {
-                      _navistate.reverseState();
+                      navistate.reverseState();
                       Navigator.of(context).pop(true);
                     }, //关闭对话框
                   ),
                 ],
               ));
-      /*List<LatLng> points = [
-          LatLng(40.15680947715327, 116.2841939815524),
-          LatLng(40.15775245451647, 116.2877612783767),
-          LatLng(40.15814809111908, 116.2892995252204),
-          LatLng(40.15674285325732, 116.2899499608954),
-        ];
-        Polyline polyline = Polyline(
-          points: points,
-          joinType: JoinType.round,
-          capType: CapType.arrow,
-          color: Color(0xCC2196F3),
-        );
-        _mapPolylines[polyline.id] = polyline;*/
     }
     //翻转导航状态
     setState(() {});
@@ -192,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ));
     }
     //定位不正常（时间time为0），提示用户打开定位开关
-    else if (_userPosition.time == 0) {
+    else if (userPosition.time == 0) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -206,8 +186,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ));
     } else {
-      await _mapController?.moveCamera(
-          CameraUpdate.newLatLngZoom(_userPosition.latLng, 17.5),
+      await mapController?.moveCamera(
+          CameraUpdate.newLatLngZoom(userPosition.latLng, 17.5),
           duration: 500);
     }
   }
@@ -225,12 +205,11 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         await Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  MySettingPage(mapController: _mapController)),
+          MaterialPageRoute(builder: (context) => MySettingPage()),
         );
         break;
     }
+    setState(() {});
   }
 
   //定位权限申请函数
@@ -264,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //获得最后一次地图视角
   void _getLastCameraPosition() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await _mapController
+    await mapController
         ?.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
       bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
       target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
@@ -335,26 +314,13 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'navibtn',
         onPressed: _setNavigation,
-        tooltip: _navistate.naviStatus
+        tooltip: navistate.naviStatus
             ? '停止导航'
             : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
-        child:
-            _navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+        child: navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
-  }
-}
-
-class NaviState {
-  bool naviStatus = false;
-  int? startVertex;
-  List endVertex = [];
-
-  NaviState();
-
-  reverseState() {
-    naviStatus = !naviStatus;
   }
 }
