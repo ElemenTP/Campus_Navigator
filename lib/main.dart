@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:permission_handler/permission_handler.dart';
 
 import 'amapapikey.dart'; //高德apikey所在文件
 
@@ -41,10 +41,10 @@ class _MyHomePageState extends State<MyHomePage> {
   //高德地图widget的回调
   AMapController? _mapController;
   //用户位置
-  AMapLocation _userPosition =
-      AMapLocation(latLng: LatLng(39.909187, 116.397451));
+  //AMapLocation _userPosition =
+  //AMapLocation(latLng: LatLng(39.96725, 116.364594));
   //定位权限状态
-  PermissionStatus _locatePermissionStatus = PermissionStatus.denied;
+  //PermissionStatus _locatePermissionStatus = PermissionStatus.denied;
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
   //地图直线
@@ -149,9 +149,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //用户位置改变回调函数，记录用户位置。
-  void _onLocationChanged(AMapLocation aMapLocation) {
-    _userPosition = aMapLocation;
-  }
+  //void _onLocationChanged(AMapLocation aMapLocation) {
+  //_userPosition = aMapLocation;
+  //}
 
   //导航按钮功能函数
   void _setNavigation() async {
@@ -231,48 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //定位按钮按下回调函数，将地图widget视角调整至用户位置。
   void _setCamUserLoaction() async {
-    //没有定位权限，提示用户授予权限
-    if (_locatePermissionStatus != PermissionStatus.granted) {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('提示'),
-                content: Text('欲使用此功能，请授予定位权限。'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: () async {
-                      _locatePermissionStatus =
-                          await Permission.location.request();
-                      Navigator.of(context).pop();
-                    }, //关闭对话框
-                  ),
-                ],
-              ));
-    }
-    //定位不正常（时间time为0），提示用户打开定位开关
-    else if (_userPosition.time == 0) {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('提示'),
-                content: Text('未开启系统定位开关，或者系统定位出错。'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                  ),
-                ],
-              ));
-    } else {
-      await _mapController?.moveCamera(
-          CameraUpdate.newLatLngZoom(_userPosition.latLng, 17.5),
-          duration: 500);
-    }
+    await _mapController?.moveCamera(
+        CameraUpdate.newLatLngZoom(LatLng(39.96725, 116.364594), 17.5),
+        duration: 500);
   }
 
   //底栏按钮点击回调函数
@@ -363,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //定位权限申请函数
-  void _requestlocationPermission() async {
+  /*void _requestlocationPermission() async {
     // 申请位置权限
     _locatePermissionStatus = await Permission.location.status;
     if (_locatePermissionStatus != PermissionStatus.granted) {
@@ -388,7 +349,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ));
     }
-  }
+  }*/
 
   //获得最后一次地图视角
   void _getLastCameraPosition() async {
@@ -396,8 +357,8 @@ class _MyHomePageState extends State<MyHomePage> {
     await _mapController
         ?.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
       bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
-      target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
-          prefs.getDouble('lastCamPositionLng') ?? 116.397451),
+      target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.96725,
+          prefs.getDouble('lastCamPositionLng') ?? 116.364594),
       zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
     )));
   }
@@ -420,7 +381,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     //检测并申请定位权限
     _getStoredVertex();
-    _requestlocationPermission();
+    //_requestlocationPermission();
   }
 
   //State的build函数
@@ -438,11 +399,11 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图视角移动结束回调函数
       onCameraMoveEnd: _onCameraMoveEnd,
       //用户位置移动回调函数
-      onLocationChanged: _onLocationChanged,
+      //onLocationChanged: _onLocationChanged,
       //开启指南针
       compassEnabled: true,
       //开启显示用户位置功能
-      myLocationStyleOptions: MyLocationStyleOptions(true),
+      //myLocationStyleOptions: MyLocationStyleOptions(true),
       //地图类型，使用卫星地图
       mapType: MapType.satellite,
       //地图上的标志
