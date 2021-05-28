@@ -1,16 +1,100 @@
 //import 'dart:io';
 
 //import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+//import 'package:campnavi/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import 'header.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'header2.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
+import 'dart:math';
+
+late MapData mapdata;
+Set<Marker> buildings = {};
+List<String> buildinginfo = [];
+List<LatLng> poly = [];
+Set<Polyline> polylinelist = {};
+Set<Polygon> polygonlist = {};
+
+void dataInit(String path) async {
+  String json = await rootBundle.loadString(path);
+  mapdata = MapData.fromJson(jsonDecode(json));
+
+  for (int i = 0; i < mapdata.mapvertex[0].listVertex.length; i++) {
+    LatLng e = mapdata.mapvertex[0].listVertex[i];
+    buildinginfo.add(mapdata.mapvertex[0].detail[i]);
+    buildings.add(Marker(
+        position: LatLng((e.latitude), (e.longitude)),
+        infoWindow: InfoWindow(
+            title: i.toString(), snippet: mapdata.mapvertex[0].detail[i])));
+  }
+  for (int i = 0; i < mapdata.mapbuild[0].length; i++) {
+    buildings.add(Marker(
+        position: LatLng(mapdata.mapbuild[0][i].mark.position.latitude,
+            mapdata.mapbuild[0][i].mark.position.longitude),
+        infoWindow: InfoWindow(
+            title: i.toString(), snippet: mapdata.mapbuild[0][i].info),
+        icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
+  }
+
+  Marker e = buildings.elementAt(15);
+  buildings.add(Marker(
+      position: LatLng((e.position.latitude), (e.position.longitude)),
+      infoWindow:
+          InfoWindow(title: e.infoWindow.title, snippet: e.infoWindow.snippet),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed)));
+  markerNearby(e.position);
+  buildings.remove(e);
+
+  pathAccessible();
+}
+
+void markerNearby(LatLng point) {
+  double distance = (mapdata.mapvertex[0].listVertex[9].latitude -
+          mapdata.mapvertex[0].listVertex[21].latitude) /
+      4;
+  List<LatLng> polygonparts = [];
+  polygonparts.add(LatLng(
+      point.latitude + sqrt(3) * distance / 2, point.longitude - distance / 2));
+  polygonparts.add(LatLng(
+      point.latitude + sqrt(3) * distance / 2, point.longitude + distance / 2));
+  polygonparts.add(LatLng(point.latitude, point.longitude + distance));
+  polygonparts.add(LatLng(
+      point.latitude - sqrt(3) * distance / 2, point.longitude + distance / 2));
+  polygonparts.add(LatLng(
+      point.latitude - sqrt(3) * distance / 2, point.longitude - distance / 2));
+  polygonparts.add(LatLng(point.latitude, point.longitude - distance));
+
+  polygonlist.add(Polygon(points: polygonparts));
+  for (int i = 0; i < mapdata.mapbuild[0].length; i++) {
+    Marker e = mapdata.mapbuild[0][i].mark;
+    if (AMapTools.latLngIsInPolygon(e.position, polygonparts)) {
+      buildings.add(Marker(
+          position: LatLng((e.position.latitude), (e.position.longitude)),
+          infoWindow: InfoWindow(
+              title: e.infoWindow.title, snippet: e.infoWindow.snippet),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueOrange)));
+      buildings.remove(e);
+    }
+  }
+}
+
+void pathAccessible() {
+  mapdata.mapedge[0].forEach((e) {
+    List<LatLng> line = [];
+    line.add(mapdata.mapvertex[0].listVertex.elementAt(e.startid));
+    line.add(mapdata.mapvertex[0].listVertex.elementAt(e.endid));
+    polylinelist.add(Polyline(points: line));
+  });
+}
 
 void main() {
   runApp(MyApp());
@@ -40,12 +124,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  //高德地图widget的回调
+  AMapController? _mapController;
+  //用户位置
+  AMapLocation _userPosition =
+      AMapLocation(latLng: LatLng(39.909187, 116.397451));
   //定位权限状态
   PermissionStatus _locatePermissionStatus = PermissionStatus.denied;
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
   //地图直线
   Map<String, Polyline> _mapPolylines = {};
+  //导航状态
+  NaviState _navistate = NaviState();
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -62,15 +153,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //地图widget创建时的回调函数，获得controller并将调节视角。
   void _onMapCreated(AMapController controller) {
-    mapController = controller;
+    _mapController = controller;
     _getLastCameraPosition();
   }
 
   //地图点击回调函数，在被点击处创建标志。
   void _onMapTapped(LatLng taplocation) {
     setState(() {
-      _mapMarkers['onTapMarker'] =
-          Marker(position: taplocation, onTap: _onTapMarkerTapped);
+      //_mapMarkers['onTapMarker'] =
+      //Marker(position: taplocation, onTap: _onTapMarkerTapped);
     });
   }
 
@@ -80,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //地图视角改变回调函数，移除所有点击添加的标志。
   void _onMapCamMoved(CameraPosition newPosition) {
     setState(() {
-      _mapMarkers.remove('onTapMarker');
+      //_mapMarkers.remove('onTapMarker');
     });
   }
 
@@ -95,12 +186,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //用户位置改变回调函数，记录用户位置。
   void _onLocationChanged(AMapLocation aMapLocation) {
-    userPosition = aMapLocation;
+    _userPosition = aMapLocation;
   }
 
   //导航按钮功能函数
   void _setNavigation() async {
-    if (navistate.naviStatus) {
+    if (_navistate.naviStatus) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -115,7 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('确定'),
                     onPressed: () {
                       _mapPolylines.clear();
-                      navistate.reverseState();
+                      _navistate.reverseState();
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -135,12 +226,25 @@ class _MyHomePageState extends State<MyHomePage> {
                   TextButton(
                     child: Text('确定'),
                     onPressed: () {
-                      navistate.reverseState();
+                      _navistate.reverseState();
                       Navigator.of(context).pop(true);
                     }, //关闭对话框
                   ),
                 ],
               ));
+      /*List<LatLng> points = [
+          LatLng(40.15680947715327, 116.2841939815524),
+          LatLng(40.15775245451647, 116.2877612783767),
+          LatLng(40.15814809111908, 116.2892995252204),
+          LatLng(40.15674285325732, 116.2899499608954),
+        ];
+        Polyline polyline = Polyline(
+          points: points,
+          joinType: JoinType.round,
+          capType: CapType.arrow,
+          color: Color(0xCC2196F3),
+        );
+        _mapPolylines[polyline.id] = polyline;*/
     }
     //翻转导航状态
     setState(() {});
@@ -172,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ));
     }
     //定位不正常（时间time为0），提示用户打开定位开关
-    else if (userPosition.time == 0) {
+    else if (_userPosition.time == 0) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -186,8 +290,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ));
     } else {
-      await mapController?.moveCamera(
-          CameraUpdate.newLatLngZoom(userPosition.latLng, 17.5),
+      await _mapController?.moveCamera(
+          CameraUpdate.newLatLngZoom(_userPosition.latLng, 17.5),
           duration: 500);
     }
   }
@@ -205,11 +309,12 @@ class _MyHomePageState extends State<MyHomePage> {
       case 1:
         await Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => MySettingPage()),
+          MaterialPageRoute(
+              builder: (context) =>
+                  MySettingPage(mapController: _mapController)),
         );
         break;
     }
-    setState(() {});
   }
 
   //定位权限申请函数
@@ -243,7 +348,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //获得最后一次地图视角
   void _getLastCameraPosition() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await mapController
+    await _mapController
         ?.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
       bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
       target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
@@ -257,6 +362,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     //检测并申请定位权限
+    dataInit("mapdata/buildtest.json");
     _requestlocationPermission();
   }
 
@@ -283,9 +389,12 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图类型，使用卫星地图
       mapType: MapType.satellite,
       //地图上的标志
-      markers: Set<Marker>.of(_mapMarkers.values),
+      //markers: Set<Marker>.of(_mapMarkers.values),
+      markers: buildings,
       //地图上的线
-      polylines: Set<Polyline>.of(_mapPolylines.values),
+      //polylines: Set<Polyline>.of(_mapPolylines.values),
+      polylines: polylinelist,
+      polygons: polygonlist,
     );
 
     return Scaffold(
@@ -314,13 +423,26 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'navibtn',
         onPressed: _setNavigation,
-        tooltip: navistate.naviStatus
+        tooltip: _navistate.naviStatus
             ? '停止导航'
             : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
-        child: navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+        child:
+            _navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+}
+
+class NaviState {
+  bool naviStatus = false;
+  int? startVertex;
+  List endVertex = [];
+
+  NaviState();
+
+  reverseState() {
+    naviStatus = !naviStatus;
   }
 }

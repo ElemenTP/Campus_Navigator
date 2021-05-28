@@ -1,0 +1,416 @@
+{
+    "mapvertex": [
+        {
+            "listVertex": [
+                {
+                    "latitude": 40.15684740149561,
+                    "longitude": 116.28424087910491,
+                    "detail": "西南门"
+                },
+                {
+                    "latitude": 40.156877125965345,
+                    "longitude": 116.28441790489683,
+                    "detail": "鸿雁路一段门口拐点"
+                },
+                {
+                    "latitude": 40.157039072847745,
+                    "longitude": 116.28442997483722,
+                    "detail": "快递点入口"
+                },
+                {
+                    "latitude": 40.15775,
+                    "longitude": 116.287759,
+                    "detail": "鸿雁路一段十字路口"
+                },
+                {
+                    "latitude": 40.157926,
+                    "longitude": 116.28839696190238,
+                    "detail": "鸿雁路二段标记点1"
+                },
+                {
+                    "latitude": 40.15817166524802,
+                    "longitude": 116.28934512277294,
+                    "detail": "鸿雁路二段十字路口"
+                },
+                {
+                    "latitude": 40.159054,
+                    "longitude": 116.28890000000001,
+                    "detail": "国际中路一段十字路口"
+                },
+                {
+                    "latitude": 40.15846377877538,
+                    "longitude": 116.29041398304707,
+                    "detail": "鸿雁路二段学活拐点"
+                },
+                {
+                    "latitude": 40.15820138913806,
+                    "longitude": 116.28756011270406,
+                    "detail": "国际西路雁北男生宿舍入口前拐点"
+                },
+                {
+                    "latitude": 40.159019303489735,
+                    "longitude": 116.2871846034484,
+                    "detail": "国际西路雁北女生宿舍入口前拐点"
+                },
+                {
+                    "latitude": 40.158678,
+                    "longitude": 116.28733699999998,
+                    "detail": "国际路一段路口"
+                },
+                {
+                    "latitude": 40.158669,
+                    "longitude": 116.29112299999997,
+                    "detail": "国际西路一段十字路口"
+                },
+                {
+                    "latitude": 40.15941698259716,
+                    "longitude": 116.29100943343815,
+                    "detail": "图书馆与自习室间标记点"
+                },
+                {
+                    "latitude": 40.15948872857985,
+                    "longitude": 116.2907492591682,
+                    "detail": "国际路图书馆与行政楼间标记点"
+                },
+                {
+                    "latitude": 40.15973983892229,
+                    "longitude": 116.29220435753388,
+                    "detail": "东配楼前拐点"
+                },
+                {
+                    "latitude": 40.15831925960839,
+                    "longitude": 116.29128616723108,
+                    "detail": "国际路教学楼n楼前拐点"
+                },
+                {
+                    "latitude": 40.1578867252281,
+                    "longitude": 116.291493,
+                    "detail": "国际路教学楼s楼入口前拐点"
+                },
+                {
+                    "latitude": 40.15813598820963,
+                    "longitude": 116.29170680777014,
+                    "detail": "教学楼地下室入口前拐点"
+                },
+                {
+                    "latitude": 40.159159721378735,
+                    "longitude": 116.29297951592594,
+                    "detail": "十字路口4"
+                },
+                {
+                    "latitude": 40.15855192506663,
+                    "longitude": 116.293338,
+                    "detail": "新教学楼入口前拐点"
+                },
+                {
+                    "latitude": 40.1556,
+                    "longitude": 116.290527,
+                    "detail": "国际中路末端"
+                },
+                {
+                    "latitude": 40.156156560154336,
+                    "longitude": 116.29471843274098,
+                    "detail": "南大门（在建）"
+                }
+            ]
+        }
+    ],
+    "mapedge": [
+        [
+            {
+                "startid": 0,
+                "endid": 1,
+                "availmthod": 1
+            },
+            {
+                "startid": 1,
+                "endid": 2,
+                "availmthod": 1
+            },
+            {
+                "startid": 1,
+                "endid": 3,
+                "availmthod": 1
+            },
+            {
+                "startid": 3,
+                "endid": 4,
+                "availmthod": 1
+            },
+            {
+                "startid": 4,
+                "endid": 5,
+                "availmthod": 1
+            },
+            {
+                "startid": 5,
+                "endid": 20,
+                "availmthod": 1
+            },
+            {
+                "startid": 3,
+                "endid": 8,
+                "availmthod": 1
+            },
+            {
+                "startid": 8,
+                "endid": 10,
+                "availmthod": 1
+            },
+            {
+                "startid": 10,
+                "endid": 9,
+                "availmthod": 1
+            },
+            {
+                "startid": 5,
+                "endid": 6,
+                "availmthod": 1
+            },
+            {
+                "startid": 6,
+                "endid": 10,
+                "availmthod": 1
+            },
+            {
+                "startid": 5,
+                "endid": 7,
+                "availmthod": 1
+            },
+            {
+                "startid": 7,
+                "endid": 11,
+                "availmthod": 1
+            },
+            {
+                "startid": 6,
+                "endid": 13,
+                "availmthod": 1
+            },
+            {
+                "startid": 13,
+                "endid": 11,
+                "availmthod": 1
+            },
+            {
+                "startid": 11,
+                "endid": 15,
+                "availmthod": 1
+            },
+            {
+                "startid": 15,
+                "endid": 16,
+                "availmthod": 1
+            },
+            {
+                "startid": 11,
+                "endid": 18,
+                "availmthod": 1
+            },
+            {
+                "startid": 18,
+                "endid": 19,
+                "availmthod": 1
+            },
+            {
+                "startid": 19,
+                "endid": 21,
+                "availmthod": 1
+            },
+            {
+                "startid": 13,
+                "endid": 12,
+                "availmthod": 1
+            },
+            {
+                "startid": 12,
+                "endid": 14,
+                "availmthod": 1
+            },
+            {
+                "startid": 15,
+                "endid": 17,
+                "availmthod": 1
+            }
+        ]
+    ],
+    "mapbuild": [
+        [
+            {
+                "latitude": 40.158143,
+                "longitude": 116.28736100000003,
+                "startid": 8,
+                "endid": 8,
+                "info": "体育场入口"
+            },
+            {
+                "latitude": 40.15812964179507,
+                "longitude": 116.2883607520813,
+                "startid": 4,
+                "endid": 5,
+                "info": "学校超市入口"
+            },
+            {
+                "latitude": 40.158977,
+                "longitude": 116.28914500000002,
+                "startid": 5,
+                "endid": 6,
+                "info": "学生食堂西北入口"
+            },
+            {
+                "latitude": 40.159144,
+                "longitude": 116.28888719999998,
+                "startid": 6,
+                "endid": 6,
+                "info": "洗衣房"
+            },
+            {
+                "latitude": 40.159152,
+                "longitude": 116.28917999999999,
+                "startid": 6,
+                "endid": 13,
+                "info": "教师食堂西南入口"
+            },
+            {
+                "latitude": 40.159403,
+                "longitude": 116.29003399999999,
+                "startid": 6,
+                "endid": 13,
+                "info": "行政楼南入口"
+            },
+            {
+                "latitude": 40.159333962151116,
+                "longitude": 116.29035765665867,
+                "startid": 6,
+                "endid": 13,
+                "info": "学生活动中心东北入口"
+            },
+            {
+                "latitude": 40.158833,
+                "longitude": 116.29035199999998,
+                "startid": 7,
+                "endid": 11,
+                "info": "学生活动中心南入口"
+            },
+            {
+                "latitude": 40.158776,
+                "longitude": 116.29011400000002,
+                "startid": 5,
+                "endid": 7,
+                "info": "邮政所入口"
+            },
+            {
+                "latitude": 40.15781,
+                "longitude": 116.289403,
+                "startid": 5,
+                "endid": 20,
+                "info": "s2"
+            },
+            {
+                "latitude": 40.157422,
+                "longitude": 116.28960899999998,
+                "startid": 5,
+                "endid": 20,
+                "info": "s3"
+            },
+            {
+                "latitude": 40.156988,
+                "longitude": 116.28976799999998,
+                "startid": 5,
+                "endid": 20,
+                "info": "s4"
+            },
+            {
+                "latitude": 40.156543,
+                "longitude": 116.28999599999997,
+                "startid": 5,
+                "endid": 20,
+                "info": "s5"
+            },
+            {
+                "latitude": 40.155771161930616,
+                "longitude": 116.29037506158472,
+                "startid": 5,
+                "endid": 20,
+                "info": "新宿舍楼门前入口"
+            },
+            {
+                "latitude": 40.15829876041085,
+                "longitude": 116.28791282318343,
+                "startid": 8,
+                "endid": 8,
+                "info": "雁北男生宿舍入口"
+            },
+            {
+                "latitude": 40.15909924947674,
+                "longitude": 116.28753194950986,
+                "startid": 9,
+                "endid": 9,
+                "info": "雁北女生宿舍入口"
+            },
+            {
+                "latitude": 40.158993679756044,
+                "longitude": 116.29131654636512,
+                "startid": 11,
+                "endid": 13,
+                "info": "图书馆入口1"
+            },
+            {
+                "latitude": 40.15942825697088,
+                "longitude": 116.29132056967859,
+                "startid": 12,
+                "endid": 14,
+                "info": "图书馆入口2"
+            },
+            {
+                "latitude": 40.15960762175571,
+                "longitude": 116.29123071567813,
+                "startid": 12,
+                "endid": 14,
+                "info": "自习室入口"
+            },
+            {
+                "latitude": 40.15983003343084,
+                "longitude": 116.29224995508633,
+                "startid": 14,
+                "endid": 14,
+                "info": "东配楼入口"
+            },
+            {
+                "latitude": 40.1584385863725,
+                "longitude": 116.29158476726201,
+                "startid": 15,
+                "endid": 15,
+                "info": "教学楼n楼入口"
+            },
+            {
+                "latitude": 40.157819709288,
+                "longitude": 116.29185374642702,
+                "startid": 16,
+                "endid": 16,
+                "info": "教学楼s楼西面入口"
+            },
+            {
+                "latitude": 40.158273136405235,
+                "longitude": 116.2921091391155,
+                "startid": 17,
+                "endid": 17,
+                "info": "教学楼地下室入口"
+            },
+            {
+                "latitude": 40.158412530879026,
+                "longitude": 116.29231969251953,
+                "startid": 15,
+                "endid": 16,
+                "info": "报告厅入口"
+            },
+            {
+                "latitude": 40.1586339215139,
+                "longitude": 116.29089275734805,
+                "startid": 7,
+                "endid": 11,
+                "info": "校车上车点"
+            }
+        ]
+    ]
+}
