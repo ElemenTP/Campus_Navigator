@@ -1,6 +1,9 @@
 //import 'dart:io';
 
 //import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
@@ -13,6 +16,10 @@ import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  prefs = await SharedPreferences.getInstance();
+  /*mapData = MapData.fromJson(
+      jsonDecode(await rootBundle.loadString('mapdata/default.json')));*/
   runApp(MyApp());
 }
 
@@ -61,7 +68,6 @@ class _MyHomePageState extends State<MyHomePage> {
   //地图widget创建时的回调函数，获得controller并将调节视角。
   void _onMapCreated(AMapController controller) {
     mapController = controller;
-    _getLastCameraPosition();
   }
 
   //地图点击回调函数，在被点击处创建标志。
@@ -83,8 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //地图视角改变结束回调函数，将视角信息记录在NVM中。
-  void _onCameraMoveEnd(CameraPosition endPosition) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  void _onCameraMoveEnd(CameraPosition endPosition) {
     prefs.setDouble('lastCamPositionbearing', endPosition.bearing);
     prefs.setDouble('lastCamPositionLat', endPosition.target.latitude);
     prefs.setDouble('lastCamPositionLng', endPosition.target.longitude);
@@ -239,8 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //获得最后一次地图视角
-  void _getLastCameraPosition() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  /*void _getLastCameraPosition() async {
     await mapController
         ?.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
       bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
@@ -248,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
           prefs.getDouble('lastCamPositionLng') ?? 116.397451),
       zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
     )));
-  }
+  }*/
 
   //State创建时执行一次
   @override
@@ -266,6 +270,13 @@ class _MyHomePageState extends State<MyHomePage> {
       apiKey: amapApiKeys,
       //创建地图回调函数
       onMapCreated: _onMapCreated,
+      //地图初始视角
+      initialCameraPosition: CameraPosition(
+        bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
+        target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
+            prefs.getDouble('lastCamPositionLng') ?? 116.397451),
+        zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
+      ),
       //地图点击回调函数
       onTap: _onMapTapped,
       //地图视角移动回调函数

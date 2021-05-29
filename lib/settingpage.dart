@@ -69,21 +69,15 @@ class _MySettingPageState extends State<MySettingPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                (locatePermissionStatus.isGranted
-                    ? Text(
-                        '已获取定位权限',
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: Color(0xFF303030),
-                        ),
-                      )
-                    : TextButton(
-                        child: Text(
-                          '获取定位权限',
-                          style: TextStyle(fontSize: 22),
-                        ),
-                        onPressed: _requestlocationPermission,
-                      )),
+                TextButton(
+                  child: Text(
+                    locatePermissionStatus.isGranted ? '已获取定位权限' : '获取定位权限',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                  onPressed: locatePermissionStatus.isGranted
+                      ? null
+                      : _requestlocationPermission,
+                ),
               ],
             ),
             Row(

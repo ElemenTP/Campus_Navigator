@@ -1,11 +1,13 @@
-//mport 'dart:convert';
+//import 'dart:convert';
 import 'dart:math';
 //import 'dart:io';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
-import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面
+import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+//点集类
 class MapVertex {
   List<LatLng> listVertex = [];
 
@@ -35,26 +37,90 @@ class MapVertex {
   }
 }
 
-//建筑类定义
+//建筑类
 class Building {
   //入口集，坐标编号
   List<int> doors = [];
   //描述集
   List<String> description = [];
-  //校区编号
-  int incampus = 0;
-  //*TODO
+
+  Building();
+
+  Building.fromJson(Map<String, dynamic> json) {
+    doors = json['doors'] as List<int>;
+    description = json['description'] as List<String>;
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'doors': doors,
+      'description': description,
+    };
+  }
 }
 
+//建筑集类
+class MapBuilding {
+  List<Building> listBuilding = [];
+
+  MapBuilding();
+
+  MapBuilding.fromJson(Map<String, dynamic> json) {
+    List listBuildingJson = json['listBuilding'] as List;
+    listBuildingJson.forEach((element) {
+      listBuilding.add(Building.fromJson(element));
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    /*List listBuildingJson = [];
+    listBuilding.forEach((element) {
+      listBuildingJson.add(element.toJson());
+    });*/
+    return <String, dynamic>{
+      'listBuilding': listBuilding,
+    };
+  }
+}
+
+//校区类
 class MapCampus {
   List<LatLng> campusShape = [];
   int gate = 0;
   int busstop = 0;
   String name = 'My Campus';
-  //*TODO
+
+  MapCampus();
+
+  MapCampus.fromJson(Map<String, dynamic> json) {
+    List campusShapeJson = json['campusShape'] as List;
+    campusShapeJson.forEach((element) {
+      campusShape.add(LatLng(
+          element['latitude'] as double, element['longitude'] as double));
+    });
+    gate = json['gate'] as int;
+    busstop = json['busstop'] as int;
+    name = json['name'] as String;
+  }
+
+  Map<String, dynamic> toJson() {
+    List campusShapeJson = [];
+    campusShape.forEach((element) {
+      campusShapeJson.add(<String, dynamic>{
+        'latitude': element.latitude,
+        'longitude': element.longitude,
+      });
+    });
+    return <String, dynamic>{
+      'campusShape': campusShapeJson,
+      'gate': gate,
+      'busstop': busstop,
+      'name': name,
+    };
+  }
 }
 
-//边类及构造函数
+//边类
 class Edge {
   int pointa = -1;
   int pointb = -1;
@@ -84,10 +150,6 @@ class Edge {
   }
   //默认构造函数，将生成不通的边
   Edge();
-  //随机拥挤度函数
-  randomCrowding() {
-    this.crowding = Random().nextDouble();
-  }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
@@ -109,39 +171,141 @@ class Edge {
   }
 }
 
+//边集类
+class MapEdge {
+  List<Edge> listEdge = [];
+  int squareSize = 0;
+
+  MapEdge();
+
+  List<List<Edge>> twoDimensionalize() {
+    List<List<Edge>> tmp = List.generate(
+        squareSize, (_) => List.generate(squareSize, (_) => Edge()));
+    listEdge.forEach((element) {
+      tmp[element.pointa][element.pointb] = element;
+      tmp[element.pointb][element.pointa] = element;
+    });
+    return tmp;
+  }
+
+  MapEdge.fromJson(Map<String, dynamic> json) {
+    List listEdgeJson = json['listEdge'] as List;
+    listEdgeJson.forEach((element) {
+      listEdge.add(Edge.fromJson(element));
+    });
+    squareSize = json['squareSize'] as int;
+  }
+
+  Map<String, dynamic> toJson() {
+    /*List listEdgeJson = [];
+    listEdge.forEach((element) {
+      listEdgeJson.add(element.toJson());
+    });*/
+    return <String, dynamic>{
+      'listEdge': listEdge,
+      'squareSize': squareSize,
+    };
+  }
+
+  //随机拥挤度函数
+  randomCrowding() {
+    int randomSeed = DateTime.now().millisecondsSinceEpoch;
+    listEdge.forEach((element) {
+      element.crowding = Random(randomSeed).nextDouble();
+    });
+  }
+
+  disableCrowding() {
+    listEdge.forEach((element) {
+      element.crowding = 1;
+    });
+  }
+}
+
 //校车时间表类
 class BusTimeTable {
   //始发校区编号
-  int campusfrom = 0;
+  int campusFrom = 0;
   //目的校区编号
-  int campusto = 0;
+  int campusTo = 0;
   //出发时间的时
-  int setouthour = 0;
+  int setOutHour = 0;
   //出发时间的分
-  int setoutminute = 0;
+  int setOutMinute = 0;
   //星期几？1-7，7是周日
-  int dayofweek = 1;
+  int dayOfWeek = 1;
+
   BusTimeTable();
-  //Map<String, dynamic> toJson() {
-  //return
-  //}
-  //*TODO
+
+  BusTimeTable.fromJson(Map<String, dynamic> json) {
+    campusFrom = json['campusFrom'] as int;
+    campusTo = json['campusTo'] as int;
+    setOutHour = json['setOutHour'] as int;
+    setOutMinute = json['setOutMinute'] as int;
+    dayOfWeek = json['dayOfWeek'] as int;
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'campusFrom': campusFrom,
+      'campusTo': campusTo,
+      'setOutHour': setOutHour,
+      'setOutMinute': setOutMinute,
+      'dayOfWeek': dayOfWeek,
+    };
+  }
 }
 
+//地图数据类
 class MapData {
   //校区与编号的对应表
-  List<MapCampus> listCampus = [];
+  List<MapCampus> mapCampus = [];
   //建筑列表
-  List<Building> listbuilding = [];
+  List<MapBuilding> mapBuilding = [];
   //点与编号对应表
-  List<Map<int, LatLng>> mapvertex = [];
+  List<MapVertex> mapVertex = [];
   //边与地图结构数据，按校区分成多个
-  List<List<List<Edge>>> mapedge = [];
+  List<MapEdge> mapEdge = [];
   //校车时间表
-  BusTimeTable busTimeTable = BusTimeTable();
-  //*TODO
+  List<BusTimeTable> busTimeTable = [];
+
+  MapData();
+
+  MapData.fromJson(Map<String, dynamic> json) {
+    List mapCampusJson = json['mapCampus'] as List;
+    mapCampusJson.forEach((element) {
+      mapCampus.add(MapCampus.fromJson(element));
+    });
+    List mapBuildingJson = json['mapBuilding'] as List;
+    mapBuildingJson.forEach((element) {
+      mapBuilding.add(MapBuilding.fromJson(element));
+    });
+    List mapVertexJson = json['mapVertex'] as List;
+    mapVertexJson.forEach((element) {
+      mapVertex.add(MapVertex.fromJson(element));
+    });
+    List mapEdgeJson = json['mapEdge'] as List;
+    mapEdgeJson.forEach((element) {
+      mapEdge.add(MapEdge.fromJson(element));
+    });
+    List busTimeTableJson = json['busTimeTable'] as List;
+    busTimeTableJson.forEach((element) {
+      busTimeTable.add(BusTimeTable.fromJson(element));
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'mapCampus': mapCampus,
+      'mapBuilding': mapBuilding,
+      'mapVertex': mapVertex,
+      'mapEdge': mapEdge,
+      'busTimeTable': busTimeTable,
+    };
+  }
 }
 
+//导航状态类
 class NaviState {
   bool naviStatus = false;
   LatLng? startlocation;
@@ -157,6 +321,9 @@ class NaviState {
     naviStatus = !naviStatus;
   }
 }
+
+//用户设置
+late SharedPreferences prefs;
 
 //地图数据
 late MapData mapData;
