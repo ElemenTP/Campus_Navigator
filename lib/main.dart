@@ -12,7 +12,7 @@ import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
 
-void main() {
+void main() async {
   runApp(MyApp());
 }
 
@@ -40,8 +40,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //定位权限状态
-  PermissionStatus _locatePermissionStatus = PermissionStatus.denied;
   //地图Marker
   Map<String, Marker> _mapMarkers = {};
   //地图直线
@@ -130,13 +128,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
                     onPressed: () {
                       navistate.reverseState();
-                      Navigator.of(context).pop(true);
+                      Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],
@@ -149,7 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //定位按钮按下回调函数，将地图widget视角调整至用户位置。
   void _setCamUserLoaction() async {
     //没有定位权限，提示用户授予权限
-    if (_locatePermissionStatus != PermissionStatus.granted) {
+    if (locatePermissionStatus != PermissionStatus.granted) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -163,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   TextButton(
                     child: Text('确定'),
                     onPressed: () async {
-                      _locatePermissionStatus =
+                      locatePermissionStatus =
                           await Permission.location.request();
                       Navigator.of(context).pop();
                     }, //关闭对话框
@@ -215,8 +213,8 @@ class _MyHomePageState extends State<MyHomePage> {
   //定位权限申请函数
   void _requestlocationPermission() async {
     // 申请位置权限
-    _locatePermissionStatus = await Permission.location.status;
-    if (_locatePermissionStatus != PermissionStatus.granted) {
+    locatePermissionStatus = await Permission.location.status;
+    if (!locatePermissionStatus.isGranted) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -225,14 +223,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
                     onPressed: () async {
-                      _locatePermissionStatus =
+                      locatePermissionStatus =
                           await Permission.location.request();
-                      Navigator.of(context).pop(true);
+                      Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],

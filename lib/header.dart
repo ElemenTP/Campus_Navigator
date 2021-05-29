@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面
+import 'package:permission_handler/permission_handler.dart';
 
 class MapVertex {
   List<LatLng> listVertex = [];
@@ -143,8 +144,12 @@ class MapData {
 
 class NaviState {
   bool naviStatus = false;
+  LatLng? startlocation;
   int? startVertex;
+  Building? startBuilding;
+  List<LatLng> endlocation = [];
   List<int> endVertex = [];
+  List<Building> endBuilding = [];
 
   NaviState();
 
@@ -164,3 +169,6 @@ AMapController? mapController;
 
 //用户位置
 AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
+
+//定位权限状态
+PermissionStatus locatePermissionStatus = PermissionStatus.denied;
