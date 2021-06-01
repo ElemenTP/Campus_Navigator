@@ -1,6 +1,6 @@
 //import 'dart:io';
 
-//import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 //import 'package:campnavi/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,8 +14,10 @@ import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
 import 'dart:math';
+import 'Shortpath.dart';
 
 late MapData mapdata;
+Shortpath naviSystem = Shortpath();
 Set<Marker> buildings = {};
 List<String> buildinginfo = [];
 List<LatLng> poly = [];
@@ -28,6 +30,22 @@ void dataInit(String path) async {
 
   for (int i = 0; i < mapdata.mapvertex[0].listVertex.length; i++) {
     LatLng e = mapdata.mapvertex[0].listVertex[i];
+    /*
+    if (e.latitude < 0 && e.longitude < 0) {
+      buildinginfo.add(mapdata.mapvertex[0].detail[i]);
+      buildings.add(Marker(
+          position: LatLng(-(e.latitude), -(e.longitude)),
+          infoWindow: InfoWindow(
+              title: i.toString(), snippet: mapdata.mapvertex[0].detail[i]),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueGreen)));
+    } else {
+      buildinginfo.add(mapdata.mapvertex[0].detail[i]);
+      buildings.add(Marker(
+          position: LatLng((e.latitude), (e.longitude)),
+          infoWindow: InfoWindow(
+              title: i.toString(), snippet: mapdata.mapvertex[0].detail[i])));
+    }*/
     buildinginfo.add(mapdata.mapvertex[0].detail[i]);
     buildings.add(Marker(
         position: LatLng((e.latitude), (e.longitude)),
@@ -44,7 +62,7 @@ void dataInit(String path) async {
             BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
   }
 
-  Marker e = buildings.elementAt(15);
+  Marker e = buildings.elementAt(6);
   buildings.add(Marker(
       position: LatLng((e.position.latitude), (e.position.longitude)),
       infoWindow:
@@ -54,9 +72,38 @@ void dataInit(String path) async {
   buildings.remove(e);
 
   pathAccessible();
+  polylinelist.add(navigate(mapdata.mapbuild[0][9], mapdata.mapbuild[0][18]));
+  //polylinelist.add(navigate(mapdata.mapbuild[0][0], mapdata.mapbuild[0][16]));
 }
 
 void markerNearby(LatLng point) {
+/*
+  LatLng start = LatLng(
+      point.latitude -
+          (mapdata.mapvertex[0].listVertex[9].latitude -
+                  mapdata.mapvertex[0].listVertex[21].latitude) /
+              8,
+      point.longitude -
+          (mapdata.mapvertex[0].listVertex[21].longitude -
+                  mapdata.mapvertex[0].listVertex[9].longitude) /
+              8);
+  LatLng end = LatLng(
+      point.latitude +
+          (mapdata.mapvertex[0].listVertex[9].latitude -
+                  mapdata.mapvertex[0].listVertex[21].latitude) /
+              8,
+      point.longitude +
+          (mapdata.mapvertex[0].listVertex[21].longitude -
+                  mapdata.mapvertex[0].listVertex[9].longitude) /
+              8);
+  buildings.add(Marker(
+      position: LatLng(start.latitude, start.longitude),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)));
+  buildings.add(Marker(
+      position: LatLng(end.latitude, end.longitude),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange)));
+  LatLngBounds latLngBounds = LatLngBounds(southwest: start, northeast: end);
+*/
   double distance = (mapdata.mapvertex[0].listVertex[9].latitude -
           mapdata.mapvertex[0].listVertex[21].latitude) /
       4;
@@ -85,6 +132,13 @@ void markerNearby(LatLng point) {
       buildings.remove(e);
     }
   }
+  /*
+  poly.add(LatLng(start.latitude, start.longitude));
+  poly.add(LatLng(start.latitude, end.longitude));
+  poly.add(LatLng(end.latitude, end.longitude));
+  poly.add(LatLng(end.latitude, start.longitude));
+  polygonlist.add(Polygon(points: poly));
+  */
 }
 
 void pathAccessible() {
@@ -94,6 +148,92 @@ void pathAccessible() {
     line.add(mapdata.mapvertex[0].listVertex.elementAt(e.endid));
     polylinelist.add(Polyline(points: line));
   });
+  naviSystem.pathTable = List.generate(mapdata.mapedge.length, (_) {
+    List<List<Edge>> tmp =
+        List.generate(mapdata.mapvertex[0].listVertex.length, (_) {
+      List<Edge> tmp2 = List.generate(
+          mapdata.mapvertex[0].listVertex.length, (index) => Edge(-1, -1, -1));
+      return tmp2;
+    });
+    return tmp;
+  });
+  mapdata.mapedge[0].forEach((e) {
+    naviSystem.pathTable[0][e.startid][e.endid] = e;
+    naviSystem.pathTable[0][e.endid][e.startid] = e;
+    e.length = AMapTools.distanceBetween(
+        latlngParse(e.startid, 0), latlngParse(e.endid, 0));
+  });
+}
+
+Polyline navigate(MPoint a, MPoint b) {
+  int astart = a.startid;
+  int aend = a.endid;
+  int bstart = b.startid;
+  int bend = b.endid;
+
+  List<double> answer = [];
+  List<List<int>> pathsets = [];
+  naviSystem.getShortpath(0, astart, bstart, 1);
+  pathsets.add(naviSystem.getroute());
+  answer.add(0.5 *
+          AMapTools.distanceBetween(a.mark.position, latlngParse(astart, 0)) +
+      0.5 * AMapTools.distanceBetween(b.mark.position, latlngParse(bstart, 0)) +
+      naviSystem.getrelativelen());
+
+  naviSystem.getShortpath(0, aend, bstart, 1);
+  pathsets.add(naviSystem.getroute());
+  answer.add(0.5 *
+          AMapTools.distanceBetween(a.mark.position, latlngParse(aend, 0)) +
+      0.5 * AMapTools.distanceBetween(b.mark.position, latlngParse(bstart, 0)) +
+      naviSystem.getrelativelen());
+
+  naviSystem.getShortpath(0, astart, bend, 1);
+  pathsets.add(naviSystem.getroute());
+  answer.add(0.5 *
+          AMapTools.distanceBetween(a.mark.position, latlngParse(astart, 0)) +
+      0.5 * AMapTools.distanceBetween(b.mark.position, latlngParse(bend, 0)) +
+      naviSystem.getrelativelen());
+
+  naviSystem.getShortpath(0, aend, bend, 1);
+  pathsets.add(naviSystem.getroute());
+  answer.add(0.5 *
+          AMapTools.distanceBetween(a.mark.position, latlngParse(aend, 0)) +
+      0.5 * AMapTools.distanceBetween(b.mark.position, latlngParse(bend, 0)) +
+      naviSystem.getrelativelen());
+  int res = 0;
+  for (int i = 0; i < answer.length; i++) {
+    if (answer[res] > answer[i]) {
+      res = i;
+    }
+  }
+
+  List<LatLng> pointlist = [];
+  for (int i = 0; i < pathsets[res].length; i++) {
+    pointlist.add(latlngParse(pathsets[res][i], 0));
+  }
+  Polyline startline = Polyline(
+      points: [latlngParse(astart, 0), a.mark.position],
+      dashLineType: DashLineType.circle,
+      color: Colors.green);
+  Polyline endline = Polyline(
+      points: [latlngParse(bstart, 0), b.mark.position],
+      dashLineType: DashLineType.circle,
+      color: Colors.green);
+  //TODO* 虚线判断
+  Polyline line = Polyline(points: pointlist, color: Colors.deepOrange);
+  polylinelist.add(startline);
+  polylinelist.add(endline);
+  return line;
+}
+
+MPoint markerParse(Marker m, int num) {
+  String titletmp = m.infoWindow.title ?? "-1";
+  assert(titletmp != "-1");
+  return mapdata.mapbuild[num][int.parse(titletmp)];
+}
+
+LatLng latlngParse(int index, int num) {
+  return mapdata.mapvertex[num].listVertex[index];
 }
 
 void main() {
@@ -362,7 +502,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     //检测并申请定位权限
-    dataInit("mapdata/buildtest.json");
+    dataInit("mapdata/buildv2.json");
     _requestlocationPermission();
   }
 

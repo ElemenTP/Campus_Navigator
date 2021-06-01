@@ -1,23 +1,29 @@
-import 'header.dart';
+import 'header2.dart';
 
 class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
   final double maxnum = double.infinity;
   final double onBike = 0.5; //骑车使得道路打折的倍数（小于一）
-  final int startvertexID; //起始点ID
-  final int endvertexID; //终点ID
-  final int transmethod; //运动方式
+  late int startvertexID; //起始点ID
+  late int endvertexID; //终点ID
+  late int transmethod; //运动方式
   List<int> route = []; //路径集
   late double relativelen; //路径的相对长度
-
+  late List<List<List<Edge>>> pathTable = [];
   double pathlength(Edge edge, int transmethod) {
     return (edge.length - edge.length * (transmethod * this.onBike)) /
         edge.crowding;
   } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
 
   //距离等于实际距离乘上骑车加速系数的积除以拥挤度
-  Shortpath(List<List<Edge>> mapmatrix, this.startvertexID, this.endvertexID,
-      this.transmethod) {
+  //Shortpath(List<List<Edge>> mapmatrix, this.startvertexID, this.endvertexID,
+  //  this.transmethod) {
+  void getShortpath(int num, int start, int end, int availmethod) {
+    //List<List<Edge>> mapmatrix = pathTable[num];
+    List<List<Edge>> mapmatrix = List.from(pathTable[num]);
+    this.startvertexID = start;
+    this.endvertexID = end;
+    this.transmethod = availmethod;
     List<int> points =
         List.filled(mapmatrix.length, -1); //节点集，存放已经决定的最短路径的节点号,初始全为-1
     List<double> dist = List.generate(mapmatrix.length, (_) => maxnum,
@@ -26,6 +32,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
         growable: false); //存放各个节点到起点的路径的前驱。
     double min; //最小值，之后计算使用
     int pointTemp = -1; //不确定赋值
+    //l//ate int pointTemp;
     for (int i = 0; i < mapmatrix.length; i++) {
       if (mapmatrix[startvertexID][i].availmthod >= transmethod) {
         dist[i] = pathlength(mapmatrix[startvertexID][i], transmethod);
@@ -77,7 +84,8 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       //将route设为正序
     }
   }
-  getroute() {
+
+  List<int> getroute() {
     return this.route.reversed.toList();
   }
 

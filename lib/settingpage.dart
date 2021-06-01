@@ -1,10 +1,11 @@
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:flutter/material.dart';
 
-import 'header.dart';
-
 class MySettingPage extends StatefulWidget {
-  MySettingPage({Key key = const Key('setting')}) : super(key: key);
+  MySettingPage({Key key = const Key('setting'), @required this.mapController})
+      : super(key: key);
+
+  final AMapController? mapController;
 
   @override
   State<StatefulWidget> createState() => _MySettingPageState();
@@ -17,7 +18,7 @@ class _MySettingPageState extends State<MySettingPage> {
   //获取审图号函数
   void _getApprovalNumber() async {
     //按要求获取卫星地图审图号
-    await mapController?.getSatelliteImageApprovalNumber().then((value) {
+    await widget.mapController?.getSatelliteImageApprovalNumber().then((value) {
       if (value != null) _satelliteImageApprovalNumber = value;
     });
     setState(() {});
@@ -25,7 +26,7 @@ class _MySettingPageState extends State<MySettingPage> {
 
   //清除地图缓存函数
   void _cleanMapCache() async {
-    await mapController?.clearDisk();
+    await widget.mapController?.clearDisk();
     await showDialog(
         context: context,
         builder: (context) => AlertDialog(
