@@ -115,87 +115,107 @@
                 {
                     "latitude": 40.15773298011639,
                     "longitude": 116.28953690071421,
-                    "detail": "0"
+                    "detail": "s1侧道路口"
                 },
                 {
                     "latitude": 40.157311716726646,
                     "longitude": 116.2896924688344,
-                    "detail": "0"
+                    "detail": "s2侧道路口"
                 },
                 {
                     "latitude": 40.15659423048464,
                     "longitude": 116.2900492026273,
-                    "detail": "0"
+                    "detail": "s3侧道路口"
+                },
+                {
+                    "latitude":40.155921,
+                    "longitude":116.290383,
+                    "detail":"新宿舍侧道拐点"
+                },
+                {
+                    "latitude":40.155878,
+                    "longitude":116.2898994,
+                    "detail":"新宿舍侧道标记点1"
                 },
                 {
                     "latitude": 40.15620883474494,
                     "longitude": 116.2897622062676,
-                    "detail": "0"
+                    "detail": "新宿舍侧道标记点2"
                 },
                 {
                     "latitude": 40.15597616125808,
                     "longitude": 116.28903532763701,
-                    "detail": "0"
+                    "detail": "新宿舍侧道标记点F"
                 },
                 {
                     "latitude": 40.15647225706957,
                     "longitude": 116.2887764944715,
-                    "detail": "0"
+                    "detail": "s4侧道标记点F"
                 },
                 {
                     "latitude": 40.15658090566845,
                     "longitude": 116.28926331539935,
-                    "detail": "0"
+                    "detail": "s4侧道标记点2"
                 },
                 {
                     "latitude": 40.15650300669066,
                     "longitude": 116.2894765510124,
-                    "detail": "0"
+                    "detail": "s4侧道标记点1"
                 },
                 {
                     "latitude": 40.156903775478874,
                     "longitude": 116.28882209202396,
-                    "detail": "0"
+                    "detail": "s3侧道标记点F"
                 },
                 {
                     "latitude": 40.1570052485308,
                     "longitude": 116.28915736814508,
-                    "detail": "0"
+                    "detail": "s3侧道标记点2"
                 },
                 {
                     "latitude": 40.157144645607424,
                     "longitude": 116.28924319883208,
-                    "detail": "0"
+                    "detail": "s3侧道标记点1"
                 },
                 {
                     "latitude": 40.15718769464679,
                     "longitude": 116.28869200488896,
-                    "detail": "0"
+                    "detail": "s2侧道标记点F"
+                },
+                {
+                    "latitude":40.157587,
+                    "longitude":116.289001,
+                    "detail":"s2侧道标记点1"
                 },
                 {
                     "latitude": 40.15711389627689,
                     "longitude": 116.2884023263203,
-                    "detail": "0"
+                    "detail": "宿舍区小路标记点2"
                 },
                 {
                     "latitude": 40.15727891752095,
                     "longitude": 116.28835404655888,
-                    "detail": "0"
+                    "detail": "宿舍区小路标记点1"
                 },
                 {
                     "latitude": 40.15722869370652,
                     "longitude": 116.28806168578126,
-                    "detail": "0"
+                    "detail": "宿舍区小路标记点S"
                 },
                 {
-                    "latitude": 40.159226342903324,
-                    "longitude": 116.28979573387971,
-                    "detail": "0"
+                    "latitude":40.158347,
+                    "longitude":116.290015,
+                    "detail":"二维码广场南入口"
+                },
+                {
+                    "latitude": 40.1592469,
+                    "longitude": 116.28974573387971,
+                    "detail": "二维码广场"
                 },
                 {
                     "latitude": 40.15962197091803,
-                    "longitude": 116.2896763755806,
-                    "detail": "0"
+                    "longitude": 116.2895763755806,
+                    "detail": "校医院"
                 }
             ]
         }
@@ -229,7 +249,7 @@
             },
             {
                 "startid": 5,
-                "endid": 20,
+                "endid": 22,
                 "availmthod": 1
             },
             {
@@ -255,11 +275,6 @@
             {
                 "startid": 6,
                 "endid": 10,
-                "availmthod": 1
-            },
-            {
-                "startid": 5,
-                "endid": 7,
                 "availmthod": 1
             },
             {
@@ -316,7 +331,144 @@
                 "startid": 15,
                 "endid": 17,
                 "availmthod": 1
+            },
+            {
+                "startid":22,
+                "endid":36,
+                "availmthod":1
+            },
+            {
+                "startid": 35,
+                "endid": 36,
+                "availmthod":1
+            },
+            {
+                "startid": 35,
+                "endid": 37,
+                "availmthod":1
+            },
+            {
+                "startid": 37,
+                "endid": 38,
+                "availmthod":1
+            },
+            {
+                "startid": 38,
+                "endid": 39,
+                "availmthod":1
+            },
+            {
+                "startid": 3,
+                "endid": 39,
+                "availmthod":1
+            },
+            {
+                "startid": 35,
+                "endid": 32,
+                "availmthod":1
+            },
+            {
+                "startid": 32,
+                "endid": 33,
+                "availmthod":1
+            },
+            {
+                "startid": 33,
+                "endid": 34,
+                "availmthod":1
+            },
+            {
+                "startid": 34,
+                "endid": 23,
+                "availmthod":1
+            },
+            {
+                "startid": 32,
+                "endid": 29,
+                "availmthod":1
+            },
+            {
+                "startid":29,
+                "endid":30,
+                "availmthod":1
+            },
+            {
+                "startid":30,
+                "endid":31,
+                "availmthod":1
+            },
+            {
+                "startid":31,
+                "endid":24,
+                "availmthod":1
+            },
+            {
+                "startid":29,
+                "endid":28,
+                "availmthod":1
+            },
+            {
+                "startid":28,
+                "endid":27,
+                "availmthod":1
+            },
+            {
+                "startid":27,
+                "endid":26,
+                "availmthod":1
+            },
+            {
+                "startid":26,
+                "endid":25,
+                "availmthod":1
+            },
+            {
+                "startid":25,
+                "endid":24,
+                "availmthod":1
+            },
+            {
+                "startid":25,
+                "endid":20,
+                "availmthod":1
+            },
+            {
+                "startid":24,
+                "endid":23,
+                "availmthod":1
+            },
+            {
+                "startid":23,
+                "endid":22,
+                "availmthod":1
+            },
+            {
+                "startid":22,
+                "endid":5,
+                "availmthod":1
+            },
+            {
+                "startid":40,
+                "endid":41,
+                "availmthod":1
+            },
+            {
+                "startid":41,
+                "endid":42,
+                "availmthod":1
+            },
+            {
+                "startid": 5,
+                "endid": 40,
+                "availmthod":1
+            },
+            {
+                "startid": 7,
+                "endid": 40,
+                "availmthod":1
             }
+
+            
         ]
     ],
     "mapbuild": [
