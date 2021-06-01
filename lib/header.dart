@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
+import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,8 +48,15 @@ class Building {
   Building();
 
   Building.fromJson(Map<String, dynamic> json) {
-    doors = json['doors'] as List<int>;
-    description = json['description'] as List<String>;
+    List doorsJson = json['doors'] as List;
+    doorsJson.forEach((element) {
+      doors.add(element as int);
+    });
+
+    List descriptionJson = json['description'] as List;
+    descriptionJson.forEach((element) {
+      description.add(element as String);
+    });
   }
 
   Map<String, dynamic> toJson() {
@@ -308,6 +316,8 @@ class MapData {
 //导航状态类
 class NaviState {
   bool naviStatus = false;
+  bool crowding = false;
+  bool onbike = false;
   LatLng? startlocation;
   int? startVertex;
   Building? startBuilding;
@@ -319,6 +329,18 @@ class NaviState {
 
   reverseState() {
     naviStatus = !naviStatus;
+  }
+
+  Widget getstartwidget() {
+    if (startlocation != null) {
+      return Card();
+    } else if (startVertex != null) {
+      return Card();
+    } else if (startBuilding != null) {
+      return Card();
+    } else {
+      return Card();
+    }
   }
 }
 
