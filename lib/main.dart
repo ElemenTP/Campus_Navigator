@@ -15,11 +15,20 @@ import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
 
+Set<Marker> markerlist = {};
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
-  /*mapData = MapData.fromJson(
-      jsonDecode(await rootBundle.loadString('mapdata/default.json')));*/
+  int i = 0;
+  mapData = MapData.fromJson(
+      jsonDecode(await rootBundle.loadString('mapdata/example.json')));
+  mapData.mapVertex[0].listVertex.forEach((element) {
+    markerlist.add(Marker(
+        position: element,
+        infoWindow: InfoWindow(title: mapData.mapVertex[0].detail[i++])));
+  });
+
   runApp(MyApp());
 }
 
@@ -292,7 +301,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图类型，使用卫星地图
       mapType: MapType.satellite,
       //地图上的标志
-      markers: Set<Marker>.of(_mapMarkers.values),
+      //markers: Set<Marker>.of(_mapMarkers.values),
+      markers: markerlist,
       //地图上的线
       polylines: Set<Polyline>.of(_mapPolylines.values),
     );

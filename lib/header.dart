@@ -11,27 +11,33 @@ import 'package:shared_preferences/shared_preferences.dart';
 //点集类
 class MapVertex {
   List<LatLng> listVertex = [];
-
+  List<String> detail = [];
   MapVertex();
 
   MapVertex.fromList(this.listVertex);
 
   MapVertex.fromJson(Map<String, dynamic> json) {
     List listVertexJson = json['listVertex'] as List;
+    //List<String> detaillist = [];
     listVertexJson.forEach((element) {
       listVertex.add(LatLng(
           element['latitude'] as double, element['longitude'] as double));
+      detail.add(element["detail"] as String);
     });
   }
 
   Map<String, dynamic> toJson() {
     List listVertexJson = [];
+    int i = 0;
     listVertex.forEach((element) {
       listVertexJson.add(<String, dynamic>{
         'latitude': element.latitude,
         'longitude': element.longitude,
+        "detail": detail[i] as String
       });
+      i = i + 1;
     });
+
     return <String, dynamic>{
       'listVertex': listVertexJson,
     };
@@ -163,7 +169,7 @@ class Edge {
     return <String, dynamic>{
       'pointa': pointa,
       'pointb': pointb,
-      'length': length,
+      //'length': length,
       'availmthod': availmthod,
     };
   }
@@ -171,8 +177,9 @@ class Edge {
   Edge.fromJson(Map<String, dynamic> json) {
     pointa = json['pointa'] ?? -1;
     pointb = json['pointb'] ?? -1;
-    length = json['length'] ?? double.infinity;
-    if (pointa == -1 || pointb == -1 || length == double.infinity)
+    //length = json['length'] ?? double.infinity;
+    //if (pointa == -1 || pointb == -1 || length == double.infinity)
+    if (pointa == -1 || pointb == -1)
       availmthod = -1;
     else
       availmthod = json['availmthod'] ?? -1;
@@ -201,7 +208,7 @@ class MapEdge {
     listEdgeJson.forEach((element) {
       listEdge.add(Edge.fromJson(element));
     });
-    squareSize = json['squareSize'] as int;
+    //squareSize = json['squareSize'] as int;
   }
 
   Map<String, dynamic> toJson() {
@@ -211,7 +218,7 @@ class MapEdge {
     });*/
     return <String, dynamic>{
       'listEdge': listEdge,
-      'squareSize': squareSize,
+      //'squareSize': squareSize,
     };
   }
 
