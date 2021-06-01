@@ -1,4 +1,4 @@
-//import 'dart:io';
+import 'dart:io';
 
 //import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
@@ -18,8 +18,14 @@ import 'settingpage.dart'; //设置界面
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
-  /*mapData = MapData.fromJson(
-      jsonDecode(await rootBundle.loadString('mapdata/default.json')));*/
+  String? filedir = prefs.getString('filedir');
+  if (filedir == null) {
+    mapData = MapData.fromJson(
+        jsonDecode(await rootBundle.loadString('mapdata/default.json')));
+  } else {
+    File datafile = File(filedir);
+    mapData = MapData.fromJson(jsonDecode(await datafile.readAsString()));
+  }
   runApp(MyApp());
 }
 
@@ -107,7 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text('提示'),
+                title: Text('停止导航'),
                 content: Text('要停止导航吗？'),
                 actions: <Widget>[
                   TextButton(
@@ -128,8 +134,61 @@ class _MyHomePageState extends State<MyHomePage> {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: Text('提示'),
-                content: Text('要开始导航吗？'),
+                title: Text('开始导航'),
+                content: StatefulBuilder(
+                  builder: (context, _setState) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      navistate.getStartWidget(),
+                      IconButton(
+                          onPressed: () {
+                            _setState(() {
+                              navistate.clearStartWidget();
+                            });
+                          },
+                          icon: Icon(Icons.delete)),
+                      LimitedBox(
+                        maxHeight: 270,
+                        child: SingleChildScrollView(
+                          child: navistate.getEndWidget(),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            _setState(() {
+                              navistate.clearEndWidget();
+                            });
+                          },
+                          icon: Icon(Icons.delete)),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('骑车：'),
+                          Switch(
+                              value: navistate.onbike,
+                              onChanged: (state) {
+                                _setState(() {
+                                  navistate.onbike = state;
+                                });
+                              })
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('拥挤：'),
+                          Switch(
+                              value: navistate.crowding,
+                              onChanged: (state) {
+                                _setState(() {
+                                  navistate.crowding = state;
+                                });
+                              })
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
@@ -137,10 +196,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   TextButton(
                     child: Text('确定'),
-                    onPressed: () {
-                      navistate.reverseState();
-                      Navigator.of(context).pop();
-                    }, //关闭对话框
+                    onPressed: navistate.canStartNavi()
+                        ? () {
+                            navistate.reverseState();
+                            Navigator.of(context).pop();
+                          }
+                        : null, //关闭对话框
                   ),
                 ],
               ));
@@ -242,17 +303,6 @@ class _MyHomePageState extends State<MyHomePage> {
               ));
     }
   }
-
-  //获得最后一次地图视角
-  /*void _getLastCameraPosition() async {
-    await mapController
-        ?.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(
-      bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
-      target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
-          prefs.getDouble('lastCamPositionLng') ?? 116.397451),
-      zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
-    )));
-  }*/
 
   //State创建时执行一次
   @override

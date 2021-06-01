@@ -318,11 +318,9 @@ class NaviState {
   bool naviStatus = false;
   bool crowding = false;
   bool onbike = false;
-  LatLng? startlocation;
-  int? startVertex;
+  LatLng? startLocation;
   Building? startBuilding;
-  List<LatLng> endlocation = [];
-  List<int> endVertex = [];
+  List<LatLng> endLocation = [];
   List<Building> endBuilding = [];
 
   NaviState();
@@ -331,16 +329,69 @@ class NaviState {
     naviStatus = !naviStatus;
   }
 
-  Widget getstartwidget() {
-    if (startlocation != null) {
-      return Card();
-    } else if (startVertex != null) {
-      return Card();
+  bool canStartNavi() {
+    return (startLocation != null || startBuilding != null) &&
+        (endLocation.isNotEmpty || endBuilding.isNotEmpty);
+  }
+
+  Widget getStartWidget() {
+    if (startLocation != null) {
+      return Card(
+        child: ListTile(
+          title: Text(
+              '坐标：${startLocation!.longitude}，${startLocation!.latitude}。'),
+        ),
+      );
     } else if (startBuilding != null) {
-      return Card();
+      return Card(
+        child: ListTile(
+          title: Text('建筑：${startBuilding!.description[0]}。'),
+        ),
+      );
     } else {
-      return Card();
+      return Card(
+        child: ListTile(
+          title: Text('未设置出发点。'),
+        ),
+      );
     }
+  }
+
+  void clearStartWidget() {
+    startLocation = null;
+    startBuilding = null;
+  }
+
+  Widget getEndWidget() {
+    List<Widget> inColumn = [];
+    endLocation.forEach((element) {
+      inColumn.add(Card(
+        child: ListTile(
+          title: Text('坐标：${element.longitude}，${element.latitude}。'),
+        ),
+      ));
+    });
+    endBuilding.forEach((element) {
+      inColumn.add(Card(
+        child: ListTile(
+          title: Text('建筑：${element.description[0]}。'),
+        ),
+      ));
+    });
+    if (inColumn.isEmpty)
+      inColumn.add(Card(
+        child: ListTile(
+          title: Text('未设置目的地。'),
+        ),
+      ));
+    return Column(
+      children: inColumn,
+    );
+  }
+
+  void clearEndWidget() {
+    endLocation.clear();
+    endBuilding.clear();
   }
 }
 

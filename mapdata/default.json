@@ -1,0 +1,109 @@
+{
+    "mapCampus": [
+        {
+            "campusShape": [
+                {
+                    "latitude": 39.909187,
+                    "longitude": 116.39745099999999
+                }
+            ],
+            "gate": 0,
+            "busstop": 0,
+            "name": "My Campus"
+        }
+    ],
+    "mapBuilding": [
+        {
+            "listBuilding": [
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description1"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description2"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description3"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description4"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description5"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description6"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description7"
+                    ]
+                }
+            ]
+        }
+    ],
+    "mapVertex": [
+        {
+            "listVertex": [
+                {
+                    "latitude": 39.909187,
+                    "longitude": 116.39745099999999
+                }
+            ]
+        }
+    ],
+    "mapEdge": [
+        {
+            "listEdge": [
+                {
+                    "pointa": 1,
+                    "pointb": 2,
+                    "length": 1234.0,
+                    "availmthod": 1
+                }
+            ],
+            "squareSize": 1
+        }
+    ],
+    "busTimeTable": [
+        {
+            "campusFrom": 0,
+            "campusTo": 0,
+            "setOutHour": 0,
+            "setOutMinute": 0,
+            "dayOfWeek": 1
+        }
+    ]
+}
