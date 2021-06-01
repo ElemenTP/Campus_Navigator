@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
-
+import 'dart:ui';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,9 @@ import 'package:amap_flutter_map/amap_flutter_map.dart';
 //import 'package:permission_handler/permission_handler.dart';
 
 import 'amapapikey.dart'; //高德apikey所在文件
+
+List<LatLng> tmp = [];
+List<String> tmpdetail = [];
 
 void main() {
   runApp(MyApp());
@@ -52,7 +55,8 @@ class _MyHomePageState extends State<MyHomePage> {
   //导航状态
   NaviState _navistate = NaviState();
   //采集的地图点集数据
-  MapVertex _mapVertex = MapVertex();
+
+  MapVertex _mapVertex = MapVertex(listVertex: tmp, detail: tmpdetail);
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -274,7 +278,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           if (toStore != null) {
                             File vtxdata =
                                 File(toStore.path + '/optvertex.json');
-                            await vtxdata.writeAsString(jsonEncode(_mapVertex));
+                            await vtxdata
+                                .writeAsString(jsonEncode(_mapVertex.toJson()));
                           }
                           Navigator.of(context).pop();
                         }, //关闭对话框
@@ -464,28 +469,45 @@ class NaviState {
 
 class MapVertex {
   List<LatLng> listVertex = [];
-  MapVertex();
-
-  MapVertex.fromList(this.listVertex);
-
-  MapVertex.fromJson(Map<String, dynamic> json) {
-    List listVertexJson = json['listVertex'] as List;
-    listVertexJson.forEach((element) {
-      listVertex.add(LatLng(
-          element['latitude'] as double, element['longitude'] as double));
-    });
+  List<String> detail = [];
+  MapVertex({required this.listVertex, required this.detail});
+  factory MapVertex.fromJson(Map<String, dynamic> json) =>
+      _$MapVertexFromJson(json);
+  Map<String, dynamic> toJson() => _$MapVertexToJson(this);
+  LatLng getLatLng(int id) {
+    return listVertex[id];
   }
+}
 
-  Map<String, dynamic> toJson() {
-    List listVertexJson = [];
-    listVertex.forEach((element) {
-      listVertexJson.add(<String, dynamic>{
-        'latitude': element.latitude,
-        'longitude': element.longitude,
-      });
+MapVertex _$MapVertexFromJson(Map<String, dynamic> json) {
+  var listVertexJson = json['listVertex'] as List;
+  List<LatLng> latlngList = [];
+  List<String> detaillist = [];
+  listVertexJson.map((i) => lfromJson(i)).toList();
+  listVertexJson.forEach((e) {
+    latlngList.add(lfromJson(e));
+    detaillist.add(e["detail"] as String);
+  });
+  return MapVertex(listVertex: latlngList, detail: detaillist);
+}
+
+Map<String, dynamic> _$MapVertexToJson(MapVertex instance) {
+  //List<Map<String, double>> json = [];
+  List<Map<String, dynamic>> json = [];
+  instance.detail = [];
+  int i = 0;
+  instance.detail.add(i.toString());
+  instance.listVertex.forEach((e) {
+    json.add(<String, dynamic>{
+      "latitude": e.latitude as double,
+      "longitude": e.longitude as double,
+      "detail": instance.detail[i] as String
     });
-    return <String, dynamic>{
-      'listVertex': listVertexJson,
-    };
-  }
+    i = (i + 1) % instance.detail.length;
+  });
+  return <String, dynamic>{"listVertex": json};
+}
+
+LatLng lfromJson(Map<String, dynamic> json) {
+  return LatLng(json["latitude"] as double, json["longitude"] as double);
 }
