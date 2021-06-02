@@ -16,19 +16,26 @@ import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
 
 Set<Marker> markerlist = {};
-
+Set<Polyline> polylineset = {};
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
   int i = 0;
   mapData = MapData.fromJson(
-      jsonDecode(await rootBundle.loadString('mapdata/empty.json')));
+      jsonDecode(await rootBundle.loadString('mapdata/example.json')));
   mapData.mapVertex[0].listVertex.forEach((element) {
     markerlist.add(
         Marker(position: element, infoWindow: InfoWindow(title: i.toString())));
     i++;
   });
 
+  mapData.mapEdge[0].listEdge.forEach((element) {
+    Polyline polyline = Polyline(points: <LatLng>[
+      mapData.mapVertex[0].listVertex[element.pointa],
+      mapData.mapVertex[0].listVertex[element.pointb]
+    ]);
+    polylineset.add(polyline);
+  });
   runApp(MyApp());
 }
 
@@ -304,7 +311,8 @@ class _MyHomePageState extends State<MyHomePage> {
       //markers: Set<Marker>.of(_mapMarkers.values),
       markers: markerlist,
       //地图上的线
-      polylines: Set<Polyline>.of(_mapPolylines.values),
+      //polylines: Set<Polyline>.of(_mapPolylines.values),
+      polylines: polylineset,
     );
 
     return Scaffold(

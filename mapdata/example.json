@@ -13,22 +13,19 @@
         }
     ],
     "mapBuilding": [
-        
-
         {
             "listBuilding": [
                 {
-                    "doors": [ 
+                    "doors": [
                         1
                     ],
-                    "description": [ 
+                    "description": [
                         "description"
                     ]
                 }
             ]
         }
     ],
-    
     "mapVertex": [
         {
             "listVertex": [
@@ -143,11 +140,6 @@
                     "detail": "南大门（在建）"
                 },
                 {
-                    "latitude": 39.96777615915524,
-                    "longitude": 116.35812903067858,
-                    "detail": "0"
-                },
-                {
                     "latitude": 40.15773298011639,
                     "longitude": 116.28953690071421,
                     "detail": "0"
@@ -235,135 +227,135 @@
             ]
         }
     ],
-    
     "mapEdge": [
         {
             "listEdge": [
-                {
-                    "pointa": 0,
-                    "pointb": 1,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 1,
-                    "pointb": 2,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 1,
-                    "pointb": 3,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 3,
-                    "pointb": 4,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 5,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 5,
-                    "pointb": 20,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 3,
-                    "pointb": 8,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 10,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 10,
-                    "pointb": 9,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 5,
-                    "pointb": 6,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 6,
-                    "pointb": 10,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 5,
-                    "pointb": 7,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 7,
-                    "pointb": 11,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 6,
-                    "pointb": 13,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 13,
-                    "pointb": 11,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 11,
-                    "pointb": 15,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 15,
-                    "pointb": 16,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 11,
-                    "pointb": 18,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 18,
-                    "pointb": 19,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 19,
-                    "pointb": 21,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 13,
-                    "pointb": 12,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 12,
-                    "pointb": 14,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 15,
-                    "pointb": 17,
-                    "availmthod": 1
-                }
-            ]
+                
+                    {
+                        "pointa": 0,
+                        "pointb": 1,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 1,
+                        "pointb": 2,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 1,
+                        "pointb": 3,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 3,
+                        "pointb": 4,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 4,
+                        "pointb": 5,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 5,
+                        "pointb": 20,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 3,
+                        "pointb": 8,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 8,
+                        "pointb": 10,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 10,
+                        "pointb": 9,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 5,
+                        "pointb": 6,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 6,
+                        "pointb": 10,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 5,
+                        "pointb": 7,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 7,
+                        "pointb": 11,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 6,
+                        "pointb": 13,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 13,
+                        "pointb": 11,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 11,
+                        "pointb": 15,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 15,
+                        "pointb": 16,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 11,
+                        "pointb": 18,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 18,
+                        "pointb": 19,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 19,
+                        "pointb": 21,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 13,
+                        "pointb": 12,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 12,
+                        "pointb": 14,
+                        "availmthod": 1
+                    },
+                    {
+                        "pointa": 15,
+                        "pointb": 17,
+                        "availmthod": 1
+                    }
+                ]
         }
     ],
     "busTimeTable": [
         {
-            "campusFrom": 0, 
-            "campusTo": 0, 
-            "setOutHour": 0, 
-            "setOutMinute": 0, 
-            "dayOfWeek": 1 
+            "campusFrom": 0,
+            "campusTo": 0,
+            "setOutHour": 0,
+            "setOutMinute": 0,
+            "dayOfWeek": 1
         }
     ]
 }
