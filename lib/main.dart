@@ -22,7 +22,7 @@ void main() async {
   prefs = await SharedPreferences.getInstance();
   int i = 0;
   mapData = MapData.fromJson(
-      jsonDecode(await rootBundle.loadString('mapdata/example.json')));
+      jsonDecode(await rootBundle.loadString('mapdata/empty.json')));
   mapData.mapVertex[0].listVertex.forEach((element) {
     markerlist.add(
         Marker(position: element, infoWindow: InfoWindow(title: i.toString())));
