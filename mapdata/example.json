@@ -142,91 +142,110 @@
                     "longitude": 116.29471843274098,
                     "detail": "南大门（在建）"
                 },
-
                 {
                     "latitude": 40.15773298011639,
                     "longitude": 116.28953690071421,
-                    "detail": "0"
+                    "detail": "s1侧道路口"
                 },
                 {
                     "latitude": 40.157311716726646,
-                    "longitude": 116.2896924688344,
-                    "detail": "0"
+                    "longitude": 116.2897224688344,
+                    "detail": "s2侧道路口"
                 },
                 {
-                    "latitude": 40.15659423048464,
-                    "longitude": 116.2900492026273,
-                    "detail": "0"
+                    "latitude": 40.15663423048464,
+                    "longitude": 116.2900292026273,
+                    "detail": "s3侧道路口"
+                },
+                {
+                    "latitude": 40.155921,
+                    "longitude": 116.290383,
+                    "detail": "新宿舍侧道拐点"
+                },
+                {
+                    "latitude": 40.155878,
+                    "longitude": 116.2898994,
+                    "detail": "新宿舍侧道标记点1"
                 },
                 {
                     "latitude": 40.15620883474494,
                     "longitude": 116.2897622062676,
-                    "detail": "0"
+                    "detail": "新宿舍侧道标记点2"
                 },
                 {
-                    "latitude": 40.15597616125808,
+                    "latitude": 40.15593616125808,
                     "longitude": 116.28903532763701,
-                    "detail": "0"
+                    "detail": "新宿舍侧道标记点F"
                 },
                 {
                     "latitude": 40.15647225706957,
                     "longitude": 116.2887764944715,
-                    "detail": "0"
+                    "detail": "s4侧道标记点F"
                 },
                 {
                     "latitude": 40.15658090566845,
                     "longitude": 116.28926331539935,
-                    "detail": "0"
+                    "detail": "s4侧道标记点2"
                 },
                 {
-                    "latitude": 40.15650300669066,
+                    "latitude": 40.15650000669066,
                     "longitude": 116.2894765510124,
-                    "detail": "0"
+                    "detail": "s4侧道标记点1"
                 },
                 {
                     "latitude": 40.156903775478874,
                     "longitude": 116.28882209202396,
-                    "detail": "0"
+                    "detail": "s3侧道标记点F"
                 },
                 {
                     "latitude": 40.1570052485308,
                     "longitude": 116.28915736814508,
-                    "detail": "0"
+                    "detail": "s3侧道标记点2"
                 },
                 {
-                    "latitude": 40.157144645607424,
+                    "latitude": 40.157184645607424,
                     "longitude": 116.28924319883208,
-                    "detail": "0"
+                    "detail": "s3侧道标记点1"
                 },
                 {
                     "latitude": 40.15718769464679,
                     "longitude": 116.28869200488896,
-                    "detail": "0"
+                    "detail": "s2侧道标记点F"
                 },
                 {
-                    "latitude": 40.15711389627689,
-                    "longitude": 116.2884023263203,
-                    "detail": "0"
+                    "latitude": 40.157587,
+                    "longitude": 116.289001,
+                    "detail": "s2侧道标记点1"
+                },
+                {
+                    "latitude": 40.15713389627689,
+                    "longitude": 116.2884423263203,
+                    "detail": "宿舍区小路标记点2"
                 },
                 {
                     "latitude": 40.15727891752095,
                     "longitude": 116.28835404655888,
-                    "detail": "0"
+                    "detail": "宿舍区小路标记点1"
                 },
                 {
-                    "latitude": 40.15722869370652,
-                    "longitude": 116.28806168578126,
-                    "detail": "0"
+                    "latitude": 40.15720869370652,
+                    "longitude": 116.28803168578126,
+                    "detail": "宿舍区小路标记点S"
                 },
                 {
-                    "latitude": 40.159226342903324,
-                    "longitude": 116.28979573387971,
-                    "detail": "0"
+                    "latitude": 40.158347,
+                    "longitude": 116.290015,
+                    "detail": "二维码广场南入口"
+                },
+                {
+                    "latitude": 40.1592469,
+                    "longitude": 116.28974573387971,
+                    "detail": "二维码广场"
                 },
                 {
                     "latitude": 40.15962197091803,
-                    "longitude": 116.2896763755806,
-                    "detail": "0"
+                    "longitude": 116.2895763755806,
+                    "detail": "校医院"
                 }
             ]
         }
