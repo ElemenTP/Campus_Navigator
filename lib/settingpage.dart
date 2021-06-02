@@ -43,7 +43,7 @@ class _MySettingPageState extends State<MySettingPage> {
             ));
   }
 
-  void _requestlocationPermission() async {
+  void _requestLocationPermission() async {
     // 申请位置权限
     locatePermissionStatus = await Permission.location.request();
     setState(() {});
@@ -76,7 +76,7 @@ class _MySettingPageState extends State<MySettingPage> {
                   ),
                   onPressed: locatePermissionStatus.isGranted
                       ? null
-                      : _requestlocationPermission,
+                      : _requestLocationPermission,
                 ),
               ],
             ),

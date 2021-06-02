@@ -325,7 +325,7 @@ class NaviState {
   bool naviStatus = false;
   bool crowding = false;
   bool onbike = false;
-  bool startOnUserLoc = false;
+  bool startOnUserLoc = true;
   LatLng? startLocation;
   Building? startBuilding;
   List<LatLng> endLocation = [];
@@ -334,123 +334,110 @@ class NaviState {
   NaviState();
 
   Future<bool> manageNaviState(BuildContext context) async {
-    if (naviStatus) {
-      return await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('停止导航'),
-                content: Text('要停止导航吗？'),
+    return await showDialog(
+        context: context,
+        builder: (context) => StatefulBuilder(
+              builder: (context, _setState) => AlertDialog(
+                title: startOnUserLoc ? Text('导航') : Text('路线'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _getStartWidget(_setState),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('以当前位置为起点：'),
+                          Switch(
+                              value: startOnUserLoc,
+                              onChanged: (state) {
+                                _setState(() {
+                                  startOnUserLoc = state;
+                                });
+                                startBuilding = null;
+                                startLocation = null;
+                                mapMarkers.remove('startLocationMarker');
+                              })
+                        ],
+                      ),
+                      LimitedBox(
+                        maxHeight: 270,
+                        child: SingleChildScrollView(
+                          child: _getEndWidget(_setState),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          _setState(() {
+                            endLocation.clear();
+                            endBuilding.clear();
+                          });
+                          mapMarkers.removeWhere((key, value) =>
+                              key.contains('endLocationMarker'));
+                        },
+                        icon: Icon(Icons.delete),
+                        label: Text('清除全部终点'),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('骑车：'),
+                          Switch(
+                              value: onbike,
+                              onChanged: (state) {
+                                _setState(() {
+                                  onbike = state;
+                                });
+                              })
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('拥挤：'),
+                          Switch(
+                              value: crowding,
+                              onChanged: (state) {
+                                _setState(() {
+                                  crowding = state;
+                                });
+                              })
+                        ],
+                      ),
+                      Text(
+                        '提示：点击可删除起点/终点',
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.normal),
+                      ),
+                    ],
+                  ),
+                ),
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
                     onPressed: () => Navigator.of(context).pop(false), //关闭对话框
                   ),
                   TextButton(
-                    child: Text('确定'),
-                    onPressed: () {
-                      naviStatus = !naviStatus;
-                      Navigator.of(context).pop(true);
-                    }, //关闭对话框
+                    child: Text('停止'),
+                    onPressed: naviStatus
+                        ? () {
+                            naviStatus = false;
+                            Navigator.of(context).pop(true);
+                          }
+                        : null, //关闭对话框
+                  ),
+                  TextButton(
+                    child: startOnUserLoc ? Text('展示') : Text('开始'),
+                    onPressed: _canStartNavi()
+                        ? () {
+                            naviStatus = true;
+                            Navigator.of(context).pop(true);
+                          }
+                        : null, //关闭对话框
                   ),
                 ],
-              ));
-    } else {
-      return await showDialog(
-          context: context,
-          builder: (context) => StatefulBuilder(
-                builder: (context, _setState) => AlertDialog(
-                  title: Text('开始导航'),
-                  content: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _getStartWidget(_setState),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('以当前位置为起点：'),
-                            Switch(
-                                value: startOnUserLoc,
-                                onChanged: (state) {
-                                  _setState(() {
-                                    startOnUserLoc = state;
-                                  });
-                                  startBuilding = null;
-                                  startLocation = null;
-                                  mapMarkers.remove('startLocationMarker');
-                                })
-                          ],
-                        ),
-                        LimitedBox(
-                          maxHeight: 270,
-                          child: SingleChildScrollView(
-                            child: _getEndWidget(_setState),
-                          ),
-                        ),
-                        TextButton.icon(
-                          onPressed: () {
-                            _setState(() {
-                              endLocation.clear();
-                              endBuilding.clear();
-                            });
-                            mapMarkers.removeWhere((key, value) =>
-                                key.contains('endLocationMarker'));
-                          },
-                          icon: Icon(Icons.delete),
-                          label: Text('清除全部终点'),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('骑车：'),
-                            Switch(
-                                value: onbike,
-                                onChanged: (state) {
-                                  _setState(() {
-                                    onbike = state;
-                                  });
-                                })
-                          ],
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('拥挤：'),
-                            Switch(
-                                value: crowding,
-                                onChanged: (state) {
-                                  _setState(() {
-                                    crowding = state;
-                                  });
-                                })
-                          ],
-                        ),
-                        Text(
-                          '提示：点击可删除起点/终点',
-                          style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.normal),
-                        ),
-                      ],
-                    ),
-                  ),
-                  actions: <Widget>[
-                    TextButton(
-                      child: Text('取消'),
-                      onPressed: () => Navigator.of(context).pop(false), //关闭对话框
-                    ),
-                    TextButton(
-                      child: Text('确定'),
-                      onPressed: _canStartNavi()
-                          ? () {
-                              naviStatus = !naviStatus;
-                              Navigator.of(context).pop(true);
-                            }
-                          : null, //关闭对话框
-                    ),
-                  ],
-                ),
-              ));
-    }
+              ),
+            ));
   }
 
   bool _canStartNavi() {
@@ -561,3 +548,48 @@ AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
 
 //定位权限状态
 PermissionStatus locatePermissionStatus = PermissionStatus.denied;
+
+bool stateLocationReqiurement(BuildContext context) {
+  //没有定位权限，提示用户授予权限
+  if (!locatePermissionStatus.isGranted) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('提示'),
+              content: Text('欲使用此功能，请授予定位权限。'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () async {
+                    locatePermissionStatus =
+                        await Permission.location.request();
+                    Navigator.of(context).pop();
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+    return false;
+  }
+  //定位不正常（时间time为0），提示用户打开定位开关
+  else if (userPosition.time == 0) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('提示'),
+              content: Text('未开启系统定位开关，或者系统定位出错。'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+              ],
+            ));
+    return false;
+  } else {
+    return true;
+  }
+}

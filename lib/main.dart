@@ -228,50 +228,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //导航按钮功能函数
   void _setNavigation() async {
-    if (await navistate.manageNaviState(context)) {}
+    if (await navistate.manageNaviState(context)) {
+      if (navistate.naviStatus) {
+        if (stateLocationReqiurement(context)) {
+        } else {
+          navistate.naviStatus = false;
+        }
+      } else {}
+    }
     setState(() {});
   }
 
   //定位按钮按下回调函数，将地图widget视角调整至用户位置。
   void _setCamUserLoaction() async {
-    //没有定位权限，提示用户授予权限
-    if (locatePermissionStatus != PermissionStatus.granted) {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('提示'),
-                content: Text('欲使用此功能，请授予定位权限。'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: () async {
-                      locatePermissionStatus =
-                          await Permission.location.request();
-                      Navigator.of(context).pop();
-                    }, //关闭对话框
-                  ),
-                ],
-              ));
-    }
-    //定位不正常（时间time为0），提示用户打开定位开关
-    else if (userPosition.time == 0) {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('提示'),
-                content: Text('未开启系统定位开关，或者系统定位出错。'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                  ),
-                ],
-              ));
-    } else {
+    if (stateLocationReqiurement(context)) {
       await mapController?.moveCamera(
           CameraUpdate.newLatLngZoom(userPosition.latLng, 17.5),
           duration: 500);
@@ -299,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //定位权限申请函数
-  void _requestlocationPermission() async {
+  void _requestLocationPermission() async {
     // 申请位置权限
     locatePermissionStatus = await Permission.location.status;
     if (!locatePermissionStatus.isGranted) {
@@ -331,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     //检测并申请定位权限
-    _requestlocationPermission();
+    _requestLocationPermission();
   }
 
   //State的build函数
