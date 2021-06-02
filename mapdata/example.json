@@ -13,502 +13,212 @@
         }
     ],
     "mapBuilding": [
-        
-
         {
             "listBuilding": [
                 {
-                    "doors": [ 
+                    "doors": [
                         1
                     ],
-                    "description": [ 
+                    "description": [
                         "description"
                     ]
                 }
             ]
         }
     ],
-    
     "mapVertex": [
         {
             "listVertex": [
                 {
-                    "latitude": 40.15684740149561,
-                    "longitude": 116.28424087910491,
-                    "detail": "西南门"
+                    "latitude": 39.96486425389944,
+                    "longitude": 116.35620320463886,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.156877125965345,
-                    "longitude": 116.28441790489683,
-                    "detail": "鸿雁路一段门口拐点"
+                    "latitude": 39.96446440971283,
+                    "longitude": 116.35619247580297,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.157039072847745,
-                    "longitude": 116.28442997483722,
-                    "detail": "快递点入口"
+                    "latitude": 39.964475716392904,
+                    "longitude": 116.35570699597957,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15775,
-                    "longitude": 116.287759,
-                    "detail": "鸿雁路一段十字路口"
+                    "latitude": 39.96413137575184,
+                    "longitude": 116.35622063899717,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.157926,
-                    "longitude": 116.28839696190238,
-                    "detail": "鸿雁路二段标记点1"
+                    "latitude": 39.96410465073405,
+                    "longitude": 116.35532344009704,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15817166524802,
-                    "longitude": 116.28934512277294,
-                    "detail": "鸿雁路二段十字路口"
+                    "latitude": 39.96370274632192,
+                    "longitude": 116.35625550771374,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.159054,
-                    "longitude": 116.28890000000001,
-                    "detail": "国际中路一段十字路口"
+                    "latitude": 39.96367807692044,
+                    "longitude": 116.35534489776876,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15846377877538,
-                    "longitude": 116.29041398304707,
-                    "detail": "鸿雁路二段学活拐点"
+                    "latitude": 39.964142682487,
+                    "longitude": 116.35715002440492,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15820138913806,
-                    "longitude": 116.28756011270406,
-                    "detail": "国际西路雁北男生宿舍入口前拐点"
+                    "latitude": 39.963725359932134,
+                    "longitude": 116.35713124894215,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.159019303489735,
-                    "longitude": 116.2871846034484,
-                    "detail": "国际西路雁北女生宿舍入口前拐点"
+                    "latitude": 39.96485500303209,
+                    "longitude": 116.35709906243449,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.158678,
-                    "longitude": 116.28733699999998,
-                    "detail": "国际路一段路口"
+                    "latitude": 39.96321346819666,
+                    "longitude": 116.35711247347933,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.158669,
-                    "longitude": 116.29112299999997,
-                    "detail": "国际西路一段十字路口"
+                    "latitude": 39.963198049711444,
+                    "longitude": 116.35627964759448,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15941698259716,
-                    "longitude": 116.29100943343815,
-                    "detail": "图书馆与自习室间标记点"
+                    "latitude": 39.96317132432881,
+                    "longitude": 116.35533685114189,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15948872857985,
-                    "longitude": 116.2907492591682,
-                    "detail": "国际路图书馆与行政楼间标记点"
+                    "latitude": 39.962594670259236,
+                    "longitude": 116.3554280462468,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15973983892229,
-                    "longitude": 116.29220435753388,
-                    "detail": "东配楼前拐点"
+                    "latitude": 39.96267587495897,
+                    "longitude": 116.35725597165919,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15831925960839,
-                    "longitude": 116.29128616723108,
-                    "detail": "国际路教学楼n楼前拐点"
+                    "latitude": 39.96263270285213,
+                    "longitude": 116.35638023043077,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.1578867252281,
-                    "longitude": 116.291493,
-                    "detail": "国际路教学楼s楼入口前拐点"
+                    "latitude": 39.962200980284436,
+                    "longitude": 116.35553533460558,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15813598820963,
-                    "longitude": 116.29170680777014,
-                    "detail": "教学楼地下室入口前拐点"
+                    "latitude": 39.962180421998944,
+                    "longitude": 116.35634267950525,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.159159721378735,
-                    "longitude": 116.29297951592594,
-                    "detail": "十字路口4"
+                    "latitude": 39.96220920359692,
+                    "longitude": 116.35731229804753,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15855192506663,
-                    "longitude": 116.293338,
-                    "detail": "新教学楼入口前拐点"
+                    "latitude": 39.96117614222578,
+                    "longitude": 116.3563842537443,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.1556,
-                    "longitude": 116.290527,
-                    "detail": "国际中路末端"
+                    "latitude": 39.96123062246903,
+                    "longitude": 116.35737264774934,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.156156560154336,
-                    "longitude": 116.29471843274098,
-                    "detail": "南大门（在建）"
+                    "latitude": 39.96117100257795,
+                    "longitude": 116.3556292119195,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15773298011639,
-                    "longitude": 116.28953690071421,
-                    "detail": "s1侧道路口"
+                    "latitude": 39.960620030089906,
+                    "longitude": 116.35563859965089,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.157311716726646,
-                    "longitude": 116.2897224688344,
-                    "detail": "s2侧道路口"
+                    "latitude": 39.960675538713325,
+                    "longitude": 116.35645265007298,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15663423048464,
-                    "longitude": 116.2900292026273,
-                    "detail": "s3侧道路口"
+                    "latitude": 39.96076702504987,
+                    "longitude": 116.35742897413769,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.155921,
-                    "longitude": 116.290383,
-                    "detail": "新宿舍侧道拐点"
+                    "latitude": 39.96003615887686,
+                    "longitude": 116.35566005732267,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.155878,
-                    "longitude": 116.2898994,
-                    "detail": "新宿舍侧道标记点1"
+                    "latitude": 39.96009783564896,
+                    "longitude": 116.35647678995372,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15620883474494,
-                    "longitude": 116.2897622062676,
-                    "detail": "新宿舍侧道标记点2"
+                    "latitude": 39.9601317578499,
+                    "longitude": 116.35733777903272,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15593616125808,
-                    "longitude": 116.28903532763701,
-                    "detail": "新宿舍侧道标记点F"
+                    "latitude": 39.95972057852242,
+                    "longitude": 116.35738069437627,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15647225706957,
-                    "longitude": 116.2887764944715,
-                    "detail": "s4侧道标记点F"
+                    "latitude": 39.95969179587691,
+                    "longitude": 116.35649556541648,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15658090566845,
-                    "longitude": 116.28926331539935,
-                    "detail": "s4侧道标记点2"
+                    "latitude": 39.958464410362346,
+                    "longitude": 116.35741556309284,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.15650000669066,
-                    "longitude": 116.2894765510124,
-                    "detail": "s4侧道标记点1"
+                    "latitude": 39.95842329153826,
+                    "longitude": 116.3580177190064,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.156903775478874,
-                    "longitude": 116.28882209202396,
-                    "detail": "s3侧道标记点F"
+                    "latitude": 39.95882111512365,
+                    "longitude": 116.35741556309284,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.1570052485308,
-                    "longitude": 116.28915736814508,
-                    "detail": "s3侧道标记点2"
+                    "latitude": 39.95939985693059,
+                    "longitude": 116.3573914232121,
+                    "detail": "0"
                 },
                 {
-                    "latitude": 40.157184645607424,
-                    "longitude": 116.28924319883208,
-                    "detail": "s3侧道标记点1"
-                },
-                {
-                    "latitude": 40.15718769464679,
-                    "longitude": 116.28869200488896,
-                    "detail": "s2侧道标记点F"
-                },
-                {
-                    "latitude": 40.157587,
-                    "longitude": 116.289001,
-                    "detail": "s2侧道标记点1"
-                },
-                {
-                    "latitude": 40.15713389627689,
-                    "longitude": 116.2884423263203,
-                    "detail": "宿舍区小路标记点2"
-                },
-                {
-                    "latitude": 40.15727891752095,
-                    "longitude": 116.28835404655888,
-                    "detail": "宿舍区小路标记点1"
-                },
-                {
-                    "latitude": 40.15720869370652,
-                    "longitude": 116.28803168578126,
-                    "detail": "宿舍区小路标记点S"
-                },
-                {
-                    "latitude": 40.158347,
-                    "longitude": 116.290015,
-                    "detail": "二维码广场南入口"
-                },
-                {
-                    "latitude": 40.1592469,
-                    "longitude": 116.28974573387971,
-                    "detail": "二维码广场"
-                },
-                {
-                    "latitude": 40.15962197091803,
-                    "longitude": 116.2895763755806,
-                    "detail": "校医院"
+                    "latitude": 39.9590935252877,
+                    "longitude": 116.35743702076462,
+                    "detail": "0"
                 }
             ]
         }
     ],
-    
     "mapEdge": [
         {
-            "listEdge": [
-                {
-                    "pointa": 0,
-                    "pointb": 1,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 1,
-                    "pointb": 2,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 1,
-                    "pointb": 3,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 3,
-                    "pointb": 4,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 5,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 5,
-                    "pointb": 22,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 3,
-                    "pointb": 8,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 10,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 10,
-                    "pointb": 9,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 5,
-                    "pointb": 6,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 6,
-                    "pointb": 10,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 7,
-                    "pointb": 11,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 6,
-                    "pointb": 13,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 13,
-                    "pointb": 11,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 11,
-                    "pointb": 15,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 15,
-                    "pointb": 16,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 11,
-                    "pointb": 18,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 18,
-                    "pointb": 19,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 19,
-                    "pointb": 21,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 13,
-                    "pointb": 12,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 12,
-                    "pointb": 14,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 15,
-                    "pointb": 17,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 22,
-                    "pointb": 36,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 36,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 37,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 37,
-                    "pointb": 38,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 38,
-                    "pointb": 39,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 3,
-                    "pointb": 39,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 32,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 32,
-                    "pointb": 33,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 33,
-                    "pointb": 34,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 34,
-                    "pointb": 23,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 32,
-                    "pointb": 29,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 30,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 30,
-                    "pointb": 31,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 31,
-                    "pointb": 24,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 28,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 28,
-                    "pointb": 27,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 26,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 26,
-                    "pointb": 25,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 25,
-                    "pointb": 24,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 25,
-                    "pointb": 20,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 24,
-                    "pointb": 23,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 23,
-                    "pointb": 22,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 22,
-                    "pointb": 5,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 40,
-                    "pointb": 41,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 41,
-                    "pointb": 42,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 5,
-                    "pointb": 40,
-                    "availmthod": 1
-                },
-                {
-                    "pointa": 7,
-                    "pointb": 40,
-                    "availmthod": 1
-                }
-            ]
+            "listEdge": []
         }
     ],
     "busTimeTable": [
         {
-            "campusFrom": 0, 
-            "campusTo": 0, 
-            "setOutHour": 0, 
-            "setOutMinute": 0, 
-            "dayOfWeek": 1 
+            "campusFrom": 0,
+            "campusTo": 0,
+            "setOutHour": 0,
+            "setOutMinute": 0,
+            "dayOfWeek": 1
         }
     ]
 }
