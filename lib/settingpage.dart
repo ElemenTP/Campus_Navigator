@@ -1,11 +1,11 @@
-import 'package:amap_flutter_map/amap_flutter_map.dart';
+//import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'header.dart';
 
 class MySettingPage extends StatefulWidget {
-  MySettingPage({Key key = const Key('setting'), @required this.mapController})
-      : super(key: key);
-
-  final AMapController? mapController;
+  MySettingPage({Key key = const Key('setting')}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _MySettingPageState();
@@ -14,11 +14,13 @@ class MySettingPage extends StatefulWidget {
 class _MySettingPageState extends State<MySettingPage> {
   //卫星地图审图号
   String _satelliteImageApprovalNumber = '地图未正常加载';
+  //检查是否为发行版
+  static bool get isRelease => bool.fromEnvironment("dart.vm.product");
 
   //获取审图号函数
   void _getApprovalNumber() async {
     //按要求获取卫星地图审图号
-    await widget.mapController?.getSatelliteImageApprovalNumber().then((value) {
+    await mapController?.getSatelliteImageApprovalNumber().then((value) {
       if (value != null) _satelliteImageApprovalNumber = value;
     });
     setState(() {});
@@ -26,7 +28,7 @@ class _MySettingPageState extends State<MySettingPage> {
 
   //清除地图缓存函数
   void _cleanMapCache() async {
-    await widget.mapController?.clearDisk();
+    await mapController?.clearDisk();
     await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -39,6 +41,12 @@ class _MySettingPageState extends State<MySettingPage> {
                 ),
               ],
             ));
+  }
+
+  void _requestLocationPermission() async {
+    // 申请位置权限
+    locatePermissionStatus = await Permission.location.request();
+    setState(() {});
   }
 
   @override
@@ -63,6 +71,20 @@ class _MySettingPageState extends State<MySettingPage> {
               children: [
                 TextButton(
                   child: Text(
+                    locatePermissionStatus.isGranted ? '已获取定位权限' : '获取定位权限',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                  onPressed: locatePermissionStatus.isGranted
+                      ? null
+                      : _requestLocationPermission,
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  child: Text(
                     '清除缓存',
                     style: TextStyle(fontSize: 22),
                   ),
@@ -75,7 +97,7 @@ class _MySettingPageState extends State<MySettingPage> {
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Text(
-              '校园导航 debug',
+              '校园导航 ' + (isRelease ? 'Release' : 'Debug'),
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
             Text(

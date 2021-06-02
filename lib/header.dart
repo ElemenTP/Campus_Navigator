@@ -1,9 +1,14 @@
-import 'dart:convert';
+//import 'dart:convert';
 import 'dart:math';
-import 'dart:io';
+//import 'dart:io';
 
-import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+import 'package:amap_flutter_base/amap_flutter_base.dart';
+import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+//点集类
 class MapVertex {
   List<LatLng> listVertex = [];
 
@@ -11,29 +16,122 @@ class MapVertex {
 
   MapVertex.fromList(this.listVertex);
 
-  dynamic toJson() => jsonEncode(listVertex);
-
-  MapVertex.fromJson(dynamic json) {
-    List tmp = jsonDecode(json);
-    tmp.forEach((element) {
-      LatLng? point = LatLng.fromJson(element);
-      if (point != null) listVertex.add(point);
+  MapVertex.fromJson(Map<String, dynamic> json) {
+    List listVertexJson = json['listVertex'] as List;
+    listVertexJson.forEach((element) {
+      listVertex.add(LatLng(
+          element['latitude'] as double, element['longitude'] as double));
     });
+  }
+
+  Map<String, dynamic> toJson() {
+    List listVertexJson = [];
+    listVertex.forEach((element) {
+      listVertexJson.add(<String, dynamic>{
+        'latitude': element.latitude,
+        'longitude': element.longitude,
+      });
+    });
+    return <String, dynamic>{
+      'listVertex': listVertexJson,
+    };
   }
 }
 
-//建筑类定义
+//建筑类
 class Building {
   //入口集，坐标编号
   List<int> doors = [];
   //描述集
   List<String> description = [];
-  //校区编号
-  int incampus = 0;
+
+  Building();
+
+  Building.fromJson(Map<String, dynamic> json) {
+    List doorsJson = json['doors'] as List;
+    doorsJson.forEach((element) {
+      doors.add(element as int);
+    });
+
+    List descriptionJson = json['description'] as List;
+    descriptionJson.forEach((element) {
+      description.add(element as String);
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'doors': doors,
+      'description': description,
+    };
+  }
 }
 
-//边类及构造函数
+//建筑集类
+class MapBuilding {
+  List<Building> listBuilding = [];
+
+  MapBuilding();
+
+  MapBuilding.fromJson(Map<String, dynamic> json) {
+    List listBuildingJson = json['listBuilding'] as List;
+    listBuildingJson.forEach((element) {
+      listBuilding.add(Building.fromJson(element));
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    /*List listBuildingJson = [];
+    listBuilding.forEach((element) {
+      listBuildingJson.add(element.toJson());
+    });*/
+    return <String, dynamic>{
+      'listBuilding': listBuilding,
+    };
+  }
+}
+
+//校区类
+class MapCampus {
+  List<LatLng> campusShape = [];
+  int gate = 0;
+  int busstop = 0;
+  String name = 'My Campus';
+
+  MapCampus();
+
+  MapCampus.fromJson(Map<String, dynamic> json) {
+    List campusShapeJson = json['campusShape'] as List;
+    campusShapeJson.forEach((element) {
+      campusShape.add(LatLng(
+          element['latitude'] as double, element['longitude'] as double));
+    });
+    gate = json['gate'] as int;
+    busstop = json['busstop'] as int;
+    name = json['name'] as String;
+  }
+
+  Map<String, dynamic> toJson() {
+    List campusShapeJson = [];
+    campusShape.forEach((element) {
+      campusShapeJson.add(<String, dynamic>{
+        'latitude': element.latitude,
+        'longitude': element.longitude,
+      });
+    });
+    return <String, dynamic>{
+      'campusShape': campusShapeJson,
+      'gate': gate,
+      'busstop': busstop,
+      'name': name,
+    };
+  }
+}
+
+//边类
 class Edge {
+  int pointa = -1;
+  int pointb = -1;
   //边长度，建造函数自动生成
   double length = double.infinity;
   //边适应性，默认不通（<0），仅可步行(0)，可使用自行车(1)
@@ -41,196 +139,457 @@ class Edge {
   //边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
   //构造可用的边函数，默认可通行自行车
-  Edge.avail(LatLng pointa, LatLng pointb, {int availmthod = 1}) {
-    this.length = AMapTools.distanceBetween(pointa, pointb);
-    this.availmthod = availmthod;
+  Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
+      {int iptavailmthod = 1})
+      : pointa = (iptpointa < 0
+            ? 0
+            : (iptpointa > listVertex.length ? listVertex.length : iptpointa)),
+        pointb = (iptpointb < 0
+            ? 0
+            : (iptpointb > listVertex.length ? listVertex.length : iptpointb)),
+        availmthod =
+            (iptavailmthod < 0 ? 0 : (iptavailmthod > 1 ? 1 : iptavailmthod)) {
+    if (pointa == pointb)
+      availmthod = pointa = pointb = -1;
+    else {
+      this.length =
+          AMapTools.distanceBetween(listVertex[pointa], listVertex[pointb]);
+    }
   }
   //默认构造函数，将生成不通的边
   Edge();
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'pointa': pointa,
+      'pointb': pointb,
+      'length': length,
+      'availmthod': availmthod,
+    };
+  }
+
+  Edge.fromJson(Map<String, dynamic> json) {
+    pointa = json['pointa'] ?? -1;
+    pointb = json['pointb'] ?? -1;
+    length = json['length'] ?? double.infinity;
+    if (pointa == -1 || pointb == -1 || length == double.infinity)
+      availmthod = -1;
+    else
+      availmthod = json['availmthod'] ?? -1;
+  }
+}
+
+//边集类
+class MapEdge {
+  List<Edge> listEdge = [];
+  int squareSize = 0;
+
+  MapEdge();
+
+  List<List<Edge>> twoDimensionalize() {
+    List<List<Edge>> tmp = List.generate(
+        squareSize, (_) => List.generate(squareSize, (_) => Edge()));
+    listEdge.forEach((element) {
+      tmp[element.pointa][element.pointb] = element;
+      tmp[element.pointb][element.pointa] = element;
+    });
+    return tmp;
+  }
+
+  MapEdge.fromJson(Map<String, dynamic> json) {
+    List listEdgeJson = json['listEdge'] as List;
+    listEdgeJson.forEach((element) {
+      listEdge.add(Edge.fromJson(element));
+    });
+    squareSize = json['squareSize'] as int;
+  }
+
+  Map<String, dynamic> toJson() {
+    /*List listEdgeJson = [];
+    listEdge.forEach((element) {
+      listEdgeJson.add(element.toJson());
+    });*/
+    return <String, dynamic>{
+      'listEdge': listEdge,
+      'squareSize': squareSize,
+    };
+  }
+
   //随机拥挤度函数
   randomCrowding() {
-    this.crowding = Random().nextDouble();
+    int randomSeed = DateTime.now().millisecondsSinceEpoch;
+    listEdge.forEach((element) {
+      element.crowding = Random(randomSeed).nextDouble();
+    });
+  }
+
+  disableCrowding() {
+    listEdge.forEach((element) {
+      element.crowding = 1;
+    });
   }
 }
 
 //校车时间表类
 class BusTimeTable {
   //始发校区编号
-  int campusfrom = 0;
+  int campusFrom = 0;
   //目的校区编号
-  int campusto = 0;
+  int campusTo = 0;
   //出发时间的时
-  int setouthour = 0;
+  int setOutHour = 0;
   //出发时间的分
-  int setoutminute = 0;
-  //星期几？0-6，0是周日
-  int dayofweek = 0;
+  int setOutMinute = 0;
+  //星期几？1-7，7是周日
+  int dayOfWeek = 1;
+
+  BusTimeTable();
+
+  BusTimeTable.fromJson(Map<String, dynamic> json) {
+    campusFrom = json['campusFrom'] as int;
+    campusTo = json['campusTo'] as int;
+    setOutHour = json['setOutHour'] as int;
+    setOutMinute = json['setOutMinute'] as int;
+    dayOfWeek = json['dayOfWeek'] as int;
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'campusFrom': campusFrom,
+      'campusTo': campusTo,
+      'setOutHour': setOutHour,
+      'setOutMinute': setOutMinute,
+      'dayOfWeek': dayOfWeek,
+    };
+  }
 }
 
+//地图数据类
 class MapData {
   //校区与编号的对应表
-  Map<int, String> mapcampus = {};
+  List<MapCampus> mapCampus = [];
   //建筑列表
-  List<Building> mapbuilding = [];
+  List<MapBuilding> mapBuilding = [];
   //点与编号对应表
-  List<Map<int, LatLng>> mapvertex = [];
+  List<MapVertex> mapVertex = [];
   //边与地图结构数据，按校区分成多个
-  List<List<List<Edge>>> mapedge = [];
+  List<MapEdge> mapEdge = [];
   //校车时间表
-  List<BusTimeTable> mapbustimetable = [];
-}
+  List<BusTimeTable> busTimeTable = [];
 
-MapData dataInput(String path) {
-  final inputfile = File(path);
-  List<String> lines = inputfile.readAsLinesSync();
-  MapData inputData = MapData();
-  inputData.mapcampus = campusInput(lines[0]);
-  inputData.mapvertex = pointsInput(lines[1]);
-  inputData.mapbustimetable = bustableInput(lines[3]);
-  inputData.mapedge = edgesInput(lines[2], inputData.mapvertex);
-  List<String> tmpLines = [lines[4], lines[5], lines[6]];
-  inputData.mapbuilding = buildingInput(tmpLines);
-  return inputData;
-}
+  MapData();
 
-//校区数据导入
-Map<int, String> campusInput(String line) {
-  List<String> name = line.split(',');
-  List<int> number = List.generate(name.length, (index) => index);
-  Map<int, String> campusMap = Map.fromIterables(number, name);
-  return campusMap;
-}
+  MapData.fromJson(Map<String, dynamic> json) {
+    List mapCampusJson = json['mapCampus'] as List;
+    mapCampusJson.forEach((element) {
+      mapCampus.add(MapCampus.fromJson(element));
+    });
+    List mapBuildingJson = json['mapBuilding'] as List;
+    mapBuildingJson.forEach((element) {
+      mapBuilding.add(MapBuilding.fromJson(element));
+    });
+    List mapVertexJson = json['mapVertex'] as List;
+    mapVertexJson.forEach((element) {
+      mapVertex.add(MapVertex.fromJson(element));
+    });
+    List mapEdgeJson = json['mapEdge'] as List;
+    mapEdgeJson.forEach((element) {
+      mapEdge.add(MapEdge.fromJson(element));
+    });
+    List busTimeTableJson = json['busTimeTable'] as List;
+    busTimeTableJson.forEach((element) {
+      busTimeTable.add(BusTimeTable.fromJson(element));
+    });
+  }
 
-//点集导入
-List<Map<int, LatLng>> pointsInput(String line) {
-  List<String> tmpStr = line.split(';');
-  List<Map<int, LatLng>> pointsList = [];
-  for (int i = 0; i < tmpStr.length; i++) {
-    List<String> points = tmpStr[i].split(',');
-    List<LatLng> latlngsList = [];
-    for (int j = 0; j < points.length / 2; j++) {
-      LatLng tmp = LatLng(
-          double.parse((points[j * 2])), double.parse((points[j * 2 + 1])));
-      latlngsList.add(tmp);
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'mapCampus': mapCampus,
+      'mapBuilding': mapBuilding,
+      'mapVertex': mapVertex,
+      'mapEdge': mapEdge,
+      'busTimeTable': busTimeTable,
+    };
+  }
+
+  bool locationisallowed(LatLng location) {
+    for (MapCampus it in mapCampus) {
+      if (AMapTools.latLngIsInPolygon(location, it.campusShape)) return true;
     }
-    List<int> number = List.generate(latlngsList.length, (index) => index);
-    Map<int, LatLng> latlngsMap = Map.fromIterables(number, latlngsList);
-    pointsList.add(latlngsMap);
+    return false;
   }
-  return pointsList;
 }
 
-//边集导入
-List<List<List<Edge>>> edgesInput(
-    String line, List<Map<int, LatLng>> latlngsMap) {
-  List<String> tmpStr = line.split(';');
-  List<List<List<Edge>>> edgeMatrix = [];
-  for (int i = 0; i < tmpStr.length; i++) {
-    List<List<Edge>> tmpList = [];
-    List<String> tmpStr2 = tmpStr[i].split(',');
-    for (int j = 0; j < latlngsMap[i].length; j++) {
-      List<Edge> tmp = [];
-      for (int k = 0; k < latlngsMap[i].length; k++) {
-        tmp.add(Edge());
-      }
-      tmpList.add(tmp);
-    }
-    edgeMatrix.add(tmpList);
+//导航状态类
+class NaviState {
+  bool naviStatus = false;
+  bool crowding = false;
+  bool onbike = false;
+  bool startOnUserLoc = true;
+  LatLng? startLocation;
+  Building? startBuilding;
+  List<LatLng> endLocation = [];
+  List<Building> endBuilding = [];
+
+  NaviState();
+
+  Future<bool> manageNaviState(BuildContext context) async {
+    return await showDialog(
+        context: context,
+        builder: (context) => StatefulBuilder(
+              builder: (context, _setState) => AlertDialog(
+                title: startOnUserLoc ? Text('导航') : Text('路线'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _getStartWidget(_setState),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('以当前位置为起点：'),
+                          Switch(
+                              value: startOnUserLoc,
+                              onChanged: (state) {
+                                _setState(() {
+                                  startOnUserLoc = state;
+                                });
+                                startBuilding = null;
+                                startLocation = null;
+                                mapMarkers.remove('startLocationMarker');
+                              })
+                        ],
+                      ),
+                      LimitedBox(
+                        maxHeight: 270,
+                        child: SingleChildScrollView(
+                          child: _getEndWidget(_setState),
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          _setState(() {
+                            endLocation.clear();
+                            endBuilding.clear();
+                          });
+                          mapMarkers.removeWhere((key, value) =>
+                              key.contains('endLocationMarker'));
+                        },
+                        icon: Icon(Icons.delete),
+                        label: Text('清除全部终点'),
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('骑车：'),
+                          Switch(
+                              value: onbike,
+                              onChanged: (state) {
+                                _setState(() {
+                                  onbike = state;
+                                });
+                              })
+                        ],
+                      ),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('拥挤：'),
+                          Switch(
+                              value: crowding,
+                              onChanged: (state) {
+                                _setState(() {
+                                  crowding = state;
+                                });
+                              })
+                        ],
+                      ),
+                      Text(
+                        '提示：点击可删除起点/终点',
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.normal),
+                      ),
+                    ],
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                  ),
+                  TextButton(
+                    child: Text('停止'),
+                    onPressed: naviStatus
+                        ? () {
+                            naviStatus = false;
+                            Navigator.of(context).pop(true);
+                          }
+                        : null, //关闭对话框
+                  ),
+                  TextButton(
+                    child: startOnUserLoc ? Text('展示') : Text('开始'),
+                    onPressed: _canStartNavi()
+                        ? () {
+                            naviStatus = true;
+                            Navigator.of(context).pop(true);
+                          }
+                        : null, //关闭对话框
+                  ),
+                ],
+              ),
+            ));
   }
-  //print(edgeMatrix[0].length);
-  //print(edgeMatrix[1].length);
 
-  for (int i = 0; i < tmpStr.length; i++) {
-    List<String> edgesStr = tmpStr[i].split(',');
-    //print(edgesStr.length);
-    LatLng xpoint = LatLng(-1, -1);
-    for (int j = 0; j < edgesStr.length ~/ 2; j++) {
-      LatLng point1 = latlngsMap[i][int.parse(edgesStr[j * 2])] ?? xpoint;
-      LatLng point2 = latlngsMap[i][int.parse(edgesStr[j * 2 + 1])] ?? xpoint;
+  bool _canStartNavi() {
+    return (startOnUserLoc || startLocation != null || startBuilding != null) &&
+        (endLocation.isNotEmpty || endBuilding.isNotEmpty);
+  }
 
-      //if (i == 0) {
-      //print(edgesStr.length);
-      //print('${point1.latitude}, ${point1.longitude}');
-      //print('${point2.latitude}, ${point2.longitude}');
-      //}
-
-      if (point1 == xpoint || point2 == xpoint) {
-        //throw an exception
-      }
-      Edge tmp = Edge.avail(point1, point2);
-
-      //print(int.parse(edgesStr[j * 2]));
-      //print(int.parse(edgesStr[j * 2 + 1]));
-
-      edgeMatrix[i][int.parse(edgesStr[j * 2])]
-          [int.parse(edgesStr[j * 2 + 1])] = tmp;
+  Widget _getStartWidget(void Function(void Function()) setState) {
+    if (startOnUserLoc) {
+      return Card(
+        child: ListTile(
+          title: Text('当前位置。'),
+        ),
+      );
+    } else if (startLocation != null) {
+      return Card(
+        child: ListTile(
+          title: Text(
+              '坐标：${startLocation!.longitude}，${startLocation!.latitude}。'),
+          onTap: () {
+            setState(() {
+              startLocation = null;
+            });
+            mapMarkers.remove('startLocationMarker');
+          },
+        ),
+      );
+    } else if (startBuilding != null) {
+      return Card(
+        child: ListTile(
+          title: Text('建筑：${startBuilding!.description[0]}。'),
+          onTap: () {
+            setState(() {
+              startBuilding = null;
+            });
+          },
+        ),
+      );
+    } else {
+      return Card(
+        child: ListTile(
+          title: Text('未设置出发点。'),
+        ),
+      );
     }
   }
 
-  return edgeMatrix;
+  Widget _getEndWidget(void Function(void Function()) setState) {
+    List<Widget> inColumn = [];
+    endLocation.forEach((element) {
+      inColumn.add(Card(
+        child: ListTile(
+          title: Text('坐标：${element.longitude}，${element.latitude}。'),
+          onTap: () {
+            setState(() {
+              endLocation.remove(element);
+            });
+            mapMarkers
+                .remove('endLocationMarker' + element.toJson().toString());
+          },
+        ),
+      ));
+    });
+    endBuilding.forEach((element) {
+      inColumn.add(Card(
+        child: ListTile(
+          title: Text('建筑：${element.description[0]}。'),
+          onTap: () {
+            setState(() {
+              endBuilding.remove(element);
+            });
+          },
+        ),
+      ));
+    });
+    if (inColumn.isEmpty)
+      inColumn.add(Card(
+        child: ListTile(
+          title: Text('未设置目的地。'),
+        ),
+      ));
+    return Column(
+      children: inColumn,
+    );
+  }
 }
-//校车数据导入
 
-List<BusTimeTable> bustableInput(String line) {
-  List<String> bustableStr = line.split(',');
-  List<BusTimeTable> bustableList = [];
-  for (int i = 0; i < bustableStr.length ~/ 3; i++) {
-    BusTimeTable tmp = BusTimeTable();
-    tmp.campusfrom = int.parse(bustableStr[i * 3]);
-    //*TODO exception
-    tmp.campusto = int.parse(bustableStr[i * 3 + 1]);
-    int timeinfo = int.parse(bustableStr[i * 3 + 2]);
-    tmp.dayofweek = timeinfo ~/ 10000;
-    //*TODO exception
-    tmp.setoutminute = timeinfo % 100;
-    tmp.setouthour = timeinfo ~/ 100 % 100;
-    bustableList.add(tmp);
+//用户设置
+late SharedPreferences prefs;
+
+//地图数据
+late MapData mapData;
+
+//导航状态
+NaviState navistate = NaviState();
+
+//地图Marker
+Map<String, Marker> mapMarkers = {};
+
+//地图直线
+Map<String, Polyline> mapPolylines = {};
+
+//地图控制器
+AMapController? mapController;
+
+//用户位置
+AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
+
+//定位权限状态
+PermissionStatus locatePermissionStatus = PermissionStatus.denied;
+
+bool stateLocationReqiurement(BuildContext context) {
+  //没有定位权限，提示用户授予权限
+  if (!locatePermissionStatus.isGranted) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('提示'),
+              content: Text('欲使用此功能，请授予定位权限。'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () async {
+                    locatePermissionStatus =
+                        await Permission.location.request();
+                    Navigator.of(context).pop();
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+    return false;
   }
-  return bustableList;
-}
-
-//建筑集导入
-List<Building> buildingInput(List<String> line) {
-  List<String> descripStr = line[0].split(';');
-  List<List<String>> descripList = [];
-  for (int i = 0; i < descripStr.length; i++) {
-    List<String> tmpStr = descripStr[i].split(',');
-    List<String> tmpList = [];
-    for (int j = 0; j < tmpStr.length; j++) {
-      tmpList.add(tmpStr[j]);
-    }
-    descripList.add(tmpList);
+  //定位不正常（时间time为0），提示用户打开定位开关
+  else if (userPosition.time == 0) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('提示'),
+              content: Text('未开启系统定位开关，或者系统定位出错。'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+              ],
+            ));
+    return false;
+  } else {
+    return true;
   }
-  //print(descrip_list);
-  List<String> entryStr = line[1].split(';');
-  List<List<int>> entryList = [];
-  for (int i = 0; i < entryStr.length; i++) {
-    List<String> tmpStr = entryStr[i].split(',');
-    List<int> tmpList = [];
-    for (int j = 0; j < tmpStr[j].length; j++) {
-      tmpList.add(int.parse(tmpStr[j]));
-    }
-    entryList.add(tmpList);
-  }
-
-  //print(entry_list);
-
-  List<String> numberStr = line[2].split(',');
-  List<int> numberList = [];
-  for (int i = 0; i < numberStr.length; i++) {
-    numberList.add(int.parse(numberStr[i]));
-  }
-
-  //print(number_list);
-  List<Building> buildList = [];
-  for (int i = 0; i < descripStr.length; i++) {
-    Building tmp = Building();
-    tmp.doors = entryList[i];
-    tmp.description = descripList[i];
-    tmp.incampus = numberList[i];
-
-    buildList.add(tmp);
-  }
-
-  return buildList;
 }
