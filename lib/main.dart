@@ -24,9 +24,9 @@ void main() async {
   mapData = MapData.fromJson(
       jsonDecode(await rootBundle.loadString('mapdata/example.json')));
   mapData.mapVertex[0].listVertex.forEach((element) {
-    markerlist.add(Marker(
-        position: element,
-        infoWindow: InfoWindow(title: mapData.mapVertex[0].detail[i++])));
+    markerlist.add(
+        Marker(position: element, infoWindow: InfoWindow(title: i.toString())));
+    i++;
   });
 
   runApp(MyApp());
