@@ -308,7 +308,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //开启显示用户位置功能
       myLocationStyleOptions: MyLocationStyleOptions(true),
       //地图类型，使用卫星地图
-      mapType: MapType.satellite,
+      mapType: MapType.normal,
       //地图上的标志
       //markers: Set<Marker>.of(_mapMarkers.values),
       markers: markerlist,
