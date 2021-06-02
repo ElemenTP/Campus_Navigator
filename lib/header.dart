@@ -311,6 +311,13 @@ class MapData {
       'busTimeTable': busTimeTable,
     };
   }
+
+  bool locationisallowed(LatLng location) {
+    for (MapCampus it in mapCampus) {
+      if (AMapTools.latLngIsInPolygon(location, it.campusShape)) return true;
+    }
+    return false;
+  }
 }
 
 //导航状态类
@@ -318,6 +325,7 @@ class NaviState {
   bool naviStatus = false;
   bool crowding = false;
   bool onbike = false;
+  bool startOnUserLoc = false;
   LatLng? startLocation;
   Building? startBuilding;
   List<LatLng> endLocation = [];
@@ -325,27 +333,160 @@ class NaviState {
 
   NaviState();
 
-  reverseState() {
-    naviStatus = !naviStatus;
+  Future<bool> manageNaviState(BuildContext context) async {
+    if (naviStatus) {
+      return await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('停止导航'),
+                content: Text('要停止导航吗？'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                  ),
+                  TextButton(
+                    child: Text('确定'),
+                    onPressed: () {
+                      naviStatus = !naviStatus;
+                      Navigator.of(context).pop(true);
+                    }, //关闭对话框
+                  ),
+                ],
+              ));
+    } else {
+      return await showDialog(
+          context: context,
+          builder: (context) => StatefulBuilder(
+                builder: (context, _setState) => AlertDialog(
+                  title: Text('开始导航'),
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _getStartWidget(_setState),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('以当前位置为起点：'),
+                            Switch(
+                                value: startOnUserLoc,
+                                onChanged: (state) {
+                                  _setState(() {
+                                    startOnUserLoc = state;
+                                  });
+                                  startBuilding = null;
+                                  startLocation = null;
+                                  mapMarkers.remove('startLocationMarker');
+                                })
+                          ],
+                        ),
+                        LimitedBox(
+                          maxHeight: 270,
+                          child: SingleChildScrollView(
+                            child: _getEndWidget(_setState),
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            _setState(() {
+                              endLocation.clear();
+                              endBuilding.clear();
+                            });
+                            mapMarkers.removeWhere((key, value) =>
+                                key.contains('endLocationMarker'));
+                          },
+                          icon: Icon(Icons.delete),
+                          label: Text('清除全部终点'),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('骑车：'),
+                            Switch(
+                                value: onbike,
+                                onChanged: (state) {
+                                  _setState(() {
+                                    onbike = state;
+                                  });
+                                })
+                          ],
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('拥挤：'),
+                            Switch(
+                                value: crowding,
+                                onChanged: (state) {
+                                  _setState(() {
+                                    crowding = state;
+                                  });
+                                })
+                          ],
+                        ),
+                        Text(
+                          '提示：点击可删除起点/终点',
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.normal),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                    ),
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: _canStartNavi()
+                          ? () {
+                              naviStatus = !naviStatus;
+                              Navigator.of(context).pop(true);
+                            }
+                          : null, //关闭对话框
+                    ),
+                  ],
+                ),
+              ));
+    }
   }
 
-  bool canStartNavi() {
-    return (startLocation != null || startBuilding != null) &&
+  bool _canStartNavi() {
+    return (startOnUserLoc || startLocation != null || startBuilding != null) &&
         (endLocation.isNotEmpty || endBuilding.isNotEmpty);
   }
 
-  Widget getStartWidget() {
-    if (startLocation != null) {
+  Widget _getStartWidget(void Function(void Function()) setState) {
+    if (startOnUserLoc) {
+      return Card(
+        child: ListTile(
+          title: Text('当前位置。'),
+        ),
+      );
+    } else if (startLocation != null) {
       return Card(
         child: ListTile(
           title: Text(
               '坐标：${startLocation!.longitude}，${startLocation!.latitude}。'),
+          onTap: () {
+            setState(() {
+              startLocation = null;
+            });
+            mapMarkers.remove('startLocationMarker');
+          },
         ),
       );
     } else if (startBuilding != null) {
       return Card(
         child: ListTile(
           title: Text('建筑：${startBuilding!.description[0]}。'),
+          onTap: () {
+            setState(() {
+              startBuilding = null;
+            });
+          },
         ),
       );
     } else {
@@ -357,17 +498,19 @@ class NaviState {
     }
   }
 
-  void clearStartWidget() {
-    startLocation = null;
-    startBuilding = null;
-  }
-
-  Widget getEndWidget() {
+  Widget _getEndWidget(void Function(void Function()) setState) {
     List<Widget> inColumn = [];
     endLocation.forEach((element) {
       inColumn.add(Card(
         child: ListTile(
           title: Text('坐标：${element.longitude}，${element.latitude}。'),
+          onTap: () {
+            setState(() {
+              endLocation.remove(element);
+            });
+            mapMarkers
+                .remove('endLocationMarker' + element.toJson().toString());
+          },
         ),
       ));
     });
@@ -375,6 +518,11 @@ class NaviState {
       inColumn.add(Card(
         child: ListTile(
           title: Text('建筑：${element.description[0]}。'),
+          onTap: () {
+            setState(() {
+              endBuilding.remove(element);
+            });
+          },
         ),
       ));
     });
@@ -388,11 +536,6 @@ class NaviState {
       children: inColumn,
     );
   }
-
-  void clearEndWidget() {
-    endLocation.clear();
-    endBuilding.clear();
-  }
 }
 
 //用户设置
@@ -403,6 +546,12 @@ late MapData mapData;
 
 //导航状态
 NaviState navistate = NaviState();
+
+//地图Marker
+Map<String, Marker> mapMarkers = {};
+
+//地图直线
+Map<String, Polyline> mapPolylines = {};
 
 //地图控制器
 AMapController? mapController;

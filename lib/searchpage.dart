@@ -92,11 +92,13 @@ class _MySearchPageState extends State<MySearchPage> {
                   ),
                   TextButton(
                     child: Text('起点'),
-                    onPressed: () {
-                      navistate.startLocation = null;
-                      navistate.startBuilding = searchresult[index];
-                      Navigator.of(context).pop();
-                    }, //关闭对话框
+                    onPressed: navistate.startOnUserLoc
+                        ? null
+                        : () {
+                            navistate.startLocation = null;
+                            navistate.startBuilding = searchresult[index];
+                            Navigator.of(context).pop();
+                          }, //关闭对话框
                   ),
                   TextButton(
                     child: Text('终点'),

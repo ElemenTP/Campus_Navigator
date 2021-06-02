@@ -3,13 +3,37 @@
         {
             "campusShape": [
                 {
-                    "latitude": 39.909187,
-                    "longitude": 116.39745099999999
+                    "latitude": 40.158812263444844,
+                    "longitude": 116.28312910348723
+                },
+                {
+                    "latitude": 40.15657373076634,
+                    "longitude": 116.28433207420983
+                },
+                {
+                    "latitude": 40.15746648776469,
+                    "longitude": 116.28762582682378
+                },
+                {
+                    "latitude": 40.154581128611255,
+                    "longitude": 116.28917077918993
+                },
+                {
+                    "latitude": 40.15647225706957,
+                    "longitude": 116.29638323910757
+                },
+                {
+                    "latitude": 40.16114603967753,
+                    "longitude": 116.29370505345202
+                },
+                {
+                    "latitude": 40.15987410570395,
+                    "longitude": 116.28683859849139
                 }
             ],
             "gate": 0,
             "busstop": 0,
-            "name": "My Campus"
+            "name": "沙河校区"
         }
     ],
     "mapBuilding": [
@@ -70,6 +94,78 @@
                     "description": [
                         "description7"
                     ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description8"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description9"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description6"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description10"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description11"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description12"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description13"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description14"
+                    ]
+                },
+                {
+                    "doors": [
+                        1
+                    ],
+                    "description": [
+                        "description15"
+                    ]
                 }
             ]
         }
@@ -78,8 +174,8 @@
         {
             "listVertex": [
                 {
-                    "latitude": 39.909187,
-                    "longitude": 116.39745099999999
+                    "latitude": 40.15684637651366,
+                    "longitude": 116.28429049997078
                 }
             ]
         }

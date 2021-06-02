@@ -53,10 +53,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  //地图Marker
-  Map<String, Marker> _mapMarkers = {};
-  //地图直线
-  Map<String, Polyline> _mapPolylines = {};
   //底栏项目List
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
@@ -77,20 +73,143 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //地图点击回调函数，在被点击处创建标志。
-  void _onMapTapped(LatLng taplocation) {
-    setState(() {
-      _mapMarkers['onTapMarker'] =
-          Marker(position: taplocation, onTap: _onTapMarkerTapped);
-    });
+  void _onMapTapped(LatLng taplocation) async {
+    if (mapData.locationisallowed(taplocation)) {
+      setState(() {
+        mapMarkers['onTapMarker'] =
+            Marker(position: taplocation, onTap: _onTapMarkerTapped);
+      });
+    } else {
+      await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('提示'),
+                content: Text('该点不在任何校区内。'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  ),
+                ],
+              ));
+    }
   }
 
-  //标志点击回调函数，显示该标志的坐标。
-  void _onTapMarkerTapped(String markerid) {}
+  //标志点击回调函数
+  void _onTapMarkerTapped(String markerid) async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('坐标'),
+              content: Text('将坐标设为'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('起点'),
+                  onPressed: navistate.startOnUserLoc
+                      ? null
+                      : () {
+                          _addStartLocation(
+                              mapMarkers['onTapMarker']!.position);
+                          mapMarkers.remove('onTapMarker');
+                          Navigator.of(context).pop(true);
+                        }, //关闭对话框
+                ),
+                TextButton(
+                  child: Text('终点'),
+                  onPressed: () {
+                    _addEndLocation(mapMarkers['onTapMarker']!.position);
+                    mapMarkers.remove('onTapMarker');
+                    Navigator.of(context).pop(true);
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+    setState(() {});
+  }
+
+  //从地图上添加坐标形式的出发地
+  void _addStartLocation(LatLng location) {
+    navistate.startBuilding = null;
+    navistate.startLocation = location;
+    mapMarkers['startLocationMarker'] = Marker(
+      position: location,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      onTap: (markerid) => _onStartMarkerTapped(),
+    );
+  }
+
+  //从地图上添加坐标形式的目的地
+  void _addEndLocation(LatLng location) {
+    if (!navistate.endLocation.contains(location)) {
+      navistate.endLocation.add(location);
+      String tmpid = 'endLocationMarker' + location.toJson().toString();
+      mapMarkers[tmpid] = Marker(
+        position: location,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+        onTap: (markerid) => _onEndMarkerTapped(tmpid),
+      );
+    }
+  }
+
+  //出发地Marker点击回调
+  void _onStartMarkerTapped() async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('删除起点'),
+              content: Text('删除起点吗？'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () {
+                    navistate.startLocation = null;
+                    mapMarkers.remove('startLocationMarker');
+                    Navigator.of(context).pop();
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+    setState(() {});
+  }
+
+  //目的地Marker点击回调
+  void _onEndMarkerTapped(String markerid) async {
+    await showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text('删除终点'),
+              content: Text('删除终点吗？'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('取消'),
+                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                ),
+                TextButton(
+                  child: Text('确定'),
+                  onPressed: () {
+                    navistate.endLocation
+                        .remove(mapMarkers[markerid]!.position);
+                    mapMarkers.remove(markerid);
+                    Navigator.of(context).pop();
+                  }, //关闭对话框
+                ),
+              ],
+            ));
+    setState(() {});
+  }
 
   //地图视角改变回调函数，移除所有点击添加的标志。
   void _onMapCamMoved(CameraPosition newPosition) {
     setState(() {
-      _mapMarkers.remove('onTapMarker');
+      mapMarkers.remove('onTapMarker');
     });
   }
 
@@ -109,104 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //导航按钮功能函数
   void _setNavigation() async {
-    if (navistate.naviStatus) {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('停止导航'),
-                content: Text('要停止导航吗？'),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: () {
-                      _mapPolylines.clear();
-                      navistate.reverseState();
-                      Navigator.of(context).pop();
-                    }, //关闭对话框
-                  ),
-                ],
-              ));
-    } else {
-      await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-                title: Text('开始导航'),
-                content: StatefulBuilder(
-                  builder: (context, _setState) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      navistate.getStartWidget(),
-                      IconButton(
-                          onPressed: () {
-                            _setState(() {
-                              navistate.clearStartWidget();
-                            });
-                          },
-                          icon: Icon(Icons.delete)),
-                      LimitedBox(
-                        maxHeight: 270,
-                        child: SingleChildScrollView(
-                          child: navistate.getEndWidget(),
-                        ),
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            _setState(() {
-                              navistate.clearEndWidget();
-                            });
-                          },
-                          icon: Icon(Icons.delete)),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('骑车：'),
-                          Switch(
-                              value: navistate.onbike,
-                              onChanged: (state) {
-                                _setState(() {
-                                  navistate.onbike = state;
-                                });
-                              })
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('拥挤：'),
-                          Switch(
-                              value: navistate.crowding,
-                              onChanged: (state) {
-                                _setState(() {
-                                  navistate.crowding = state;
-                                });
-                              })
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('确定'),
-                    onPressed: navistate.canStartNavi()
-                        ? () {
-                            navistate.reverseState();
-                            Navigator.of(context).pop();
-                          }
-                        : null, //关闭对话框
-                  ),
-                ],
-              ));
-    }
-    //翻转导航状态
+    if (await navistate.manageNaviState(context)) {}
     setState(() {});
   }
 
@@ -342,9 +364,9 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图类型，使用卫星地图
       mapType: MapType.satellite,
       //地图上的标志
-      markers: Set<Marker>.of(_mapMarkers.values),
+      markers: Set<Marker>.of(mapMarkers.values),
       //地图上的线
-      polylines: Set<Polyline>.of(_mapPolylines.values),
+      polylines: Set<Polyline>.of(mapPolylines.values),
     );
 
     return Scaffold(
