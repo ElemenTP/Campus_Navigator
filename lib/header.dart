@@ -561,6 +561,26 @@ class NaviState {
   }
 }
 
+class MapTools {
+  //导航道路，传入dijstra得到的route和某校区点集，返回直线
+  static Polyline displayRoute(List<int> path, List<LatLng> listvertex) {
+    List<LatLng> pointlist = [];
+    path.forEach((element) {
+      pointlist.add(listvertex[element]);
+    });
+    Polyline polyline =
+        Polyline(points: pointlist, dashLineType: DashLineType.none);
+    return polyline;
+  }
+
+  //传入两点（建筑点和路径点），返回虚线
+  static Polyline entryRoute(LatLng road, LatLng entry) {
+    Polyline polyline = Polyline(
+        points: <LatLng>[road, entry], dashLineType: DashLineType.circle);
+    return polyline;
+  }
+}
+
 //用户设置
 late SharedPreferences prefs;
 
