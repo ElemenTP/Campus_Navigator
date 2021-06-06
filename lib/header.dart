@@ -247,7 +247,7 @@ class MapEdge {
   randomCrowding() {
     int randomSeed = DateTime.now().millisecondsSinceEpoch;
     listEdge.forEach((element) {
-      element.crowding = Random(randomSeed).nextDouble();
+      element.crowding = 1.0 - Random(randomSeed).nextDouble();
     });
   }
 
@@ -362,10 +362,8 @@ class NaviState {
   bool crowding = false;
   bool onbike = false;
   bool startOnUserLoc = false;
-  LatLng? startLocation;
-  Building? startBuilding;
-  List<LatLng> endLocation = [];
-  List<Building> endBuilding = [];
+  dynamic start;
+  List end = [];
 
   NaviState();
 
@@ -390,8 +388,7 @@ class NaviState {
                                 _setState(() {
                                   startOnUserLoc = state;
                                 });
-                                startBuilding = null;
-                                startLocation = null;
+                                start = null;
                                 mapMarkers.remove('startLocationMarker');
                               })
                         ],
@@ -405,8 +402,7 @@ class NaviState {
                       TextButton.icon(
                         onPressed: () {
                           _setState(() {
-                            endLocation.clear();
-                            endBuilding.clear();
+                            end.clear();
                           });
                           mapMarkers.removeWhere((key, value) =>
                               key.contains('endLocationMarker'));
@@ -477,8 +473,7 @@ class NaviState {
   }
 
   bool _canStartNavi() {
-    return (startOnUserLoc || startLocation != null || startBuilding != null) &&
-        (endLocation.isNotEmpty || endBuilding.isNotEmpty);
+    return (startOnUserLoc || start != null) && end.isNotEmpty;
   }
 
   Widget _getStartWidget(void Function(void Function()) setState) {
@@ -488,26 +483,25 @@ class NaviState {
           title: Text('当前位置。'),
         ),
       );
-    } else if (startLocation != null) {
+    } else if (start.runtimeType == LatLng) {
       return Card(
         child: ListTile(
-          title: Text(
-              '坐标：${startLocation!.longitude}，${startLocation!.latitude}。'),
+          title: Text('坐标：${start!.longitude}，${start!.latitude}。'),
           onTap: () {
             setState(() {
-              startLocation = null;
+              start = null;
             });
             mapMarkers.remove('startLocationMarker');
           },
         ),
       );
-    } else if (startBuilding != null) {
+    } else if (start.runtimeType == Building) {
       return Card(
         child: ListTile(
-          title: Text('建筑：${startBuilding!.description[0]}。'),
+          title: Text('建筑：${start!.description[0]}。'),
           onTap: () {
             setState(() {
-              startBuilding = null;
+              start = null;
             });
           },
         ),
@@ -523,31 +517,30 @@ class NaviState {
 
   Widget _getEndWidget(void Function(void Function()) setState) {
     List<Widget> inColumn = [];
-    endLocation.forEach((element) {
-      inColumn.add(Card(
-        child: ListTile(
-          title: Text('坐标：${element.longitude}，${element.latitude}。'),
-          onTap: () {
-            setState(() {
-              endLocation.remove(element);
-            });
-            mapMarkers
-                .remove('endLocationMarker' + element.toJson().toString());
-          },
-        ),
-      ));
-    });
-    endBuilding.forEach((element) {
-      inColumn.add(Card(
-        child: ListTile(
-          title: Text('建筑：${element.description[0]}。'),
-          onTap: () {
-            setState(() {
-              endBuilding.remove(element);
-            });
-          },
-        ),
-      ));
+    end.forEach((element) {
+      inColumn.add(element.runtimeType == LatLng
+          ? Card(
+              child: ListTile(
+                title: Text('坐标：${element.longitude}，${element.latitude}。'),
+                onTap: () {
+                  setState(() {
+                    end.remove(element);
+                  });
+                  mapMarkers.remove(
+                      'endLocationMarker' + element.toJson().toString());
+                },
+              ),
+            )
+          : Card(
+              child: ListTile(
+                title: Text('建筑：${element.description[0]}。'),
+                onTap: () {
+                  setState(() {
+                    end.remove(element);
+                  });
+                },
+              ),
+            ));
     });
     if (inColumn.isEmpty)
       inColumn.add(Card(
@@ -650,7 +643,48 @@ bool stateLocationReqiurement(BuildContext context) {
   }
 }
 
-Future<bool> showRoute(BuildContext context) async {}
+/*Future<bool> showRoute(BuildContext context) async {
+  if (navistate.startOnUserLoc) {
+    if (stateLocationReqiurement(context)) {
+      int startCampus = mapData.locationInCampus(userPosition.latLng);
+      if (startCampus >= 0) {
+        navistate.start = userPosition.latLng;
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('您不在任何校区内。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+  List<SpecRoute> listSpecRoute = [];
+  List<NaviLoc> listNaviLoc = [];
+  if (navistate.start != null) {
+    startCampus = mapData.locationInCampus(navistate.start!);
+    SpecRoute tmp =
+        mapData.mapVertex[startCampus].nearestVertex(navistate.start!);
+    listNaviLoc.add(NaviLoc(startCampus, tmp.endVertexNum, tmp.endLocation));
+    listSpecRoute.add(tmp);
+  } else if (navistate.startBuilding != null) {
+    startCampus = mapData.buildingInCampus(navistate.startBuilding!);
+    listNaviLoc.add(NaviLoc(
+        startCampus,
+        navistate.startBuilding!.doors.first,
+        mapData.mapVertex[startCampus]
+            .listVertex[navistate.startBuilding!.doors.first]));
+  }
+}*/
 
 class SpecRoute {
   late LatLng startLocation;

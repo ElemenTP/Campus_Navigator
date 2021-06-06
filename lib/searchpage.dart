@@ -42,7 +42,7 @@ class _MySearchPageState extends State<MySearchPage> {
   }
 
   void _onListTileTapped(int index) async {
-    if (navistate.startBuilding == searchResult[index]) {
+    if (navistate.start == searchResult[index]) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -56,13 +56,13 @@ class _MySearchPageState extends State<MySearchPage> {
                   TextButton(
                     child: Text('删除该起点'),
                     onPressed: () {
-                      navistate.startBuilding = null;
+                      navistate.start = null;
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],
               ));
-    } else if (navistate.endBuilding.contains(searchResult[index])) {
+    } else if (navistate.end.contains(searchResult[index])) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -76,7 +76,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   TextButton(
                     child: Text('删除该终点'),
                     onPressed: () {
-                      navistate.endBuilding.remove(searchResult[index]);
+                      navistate.end.remove(searchResult[index]);
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -98,15 +98,15 @@ class _MySearchPageState extends State<MySearchPage> {
                     onPressed: navistate.startOnUserLoc
                         ? null
                         : () {
-                            navistate.startLocation = null;
-                            navistate.startBuilding = searchResult[index];
+                            navistate.start = searchResult[index];
+                            mapMarkers.remove('startLocationMarker');
                             Navigator.of(context).pop();
                           }, //关闭对话框
                   ),
                   TextButton(
                     child: Text('终点'),
                     onPressed: () {
-                      navistate.endBuilding.add(searchResult[index]);
+                      navistate.end.add(searchResult[index]);
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),

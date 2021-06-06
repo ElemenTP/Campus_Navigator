@@ -133,8 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //从地图上添加坐标形式的出发地
   void _addStartLocation(LatLng location) {
-    navistate.startBuilding = null;
-    navistate.startLocation = location;
+    navistate.start = location;
     mapMarkers['startLocationMarker'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
@@ -144,8 +143,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //从地图上添加坐标形式的目的地
   void _addEndLocation(LatLng location) {
-    if (!navistate.endLocation.contains(location)) {
-      navistate.endLocation.add(location);
+    if (!navistate.end.contains(location)) {
+      navistate.end.add(location);
       String tmpid = 'endLocationMarker' + location.toJson().toString();
       mapMarkers[tmpid] = Marker(
         position: location,
@@ -170,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    navistate.startLocation = null;
+                    navistate.start = null;
                     mapMarkers.remove('startLocationMarker');
                     Navigator.of(context).pop();
                   }, //关闭对话框
@@ -195,8 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    navistate.endLocation
-                        .remove(mapMarkers[markerid]!.position);
+                    navistate.end.remove(mapMarkers[markerid]!.position);
                     mapMarkers.remove(markerid);
                     Navigator.of(context).pop();
                   }, //关闭对话框
