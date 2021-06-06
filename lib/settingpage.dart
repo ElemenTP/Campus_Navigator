@@ -51,9 +51,9 @@ class _MySettingPageState extends State<MySettingPage> {
 
   @override
   void initState() {
-    super.initState();
     //获取审图号
     _getApprovalNumber();
+    super.initState();
   }
 
   @override

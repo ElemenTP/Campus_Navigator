@@ -8,6 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+LatLng latLngfromJson(Map<String, dynamic> json) {
+  return LatLng(json['latitude'] as double, json['longitude'] as double);
+}
+
+Map<String, dynamic> latLngtoJson(LatLng latLng) {
+  return <String, dynamic>{
+    'latitude': latLng.latitude,
+    'longitude': latLng.longitude,
+  };
+}
+
 //点集类
 class MapVertex {
   List<LatLng> listVertex = [];
@@ -19,40 +30,65 @@ class MapVertex {
   MapVertex.fromJson(Map<String, dynamic> json) {
     List listVertexJson = json['listVertex'] as List;
     listVertexJson.forEach((element) {
-      listVertex.add(LatLng(
-          element['latitude'] as double, element['longitude'] as double));
+      listVertex.add(latLngfromJson(element));
     });
   }
 
   Map<String, dynamic> toJson() {
     List listVertexJson = [];
     listVertex.forEach((element) {
-      listVertexJson.add(<String, dynamic>{
-        'latitude': element.latitude,
-        'longitude': element.longitude,
-      });
+      listVertexJson.add(latLngtoJson(element));
     });
     return <String, dynamic>{
       'listVertex': listVertexJson,
     };
   }
+
+  SpecRoute nearestVertex(LatLng location) {
+    late int shortestVtx;
+    double shortestLength = double.infinity;
+    for (int i = 0; i < listVertex.length; ++i) {
+      double tmp = AMapTools.distanceBetween(location, listVertex[i]);
+      if (tmp < shortestLength) {
+        shortestVtx = i;
+        shortestLength = tmp;
+      }
+    }
+    return SpecRoute(
+        location, listVertex[shortestVtx], shortestLength, shortestVtx);
+  }
 }
 
 //建筑类
 class Building {
-  //入口集，坐标编号
-  List<int> doors = [];
+  //建筑入口
+  List<LatLng> doors = [];
+  //建筑入口连接点
+  List<int> juncpoint = [];
   //描述集
   List<String> description = [];
 
   Building();
 
+  LatLng getApproxLocation() {
+    double latall = 0;
+    double lngall = 0;
+    doors.forEach((element) {
+      latall += element.latitude;
+      lngall += element.longitude;
+    });
+    return LatLng(latall / doors.length, lngall / doors.length);
+  }
+
   Building.fromJson(Map<String, dynamic> json) {
     List doorsJson = json['doors'] as List;
     doorsJson.forEach((element) {
-      doors.add(element as int);
+      doors.add(latLngfromJson(element));
     });
-
+    List juncpointJson = json['juncpoint'] as List;
+    juncpointJson.forEach((element) {
+      juncpoint.add(element as int);
+    });
     List descriptionJson = json['description'] as List;
     descriptionJson.forEach((element) {
       description.add(element as String);
@@ -62,6 +98,7 @@ class Building {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'doors': doors,
+      'juncpoint': juncpoint,
       'description': description,
     };
   }
@@ -81,10 +118,6 @@ class MapBuilding {
   }
 
   Map<String, dynamic> toJson() {
-    /*List listBuildingJson = [];
-    listBuilding.forEach((element) {
-      listBuildingJson.add(element.toJson());
-    });*/
     return <String, dynamic>{
       'listBuilding': listBuilding,
     };
@@ -103,8 +136,7 @@ class MapCampus {
   MapCampus.fromJson(Map<String, dynamic> json) {
     List campusShapeJson = json['campusShape'] as List;
     campusShapeJson.forEach((element) {
-      campusShape.add(LatLng(
-          element['latitude'] as double, element['longitude'] as double));
+      campusShape.add(latLngfromJson(element));
     });
     gate = json['gate'] as int;
     busstop = json['busstop'] as int;
@@ -114,10 +146,7 @@ class MapCampus {
   Map<String, dynamic> toJson() {
     List campusShapeJson = [];
     campusShape.forEach((element) {
-      campusShapeJson.add(<String, dynamic>{
-        'latitude': element.latitude,
-        'longitude': element.longitude,
-      });
+      campusShapeJson.add(latLngtoJson(element));
     });
     return <String, dynamic>{
       'campusShape': campusShapeJson,
@@ -138,6 +167,7 @@ class Edge {
   int availmthod = -1;
   //边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
+
   //构造可用的边函数，默认可通行自行车
   Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
       {int iptavailmthod = 1})
@@ -152,10 +182,11 @@ class Edge {
     if (pointa == pointb)
       availmthod = pointa = pointb = -1;
     else {
-      this.length =
+      length =
           AMapTools.distanceBetween(listVertex[pointa], listVertex[pointb]);
     }
   }
+
   //默认构造函数，将生成不通的边
   Edge();
 
@@ -182,11 +213,10 @@ class Edge {
 //边集类
 class MapEdge {
   List<Edge> listEdge = [];
-  int squareSize = 0;
 
   MapEdge();
 
-  List<List<Edge>> twoDimensionalize() {
+  List<List<Edge>> twoDimensionalize(int squareSize) {
     List<List<Edge>> tmp = List.generate(
         squareSize, (_) => List.generate(squareSize, (_) => Edge()));
     listEdge.forEach((element) {
@@ -201,7 +231,6 @@ class MapEdge {
     listEdgeJson.forEach((element) {
       listEdge.add(Edge.fromJson(element));
     });
-    squareSize = json['squareSize'] as int;
   }
 
   Map<String, dynamic> toJson() {
@@ -211,7 +240,6 @@ class MapEdge {
     });*/
     return <String, dynamic>{
       'listEdge': listEdge,
-      'squareSize': squareSize,
     };
   }
 
@@ -312,11 +340,19 @@ class MapData {
     };
   }
 
-  bool locationisallowed(LatLng location) {
-    for (MapCampus it in mapCampus) {
-      if (AMapTools.latLngIsInPolygon(location, it.campusShape)) return true;
+  int locationInCampus(LatLng location) {
+    for (int i = 0; i < mapCampus.length; ++i) {
+      if (AMapTools.latLngIsInPolygon(location, mapCampus[i].campusShape))
+        return i;
     }
-    return false;
+    return -1;
+  }
+
+  int buildingInCampus(Building building) {
+    for (int i = 0; i < mapCampus.length; ++i) {
+      if (mapBuilding[i].listBuilding.contains(building)) return i;
+    }
+    return -1;
   }
 }
 
@@ -325,7 +361,7 @@ class NaviState {
   bool naviStatus = false;
   bool crowding = false;
   bool onbike = false;
-  bool startOnUserLoc = true;
+  bool startOnUserLoc = false;
   LatLng? startLocation;
   Building? startBuilding;
   List<LatLng> endLocation = [];
@@ -338,7 +374,7 @@ class NaviState {
         context: context,
         builder: (context) => StatefulBuilder(
               builder: (context, _setState) => AlertDialog(
-                title: startOnUserLoc ? Text('导航') : Text('路线'),
+                title: Text('导航'),
                 content: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -427,7 +463,7 @@ class NaviState {
                         : null, //关闭对话框
                   ),
                   TextButton(
-                    child: startOnUserLoc ? Text('展示') : Text('开始'),
+                    child: Text('开始'),
                     onPressed: _canStartNavi()
                         ? () {
                             naviStatus = true;
@@ -592,4 +628,31 @@ bool stateLocationReqiurement(BuildContext context) {
   } else {
     return true;
   }
+}
+
+Future<bool> showRoute(BuildContext context) async {}
+
+class SpecRoute {
+  late LatLng startLocation;
+  late LatLng endLocation;
+  late double distance;
+  late int endVertexNum;
+
+  SpecRoute(
+      this.startLocation, this.endLocation, this.distance, this.endVertexNum);
+}
+
+class Route {
+  late NaviLoc a;
+  late NaviLoc b;
+
+  Route(this.a, this.b);
+}
+
+class NaviLoc {
+  late int campusNum;
+  late int vertexNum;
+  late LatLng location;
+
+  NaviLoc(this.campusNum, this.vertexNum, this.location);
 }

@@ -74,13 +74,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //地图点击回调函数，在被点击处创建标志。
   void _onMapTapped(LatLng taplocation) async {
-    if (mapData.locationisallowed(taplocation)) {
+    if (mapData.locationInCampus(taplocation) >= 0) {
       setState(() {
         mapMarkers['onTapMarker'] =
             Marker(position: taplocation, onTap: _onTapMarkerTapped);
       });
     } else {
-      await showDialog(
+      showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
@@ -230,10 +230,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void _setNavigation() async {
     if (await navistate.manageNaviState(context)) {
       if (navistate.naviStatus) {
-        if (stateLocationReqiurement(context)) {
-        } else {
-          navistate.naviStatus = false;
-        }
       } else {}
     }
     setState(() {});
@@ -299,9 +295,9 @@ class _MyHomePageState extends State<MyHomePage> {
   //State创建时执行一次
   @override
   void initState() {
-    super.initState();
     //检测并申请定位权限
     _requestLocationPermission();
+    super.initState();
   }
 
   //State的build函数

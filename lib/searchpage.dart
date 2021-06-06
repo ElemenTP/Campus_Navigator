@@ -6,7 +6,7 @@ import 'header.dart';
 TextEditingController textcontroller = TextEditingController();
 
 //搜索结果列表
-List<Building> searchresult = [];
+List<Building> searchResult = [];
 
 class MySearchPage extends StatefulWidget {
   MySearchPage({Key key = const Key('search')}) : super(key: key);
@@ -22,14 +22,17 @@ class _MySearchPageState extends State<MySearchPage> {
     labelText: '搜索校园建筑',
   );
 
+  late FocusNode textFocusNode;
+
   void _onStartSearch() {
     setState(() {
-      searchresult.clear();
+      textFocusNode.unfocus();
+      searchResult.clear();
       mapData.mapBuilding.forEach((element1) {
         element1.listBuilding.forEach((element2) {
           for (String item in element2.description) {
             if (item.contains(textcontroller.text)) {
-              searchresult.add(element2);
+              searchResult.add(element2);
               break;
             }
           }
@@ -39,7 +42,7 @@ class _MySearchPageState extends State<MySearchPage> {
   }
 
   void _onListTileTapped(int index) async {
-    if (navistate.startBuilding == searchresult[index]) {
+    if (navistate.startBuilding == searchResult[index]) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -59,7 +62,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   ),
                 ],
               ));
-    } else if (navistate.endBuilding.contains(searchresult[index])) {
+    } else if (navistate.endBuilding.contains(searchResult[index])) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -73,7 +76,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   TextButton(
                     child: Text('删除该终点'),
                     onPressed: () {
-                      navistate.endBuilding.remove(searchresult[index]);
+                      navistate.endBuilding.remove(searchResult[index]);
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -96,20 +99,34 @@ class _MySearchPageState extends State<MySearchPage> {
                         ? null
                         : () {
                             navistate.startLocation = null;
-                            navistate.startBuilding = searchresult[index];
+                            navistate.startBuilding = searchResult[index];
                             Navigator.of(context).pop();
                           }, //关闭对话框
                   ),
                   TextButton(
                     child: Text('终点'),
                     onPressed: () {
-                      navistate.endBuilding.add(searchresult[index]);
+                      navistate.endBuilding.add(searchResult[index]);
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],
               ));
     }
+  }
+
+  @override
+  void initState() {
+    //创建FocusNode
+    textFocusNode = FocusNode();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    textFocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -124,6 +141,7 @@ class _MySearchPageState extends State<MySearchPage> {
         children: <Widget>[
           TextField(
             controller: textcontroller,
+            focusNode: textFocusNode,
             decoration: _decoration,
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.search,
@@ -148,7 +166,8 @@ class _MySearchPageState extends State<MySearchPage> {
                   onPressed: () {
                     setState(() {
                       textcontroller.clear();
-                      searchresult.clear();
+                      textFocusNode.unfocus();
+                      searchResult.clear();
                     });
                   }),
             ],
@@ -158,7 +177,7 @@ class _MySearchPageState extends State<MySearchPage> {
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   child: ListTile(
-                    title: Text(searchresult[index].description[0]),
+                    title: Text(searchResult[index].description[0]),
                     subtitle: Text('Matched String'),
                     onTap: () {
                       _onListTileTapped(index);
@@ -166,7 +185,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   ),
                 );
               },
-              itemCount: searchresult.length,
+              itemCount: searchResult.length,
             ),
           )
         ],
