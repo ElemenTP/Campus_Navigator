@@ -578,6 +578,27 @@ class NaviTools {
         points: <LatLng>[road, entry], dashLineType: DashLineType.circle);
     mapPolylines[(mapPolylines.length).toString()] = polyline;
   }
+
+  //生成一个以某点为中心的近似圆
+  static void circleAround(LatLng center) {
+    const int times = 36; //多边形的点数
+    Offset res = Offset(center.latitude, center.longitude);
+    List<LatLng> circlelist = [];
+    for (int i = 0; i < times; i++) {
+      Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
+      Offset c1 = Offset(
+          res.dx + c.dx, res.dy + c.dy / cos((res.dx + c.dx) / 180 * pi));
+
+      circlelist.add(LatLng(c1.dx, c1.dy));
+    }
+    Color col = Colors.deepOrange.shade100;
+
+    Polygon circle = Polygon(
+        points: circlelist,
+        fillColor: Color(0),
+        strokeColor: col,
+        strokeWidth: 0.4);
+  }
 }
 
 //用户设置
