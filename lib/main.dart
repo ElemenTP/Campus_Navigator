@@ -17,6 +17,7 @@ import 'settingpage.dart'; //设置界面
 
 Set<Marker> markerlist = {};
 Set<Polyline> polylineset = {};
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
@@ -38,6 +39,28 @@ void main() async {
     ]);
     polylineset.add(polyline);
   });
+
+  int j = 0;
+  mapData.mapVertex[1].listVertex.forEach((element) {
+    markerlist.add(Marker(
+        position: element,
+        infoWindow: InfoWindow(
+            title: mapData.mapVertex[1].detail[j++],
+            snippet: (j - 1).toString())));
+  });
+
+  Offset a = Offset(mapData.mapVertex[0].listVertex[44].latitude,
+      mapData.mapVertex[0].listVertex[44].longitude);
+  Offset p1 = Offset(mapData.mapVertex[0].listVertex[3].latitude,
+      mapData.mapVertex[0].listVertex[3].longitude);
+  Offset p2 = Offset(mapData.mapVertex[0].listVertex[3].latitude,
+      mapData.mapVertex[0].listVertex[3].longitude);
+  Offset res = AMapTools.getVerticalPointOnLine(a, p1, p2);
+  markerlist.add(Marker(
+      position: LatLng(res.dx, res.dy),
+      infoWindow: InfoWindow(title: "vertical"),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
+
   runApp(MyApp());
 }
 
@@ -308,7 +331,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //开启显示用户位置功能
       myLocationStyleOptions: MyLocationStyleOptions(true),
       //地图类型，使用卫星地图
-      mapType: MapType.normal,
+      mapType: MapType.satellite,
       //地图上的标志
       //markers: Set<Marker>.of(_mapMarkers.values),
       markers: markerlist,
