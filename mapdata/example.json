@@ -1141,23 +1141,13 @@
                             "availmthod": 1
                         },
                         {
-                            "pointa": 2,
+                            "pointa": 1,
                             "pointb": 3,
                             "availmthod": 1
                         },
                         {
-                            "pointa": 2,
-                            "pointb": 4,
-                            "availmthod": 1
-                        },
-                        {
                             "pointa": 3,
-                            "pointb": 2,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 4,
-                            "pointb": 2,
+                            "pointb": 4,
                             "availmthod": 1
                         },
                         {
@@ -1166,83 +1156,18 @@
                             "availmthod": 1
                         },
                         {
-                            "pointa": 4,
-                            "pointb": 6,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 4,
-                            "pointb": 8,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 4,
-                            "pointb": 23,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 4,
-                            "pointb": 25,
-                            "availmthod": 1
-                        },
-                        {
                             "pointa": 5,
-                            "pointb": 4,
+                            "pointb": 20,
                             "availmthod": 1
                         },
                         {
-                            "pointa": 6,
-                            "pointb": 4,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 6,
-                            "pointb": 7,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 7,
-                            "pointb": 6,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 8,
-                            "pointb": 4,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 8,
-                            "pointb": 9,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 8,
-                            "pointb": 17,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 8,
-                            "pointb": 18,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 8,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 9,
+                            "pointa": 3,
                             "pointb": 8,
                             "availmthod": 1
                         },
                         {
-                            "pointa": 9,
+                            "pointa": 8,
                             "pointb": 10,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 9,
-                            "pointb": 11,
                             "availmthod": 1
                         },
                         {
@@ -1251,393 +1176,73 @@
                             "availmthod": 1
                         },
                         {
-                            "pointa": 11,
-                            "pointb": 9,
+                            "pointa": 5,
+                            "pointb": 6,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 6,
+                            "pointb": 10,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 5,
+                            "pointb": 7,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 7,
+                            "pointb": 11,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 6,
+                            "pointb": 13,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 13,
+                            "pointb": 11,
                             "availmthod": 1
                         },
                         {
                             "pointa": 11,
+                            "pointb": 15,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 15,
+                            "pointb": 16,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 11,
+                            "pointb": 18,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 18,
+                            "pointb": 19,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 19,
+                            "pointb": 21,
+                            "availmthod": 1
+                        },
+                        {
+                            "pointa": 13,
                             "pointb": 12,
                             "availmthod": 1
                         },
                         {
-                            "pointa": 11,
-                            "pointb": 13,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 11,
-                            "pointb": 14,
-                            "availmthod": 1
-                        },
-                        {
                             "pointa": 12,
-                            "pointb": 11,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 13,
-                            "pointb": 11,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 13,
                             "pointb": 14,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 13,
-                            "pointb": 30,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 14,
-                            "pointb": 11,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 14,
-                            "pointb": 13,
                             "availmthod": 1
                         },
                         {
                             "pointa": 15,
                             "pointb": 17,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 16,
-                            "pointb": 17,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 17,
-                            "pointb": 8,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 17,
-                            "pointb": 15,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 17,
-                            "pointb": 16,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 17,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 18,
-                            "pointb": 8,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 18,
-                            "pointb": 19,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 19,
-                            "pointb": 18,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 19,
-                            "pointb": 20,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 20,
-                            "pointb": 19,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 20,
-                            "pointb": 21,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 21,
-                            "pointb": 20,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 21,
-                            "pointb": 22,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 22,
-                            "pointb": 21,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 23,
-                            "pointb": 4,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 23,
-                            "pointb": 24,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 24,
-                            "pointb": 23,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 25,
-                            "pointb": 4,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 25,
-                            "pointb": 26,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 26,
-                            "pointb": 25,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 8,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 17,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 28,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 30,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 35,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 42,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 27,
-                            "pointb": 45,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 28,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 28,
-                            "pointb": 29,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 28,
-                            "pointb": 45,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 29,
-                            "pointb": 28,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 29,
-                            "pointb": 30,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 29,
-                            "pointb": 31,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 29,
-                            "pointb": 32,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 29,
-                            "pointb": 33,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 30,
-                            "pointb": 13,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 30,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 30,
-                            "pointb": 29,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 31,
-                            "pointb": 29,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 32,
-                            "pointb": 29,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 33,
-                            "pointb": 29,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 33,
-                            "pointb": 34,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 34,
-                            "pointb": 33,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 35,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 35,
-                            "pointb": 36,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 35,
-                            "pointb": 37,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 35,
-                            "pointb": 39,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 36,
-                            "pointb": 35,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 36,
-                            "pointb": 39,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 36,
-                            "pointb": 41,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 37,
-                            "pointb": 35,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 37,
-                            "pointb": 38,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 38,
-                            "pointb": 37,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 39,
-                            "pointb": 35,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 39,
-                            "pointb": 36,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 39,
-                            "pointb": 40,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 39,
-                            "pointb": 41,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 40,
-                            "pointb": 39,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 41,
-                            "pointb": 36,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 41,
-                            "pointb": 39,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 42,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 42,
-                            "pointb": 43,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 43,
-                            "pointb": 42,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 43,
-                            "pointb": 44,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 44,
-                            "pointb": 43,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 45,
-                            "pointb": 27,
-                            "availmthod": 1
-                        },
-                        {
-                            "pointa": 45,
-                            "pointb": 28,
                             "availmthod": 1
                         }
                     ]
