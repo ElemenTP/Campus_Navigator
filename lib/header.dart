@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
+import 'package:campnavi/shortpath.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,20 +43,6 @@ class MapVertex {
     return <String, dynamic>{
       'listVertex': listVertexJson,
     };
-  }
-
-  SpecRoute nearestVertex(LatLng location) {
-    late int shortestVtx;
-    double shortestLength = double.infinity;
-    for (int i = 0; i < listVertex.length; ++i) {
-      double tmp = AMapTools.distanceBetween(location, listVertex[i]);
-      if (tmp < shortestLength) {
-        shortestVtx = i;
-        shortestLength = tmp;
-      }
-    }
-    return SpecRoute(
-        location, listVertex[shortestVtx], shortestLength, shortestVtx);
   }
 }
 
@@ -96,8 +83,12 @@ class Building {
   }
 
   Map<String, dynamic> toJson() {
+    List doorsJson = [];
+    doors.forEach((element) {
+      doorsJson.add(latLngtoJson(element));
+    });
     return <String, dynamic>{
-      'doors': doors,
+      'doors': doorsJson,
       'juncpoint': juncpoint,
       'description': description,
     };
@@ -169,7 +160,7 @@ class Edge {
   double crowding = 1;
 
   //构造可用的边函数，默认可通行自行车
-  Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
+  /*Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
       {int iptavailmthod = 1})
       : pointa = (iptpointa < 0
             ? 0
@@ -185,7 +176,7 @@ class Edge {
       length =
           AMapTools.distanceBetween(listVertex[pointa], listVertex[pointb]);
     }
-  }
+  }*/
 
   //默认构造函数，将生成不通的边
   Edge();
@@ -214,17 +205,9 @@ class Edge {
 class MapEdge {
   List<Edge> listEdge = [];
 
-  MapEdge();
+  bool crowded = false;
 
-  List<List<Edge>> twoDimensionalize(int squareSize) {
-    List<List<Edge>> tmp = List.generate(
-        squareSize, (_) => List.generate(squareSize, (_) => Edge()));
-    listEdge.forEach((element) {
-      tmp[element.pointa][element.pointb] = element;
-      tmp[element.pointb][element.pointa] = element;
-    });
-    return tmp;
-  }
+  MapEdge();
 
   MapEdge.fromJson(Map<String, dynamic> json) {
     List listEdgeJson = json['listEdge'] as List;
@@ -241,20 +224,6 @@ class MapEdge {
     return <String, dynamic>{
       'listEdge': listEdge,
     };
-  }
-
-  //随机拥挤度函数
-  randomCrowding() {
-    int randomSeed = DateTime.now().millisecondsSinceEpoch;
-    listEdge.forEach((element) {
-      element.crowding = 1.0 - Random(randomSeed).nextDouble();
-    });
-  }
-
-  disableCrowding() {
-    listEdge.forEach((element) {
-      element.crowding = 1;
-    });
   }
 }
 
@@ -354,6 +323,58 @@ class MapData {
     }
     return -1;
   }
+
+  List<List<Edge>> getAdjacentMatrix(int campusNum) {
+    List<Edge> listEdge = mapEdge[campusNum].listEdge;
+    int squareSize = mapVertex[campusNum].listVertex.length;
+    List<List<Edge>> tmp = List.generate(
+        squareSize, (_) => List.generate(squareSize, (_) => Edge()));
+    listEdge.forEach((element) {
+      tmp[element.pointa][element.pointb] = element;
+      tmp[element.pointb][element.pointa] = element;
+    });
+    return tmp;
+  }
+
+  int nearestVertex(int campusNum, LatLng location) {
+    List<LatLng> listVertex = mapVertex[campusNum].listVertex;
+    late int shortestVtx;
+    double shortestLength = double.infinity;
+    for (int i = 0; i < listVertex.length; ++i) {
+      double tmp = AMapTools.distanceBetween(location, listVertex[i]);
+      if (tmp < shortestLength) {
+        shortestVtx = i;
+        shortestLength = tmp;
+      }
+    }
+    return shortestVtx;
+  }
+
+  LatLng getVertexLatLng(int campusNum, int vertexNum) {
+    return mapVertex[campusNum].listVertex[vertexNum];
+  }
+
+  //随机拥挤度函数
+  void randomCrowding() {
+    int randomSeed = DateTime.now().millisecondsSinceEpoch;
+    mapEdge.forEach((element) {
+      if (!element.crowded) {
+        element.listEdge.forEach((element) {
+          element.crowding = 1.0 - Random(randomSeed).nextDouble();
+        });
+      }
+    });
+  }
+
+  void disableCrowding() {
+    mapEdge.forEach((element) {
+      if (element.crowded) {
+        element.listEdge.forEach((element) {
+          element.crowding = 1;
+        });
+      }
+    });
+  }
 }
 
 //导航状态类
@@ -385,9 +406,7 @@ class NaviState {
                           Switch(
                               value: startOnUserLoc,
                               onChanged: (state) {
-                                _setState(() {
-                                  startOnUserLoc = state;
-                                });
+                                _setState(() => startOnUserLoc = state);
                                 start = null;
                                 mapMarkers.remove('startLocationMarker');
                               })
@@ -401,9 +420,7 @@ class NaviState {
                       ),
                       TextButton.icon(
                         onPressed: () {
-                          _setState(() {
-                            end.clear();
-                          });
+                          _setState(() => end.clear());
                           mapMarkers.removeWhere((key, value) =>
                               key.contains('endLocationMarker'));
                         },
@@ -417,9 +434,7 @@ class NaviState {
                           Switch(
                               value: onbike,
                               onChanged: (state) {
-                                _setState(() {
-                                  onbike = state;
-                                });
+                                _setState(() => onbike = state);
                               })
                         ],
                       ),
@@ -429,11 +444,8 @@ class NaviState {
                           Text('拥挤：'),
                           Switch(
                               value: crowding,
-                              onChanged: (state) {
-                                _setState(() {
-                                  crowding = state;
-                                });
-                              })
+                              onChanged: (state) =>
+                                  _setState(() => crowding = state))
                         ],
                       ),
                       Text(
@@ -460,20 +472,17 @@ class NaviState {
                   ),
                   TextButton(
                     child: Text('开始'),
-                    onPressed: _canStartNavi()
-                        ? () {
-                            naviStatus = true;
-                            Navigator.of(context).pop(true);
-                          }
-                        : null, //关闭对话框
+                    onPressed:
+                        (startOnUserLoc || start != null) && end.isNotEmpty
+                            ? () {
+                                naviStatus = true;
+                                Navigator.of(context).pop(true);
+                              }
+                            : null, //关闭对话框
                   ),
                 ],
               ),
             ));
-  }
-
-  bool _canStartNavi() {
-    return (startOnUserLoc || start != null) && end.isNotEmpty;
   }
 
   Widget _getStartWidget(void Function(void Function()) setState) {
@@ -488,9 +497,7 @@ class NaviState {
         child: ListTile(
           title: Text('坐标：${start!.longitude}，${start!.latitude}。'),
           onTap: () {
-            setState(() {
-              start = null;
-            });
+            setState(() => start = null);
             mapMarkers.remove('startLocationMarker');
           },
         ),
@@ -499,11 +506,7 @@ class NaviState {
       return Card(
         child: ListTile(
           title: Text('建筑：${start!.description[0]}。'),
-          onTap: () {
-            setState(() {
-              start = null;
-            });
-          },
+          onTap: () => setState(() => start = null),
         ),
       );
     } else {
@@ -523,9 +526,7 @@ class NaviState {
               child: ListTile(
                 title: Text('坐标：${element.longitude}，${element.latitude}。'),
                 onTap: () {
-                  setState(() {
-                    end.remove(element);
-                  });
+                  setState(() => end.remove(element));
                   mapMarkers.remove(
                       'endLocationMarker' + element.toJson().toString());
                 },
@@ -534,11 +535,7 @@ class NaviState {
           : Card(
               child: ListTile(
                 title: Text('建筑：${element.description[0]}。'),
-                onTap: () {
-                  setState(() {
-                    end.remove(element);
-                  });
-                },
+                onTap: () => setState(() => end.remove(element)),
               ),
             ));
     });
@@ -554,16 +551,17 @@ class NaviState {
   }
 }
 
-class MapTools {
+//导航工具类
+class NaviTools {
   //导航道路，传入dijstra得到的route和某校区点集，返回直线
-  static void displayRoute(
-      List<int> path, List<LatLng> listvertex, List<List<Edge>> edgevertex) {
-    Map<int, dynamic> colortype = {
+  static void displayRoute(List<int> path, int campusNum) {
+    const Map<int, dynamic> colortype = {
       2: Colors.green,
       1: Colors.amber,
       0: Colors.red
     };
-
+    List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
+    List<LatLng> listvertex = mapData.mapVertex[campusNum].listVertex;
     for (int i = 0; i < path.length - 1; i++) {
       int a = edgevertex[path[i]][path[i + 1]].availmthod * 3 ~/ 1;
       Polyline polyline = Polyline(
@@ -606,6 +604,7 @@ AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
 //定位权限状态
 PermissionStatus locatePermissionStatus = PermissionStatus.denied;
 
+//检查定位是否正常
 bool stateLocationReqiurement(BuildContext context) {
   //没有定位权限，提示用户授予权限
   if (!locatePermissionStatus.isGranted) {
@@ -651,7 +650,7 @@ bool stateLocationReqiurement(BuildContext context) {
   }
 }
 
-/*Future<bool> showRoute(BuildContext context) async {
+Future<bool> showRoute(BuildContext context) async {
   if (navistate.startOnUserLoc) {
     if (stateLocationReqiurement(context)) {
       int startCampus = mapData.locationInCampus(userPosition.latLng);
@@ -676,39 +675,112 @@ bool stateLocationReqiurement(BuildContext context) {
       return false;
     }
   }
-  List<SpecRoute> listSpecRoute = [];
-  List<NaviLoc> listNaviLoc = [];
-  if (navistate.start != null) {
-    startCampus = mapData.locationInCampus(navistate.start!);
+  List naviOrder = [navistate.start];
+  naviOrder.addAll(navistate.end);
+  /*if (navistate.start.runtimeType == LatLng) {
+    int startCampus = mapData.locationInCampus(navistate.start);
     SpecRoute tmp =
         mapData.mapVertex[startCampus].nearestVertex(navistate.start!);
     listNaviLoc.add(NaviLoc(startCampus, tmp.endVertexNum, tmp.endLocation));
     listSpecRoute.add(tmp);
-  } else if (navistate.startBuilding != null) {
-    startCampus = mapData.buildingInCampus(navistate.startBuilding!);
+  } else {
+    int startCampus = mapData.buildingInCampus(navistate.start);
     listNaviLoc.add(NaviLoc(
         startCampus,
-        navistate.startBuilding!.doors.first,
-        mapData.mapVertex[startCampus]
-            .listVertex[navistate.startBuilding!.doors.first]));
+        navistate.start.doors.first,
+        mapData
+            .mapVertex[startCampus].listVertex[navistate.start.doors.first]));
+  }*/
+  for (int i = 0; i < naviOrder.length - 2; ++i) {
+    int nextEnd = i + 1;
+    double minDistance = double.infinity;
+    for (int j = i + 1; j < naviOrder.length; ++j) {
+      double curDistance = AMapTools.distanceBetween(
+          getLocation(naviOrder[i]), getLocation(naviOrder[j]));
+      if (curDistance < minDistance) {
+        minDistance = curDistance;
+        nextEnd = j;
+      }
+    }
+    if (nextEnd != i + 1) {
+      var tmp = naviOrder[i + 1];
+      naviOrder[i + 1] = naviOrder[nextEnd];
+      naviOrder[nextEnd] = tmp;
+    }
   }
-}*/
-
-class SpecRoute {
-  late LatLng startLocation;
-  late LatLng endLocation;
-  late double distance;
-  late int endVertexNum;
-
-  SpecRoute(
-      this.startLocation, this.endLocation, this.distance, this.endVertexNum);
+  for (int i = 0; i < naviOrder.length; ++i) {
+    int campusNum = 0;
+    if (naviOrder[i].runtimeType == LatLng) {
+      campusNum = mapData.locationInCampus(naviOrder[i]);
+      int nearVertex = mapData.nearestVertex(campusNum, naviOrder[i]);
+      NaviTools.entryRoute(
+          mapData.getVertexLatLng(campusNum, nearVertex), naviOrder[i]);
+      naviOrder[i] = NaviLoc(campusNum, nearVertex, naviOrder[i]);
+    } else if (naviOrder[i].runtimeType == Building) {
+      Building curBuilding = naviOrder[i] as Building;
+      campusNum = mapData.buildingInCampus(curBuilding);
+      LatLng disReference = i == 0
+          ? getLocation(naviOrder[1])
+          : (naviOrder[i - 1] as NaviLoc).location;
+      int choosedDoor = 0;
+      if (curBuilding.doors.length > 1) {
+        double minDistance = double.infinity;
+        for (int j = 0; j < curBuilding.doors.length; ++j) {
+          double curDistance =
+              AMapTools.distanceBetween(disReference, curBuilding.doors[j]);
+          if (curDistance < minDistance) {
+            minDistance = curDistance;
+            choosedDoor = j;
+          }
+        }
+      }
+      NaviTools.entryRoute(
+          mapData.getVertexLatLng(
+              campusNum, curBuilding.juncpoint[choosedDoor]),
+          curBuilding.doors[choosedDoor]);
+      naviOrder[i] = NaviLoc(campusNum, curBuilding.juncpoint[choosedDoor],
+          curBuilding.getApproxLocation());
+    }
+  }
+  int transmethod = navistate.onbike ? 1 : 0;
+  navistate.crowding ? mapData.randomCrowding() : mapData.disableCrowding();
+  double relativeLength = 0;
+  for (int i = 0; i < naviOrder.length - 1; ++i) {
+    NaviLoc startVertex = naviOrder[i] as NaviLoc;
+    NaviLoc endVertex = naviOrder[i + 1] as NaviLoc;
+    if (startVertex.campusNum == endVertex.campusNum) {
+      Shortpath path = Shortpath(
+          mapData.getAdjacentMatrix(startVertex.campusNum),
+          startVertex.vertexNum,
+          endVertex.vertexNum,
+          transmethod);
+      relativeLength += path.getrelativelen();
+      NaviTools.displayRoute(path.getroute(), startVertex.campusNum);
+    } else {
+      Shortpath patha = Shortpath(
+          mapData.getAdjacentMatrix(startVertex.campusNum),
+          startVertex.vertexNum,
+          mapData.mapCampus[startVertex.campusNum].busstop,
+          transmethod);
+      relativeLength += patha.getrelativelen();
+      NaviTools.displayRoute(patha.getroute(), startVertex.campusNum);
+      Shortpath pathb = Shortpath(
+          mapData.getAdjacentMatrix(endVertex.campusNum),
+          mapData.mapCampus[endVertex.campusNum].busstop,
+          endVertex.vertexNum,
+          transmethod);
+      relativeLength += pathb.getrelativelen();
+      NaviTools.displayRoute(pathb.getroute(), endVertex.campusNum);
+    }
+  }
+  return true;
 }
 
-class Route {
-  late NaviLoc a;
-  late NaviLoc b;
-
-  Route(this.a, this.b);
+LatLng getLocation(dynamic element) {
+  if (element.runtimeType == LatLng)
+    return element;
+  else
+    return (element as Building).getApproxLocation();
 }
 
 class NaviLoc {
