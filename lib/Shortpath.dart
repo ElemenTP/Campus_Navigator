@@ -1,14 +1,78 @@
+import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'header.dart';
+
+///<!doctype html>
+///<html>
+///<head>
+///<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+///<title>tmp</title></head>
+///<body><h1> 常量:</h1>
+///<ul>
+///<li>maxnum，dijstra初始化距离：infinity</li>
+
+///</ul>
+///<ul>
+///<li>onBike，导航策略系数（骑车）：0.5</li>
+
+///</ul>
+///<p>&nbsp;</p>
+///<h1> 成员变量：</h1>
+///<h2>  输入：</h2>
+///<ul>
+///<li>startvertexID，起始点ID</li>
+
+///</ul>
+///<ul>
+///<li>endvertexID，终点ID</li>
+
+///</ul>
+///<ul>
+///<li>ransmethod，导航策略</li>
+
+///</ul>
+///<h2>  输出：</h2>
+///<ul>
+///<li>relativelen，（导航策略下）路径长度</li>
+
+///</ul>
+///<ul>
+///<li>route，路径集</li>
+
+///</ul>
+///<ul>
+///<li>lines，（图形化）边集</li>
+
+///</ul>
+///<p>&nbsp;</p>
+///<h1> 成员函数：</h1>
+///<h2>  内部函数：</h2>
+///<ul>
+///<li>double pathlength(Edge edge, int transmethod)，计算导航策略下边的长度</li>
+
+///</ul>
+///<h2>  外部接口</h2>
+///<ul>
+///<li>getroute()，获取路径点集</li>
+
+///</ul>
+///<ul>
+///<li>getrelativelen()，获取路径长度</li>
+
+///</ul>
+///</body>
+///</html>
 
 class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
   final double maxnum = double.infinity;
   final double onBike = 0.5; //骑车使得道路打折的倍数（小于一）
-  final int startvertexID; //起始点ID
-  final int endvertexID; //终点ID
-  final int transmethod; //运动方式
-  List<int> route = []; //路径集
+  late int startvertexID; //起始点ID
+  late int endvertexID; //终点ID
+  late int transmethod; //运动方式
+
   late double relativelen; //路径的相对长度
+  List<int> route = []; //路径集
+  List<Polyline> lines = [];
 
   double pathlength(Edge edge, int transmethod) {
     return (edge.length - edge.length * (transmethod * this.onBike)) /
@@ -85,3 +149,44 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     return this.relativelen;
   }
 }
+
+
+/// <h1>常量:</h1>
+
+/// - maxnum，dijstra初始化距离：infinity
+
+/// - onBike，导航策略系数（骑车）：0.5
+
+///
+
+/// <h1>成员变量：</h1>
+
+///  <h2>输入：</h2>
+
+///   - startvertexID，起始点ID
+
+///   - endvertexID，终点ID
+
+///   - transmethod，导航策略
+
+///  <h2>输出：</h2>
+
+///   - relativelen，（导航策略下）路径长度
+
+///   - route，路径集
+
+///   - lines，（图形化）边集
+
+///
+
+/// <h1>成员函数：</h1>
+
+///  <h2>内部函数：</h2>
+
+///   - double pathlength(Edge edge, int transmethod)，计算导航策略下边的长度
+
+///  <h2>外部接口</h2>
+
+///   - getroute()，获取路径点集
+
+///   - getrelativelen()，获取路径长度
