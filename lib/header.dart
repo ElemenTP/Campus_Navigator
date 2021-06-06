@@ -556,21 +556,29 @@ class NaviState {
 
 class MapTools {
   //导航道路，传入dijstra得到的route和某校区点集，返回直线
-  static Polyline displayRoute(List<int> path, List<LatLng> listvertex) {
-    List<LatLng> pointlist = [];
-    path.forEach((element) {
-      pointlist.add(listvertex[element]);
-    });
-    Polyline polyline =
-        Polyline(points: pointlist, dashLineType: DashLineType.none);
-    return polyline;
+  static void displayRoute(
+      List<int> path, List<LatLng> listvertex, List<List<Edge>> edgevertex) {
+    Map<int, dynamic> colortype = {
+      2: Colors.green,
+      1: Colors.amber,
+      0: Colors.red
+    };
+
+    for (int i = 0; i < path.length - 1; i++) {
+      int a = edgevertex[path[i]][path[i + 1]].availmthod * 3 ~/ 1;
+      Polyline polyline = Polyline(
+          points: <LatLng>[listvertex[i], listvertex[i + 1]],
+          dashLineType: DashLineType.none,
+          color: colortype[a]);
+      mapPolylines[(mapPolylines.length).toString()] = polyline;
+    }
   }
 
   //传入两点（建筑点和路径点），返回虚线
-  static Polyline entryRoute(LatLng road, LatLng entry) {
+  static void entryRoute(LatLng road, LatLng entry) {
     Polyline polyline = Polyline(
         points: <LatLng>[road, entry], dashLineType: DashLineType.circle);
-    return polyline;
+    mapPolylines[(mapPolylines.length).toString()] = polyline;
   }
 }
 
