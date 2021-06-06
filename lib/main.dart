@@ -63,13 +63,13 @@ void main() async {
       infoWindow: InfoWindow(title: "vertical"),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
   List<LatLng> circlelist = [];
-  const int times = 3600;
+  const int times = 36;
   for (int i = 0; i < times; i++) {
     Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
-    Offset c1 = Offset(res.dx + c.dx, res.dy * cos(c.dx / 90) + c.dy);
+    Offset c1 =
+        Offset(res.dx + c.dx, res.dy + c.dy / cos((res.dx + c.dx) / 180 * pi));
     circlelist.add(LatLng(c1.dx, c1.dy));
   }
-
   Color col = Colors.deepOrange.shade100;
 
   Polygon circle = Polygon(
