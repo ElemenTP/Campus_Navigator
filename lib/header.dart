@@ -46,21 +46,26 @@ class MapVertex {
 //建筑类
 class Building {
   //入口集，坐标编号
-  List<int> doors = [];
+  List<LatLng> doors = [];
   //描述集
   List<String> description = [];
-
+  List<int> points = [];
   Building();
 
   Building.fromJson(Map<String, dynamic> json) {
     List doorsJson = json['doors'] as List;
     doorsJson.forEach((element) {
-      doors.add(element as int);
+      doors.add(LatLng(
+          element["latitude"] as double, element["longitude"] as double));
     });
 
-    List descriptionJson = json['description'] as List;
+    List descriptionJson = json['descriptions'] as List;
     descriptionJson.forEach((element) {
       description.add(element as String);
+    });
+    List pointjson = json['begins'] as List;
+    pointjson.forEach((element) {
+      points.add(element as int);
     });
   }
 
@@ -68,6 +73,7 @@ class Building {
     return <String, dynamic>{
       'doors': doors,
       'description': description,
+      'begins': points
     };
   }
 }

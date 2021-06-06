@@ -1,0 +1,359 @@
+"mapbuild": [
+    {
+        "listBuilding":[
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158143,
+                        "longitude": 116.28736100000003
+                    }
+                ],
+                "details": [
+                    "体育场入口"
+                ],
+                "begins": [
+                    8
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15812964179507,
+                        "longitude": 116.2883607520813
+                    }
+                ],
+                "details": [
+                    "学校超市入口"
+                ],
+                "begins": [
+                    4
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158977,
+                        "longitude": 116.28914500000002
+                    }
+                ],
+                "details": [
+                    "学生食堂西北入口"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.159144,
+                        "longitude": 116.28888719999998
+                    }
+                ],
+                "details": [
+                    "洗衣房"
+                ],
+                "begins": [
+                    6
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.159152,
+                        "longitude": 116.28917999999999
+                    }
+                ],
+                "details": [
+                    "教师食堂西南入口"
+                ],
+                "begins": [
+                    6
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.159403,
+                        "longitude": 116.29003399999999
+                    }
+                ],
+                "details": [
+                    "行政楼南入口"
+                ],
+                "begins": [
+                    6
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.159333962151116,
+                        "longitude": 116.29035765665867
+                    }
+                ],
+                "details": [
+                    "学生活动中心东北入口"
+                ],
+                "begins": [
+                    6
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158833,
+                        "longitude": 116.29035199999998
+                    }
+                ],
+                "details": [
+                    "学生活动中心南入口"
+                ],
+                "begins": [
+                    7
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158776,
+                        "longitude": 116.29011400000002
+                    }
+                ],
+                "details": [
+                    "邮政所入口"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15781,
+                        "longitude": 116.289403
+                    }
+                ],
+                "details": [
+                    "s2"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.157422,
+                        "longitude": 116.28960899999998
+                    }
+                ],
+                "details": [
+                    "s3"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.156988,
+                        "longitude": 116.28976799999998
+                    }
+                ],
+                "details": [
+                    "s4"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.156543,
+                        "longitude": 116.28999599999997
+                    }
+                ],
+                "details": [
+                    "s5"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.155771161930616,
+                        "longitude": 116.29037506158471
+                    }
+                ],
+                "details": [
+                    "新宿舍楼门前入口"
+                ],
+                "begins": [
+                    5
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15829876041085,
+                        "longitude": 116.28791282318343
+                    }
+                ],
+                "details": [
+                    "雁北男生宿舍入口"
+                ],
+                "begins": [
+                    8
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15909924947674,
+                        "longitude": 116.28753194950986
+                    }
+                ],
+                "details": [
+                    "雁北女生宿舍入口"
+                ],
+                "begins": [
+                    9
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158993679756044,
+                        "longitude": 116.29131654636512
+                    }
+                ],
+                "details": [
+                    "图书馆入口1"
+                ],
+                "begins": [
+                    11
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15942825697088,
+                        "longitude": 116.29132056967859
+                    }
+                ],
+                "details": [
+                    "图书馆入口2"
+                ],
+                "begins": [
+                    12
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15960762175571,
+                        "longitude": 116.29123071567813
+                    }
+                ],
+                "details": [
+                    "自习室入口"
+                ],
+                "begins": [
+                    12
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.15983003343084,
+                        "longitude": 116.29224995508633
+                    }
+                ],
+                "details": [
+                    "东配楼入口"
+                ],
+                "begins": [
+                    14
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.1584385863725,
+                        "longitude": 116.29158476726201
+                    }
+                ],
+                "details": [
+                    "教学楼n楼入口"
+                ],
+                "begins": [
+                    15
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.157819709288,
+                        "longitude": 116.29185374642702
+                    }
+                ],
+                "details": [
+                    "教学楼s楼西面入口"
+                ],
+                "begins": [
+                    16
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158273136405235,
+                        "longitude": 116.2921091391155
+                    }
+                ],
+                "details": [
+                    "教学楼地下室入口"
+                ],
+                "begins": [
+                    17
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.158412530879026,
+                        "longitude": 116.29231969251953
+                    }
+                ],
+                "details": [
+                    "报告厅入口"
+                ],
+                "begins": [
+                    15
+                ]
+            },
+            {
+                "latlngs": [
+                    {
+                        "latitude": 40.1586339215139,
+                        "longitude": 116.29089275734805
+                    }
+                ],
+                "details": [
+                    "校车上车点"
+                ],
+                "begins": [
+                    7
+                ]
+            }
+        ]
+    },
+    {
+        "listBuilding":[]
+    }
+]

@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
-
+import 'dart:math';
 import 'header.dart';
 import 'amapapikey.dart'; //高德apikey所在文件
 import 'searchpage.dart'; //搜索界面
@@ -17,19 +17,20 @@ import 'settingpage.dart'; //设置界面
 
 Set<Marker> markerlist = {};
 Set<Polyline> polylineset = {};
-
+Set<Polygon> polygonlist = {};
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
   int i = 0;
   mapData = MapData.fromJson(
-      jsonDecode(await rootBundle.loadString('mapdata/example.json')));
+      jsonDecode(await rootBundle.loadString('mapdata/buildnew.json')));
   mapData.mapVertex[0].listVertex.forEach((element) {
     markerlist.add(Marker(
         position: element,
         infoWindow: InfoWindow(
             title: mapData.mapVertex[0].detail[i++],
-            snippet: (i - 1).toString())));
+            snippet: (i - 1).toString()),
+        visible: false));
   });
 
   mapData.mapEdge[0].listEdge.forEach((element) {
@@ -46,11 +47,12 @@ void main() async {
         position: element,
         infoWindow: InfoWindow(
             title: mapData.mapVertex[1].detail[j++],
-            snippet: (j - 1).toString())));
+            snippet: (j - 1).toString()),
+        visible: false));
   });
 
-  Offset a = Offset(mapData.mapVertex[0].listVertex[44].latitude,
-      mapData.mapVertex[0].listVertex[44].longitude);
+  Offset a = Offset(mapData.mapVertex[0].listVertex[20].latitude,
+      mapData.mapVertex[0].listVertex[20].longitude);
   Offset p1 = Offset(mapData.mapVertex[0].listVertex[3].latitude,
       mapData.mapVertex[0].listVertex[3].longitude);
   Offset p2 = Offset(mapData.mapVertex[0].listVertex[3].latitude,
@@ -60,6 +62,33 @@ void main() async {
       position: LatLng(res.dx, res.dy),
       infoWindow: InfoWindow(title: "vertical"),
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
+  List<LatLng> circlelist = [];
+  const int times = 3600;
+  for (int i = 0; i < times; i++) {
+    Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
+    Offset c1 = Offset(res.dx + c.dx, res.dy * cos(c.dx / 90) + c.dy);
+    circlelist.add(LatLng(c1.dx, c1.dy));
+  }
+
+  Color col = Colors.deepOrange.shade100;
+
+  Polygon circle = Polygon(
+      points: circlelist,
+      fillColor: Color(0),
+      strokeColor: col,
+      strokeWidth: 0.4);
+  polygonlist.add(circle);
+  mapData.mapBuilding.forEach((element) {
+    element.listBuilding.forEach((e1) {
+      e1.doors.forEach((e2) {
+        markerlist.add(Marker(
+            position: e2,
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+                BitmapDescriptor.hueOrange),
+            visible: false));
+      });
+    });
+  });
 
   runApp(MyApp());
 }
@@ -338,6 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图上的线
       //polylines: Set<Polyline>.of(_mapPolylines.values),
       polylines: polylineset,
+      polygons: polygonlist,
     );
 
     return Scaffold(
