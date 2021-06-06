@@ -15,7 +15,6 @@ class MapVertex {
   MapVertex();
 
   MapVertex.fromList(this.listVertex);
-
   MapVertex.fromJson(Map<String, dynamic> json) {
     List listVertexJson = json['listVertex'] as List;
     //List<String> detaillist = [];
@@ -368,3 +367,23 @@ AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
 
 //定位权限状态
 PermissionStatus locatePermissionStatus = PermissionStatus.denied;
+
+class MapTools {
+  //导航道路，传入dijstra得到的route和某校区点集，返回直线
+  static Polyline displayRoute(List<int> path, MapVertex mapvertex) {
+    List<LatLng> pointlist = [];
+    path.forEach((element) {
+      pointlist.add(mapvertex.listVertex[element]);
+    });
+    Polyline polyline =
+        Polyline(points: pointlist, dashLineType: DashLineType.none);
+    return polyline;
+  }
+
+  //传入两点（建筑点和路径点），返回虚线
+  static Polyline entryRoute(LatLng road, LatLng entry) {
+    Polyline polyline = Polyline(
+        points: <LatLng>[road, entry], dashLineType: DashLineType.circle);
+    return polyline;
+  }
+}
