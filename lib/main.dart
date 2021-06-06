@@ -228,6 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _setNavigation() async {
     if (await navistate.manageNaviState(context)) {
       if (navistate.naviStatus) {
+        mapPolylines.clear();
         if (!await showRoute(context)) {
           navistate.naviStatus = false;
         }

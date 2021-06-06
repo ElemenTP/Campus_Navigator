@@ -1141,613 +1141,139 @@
                     "pointa": 0,
                     "pointb": 1,
                     "length": 15.420454250068806,
-                    "availmthod": -1
+                    "availmthod": 1
                 },
                 {
                     "pointa": 1,
                     "pointb": 2,
                     "length": 18.057068022716294,
-                    "availmthod": -1
+                    "availmthod": 1
                 },
                 {
-                    "pointa": 2,
+                    "pointa": 1,
                     "pointb": 3,
-                    "length": 294.07832423510087,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 2,
-                    "pointb": 4,
-                    "length": 351.65093568158557,
-                    "availmthod": -1
+                    "length": 300.40548343470203,
+                    "availmthod": 1
                 },
                 {
                     "pointa": 3,
-                    "pointb": 2,
-                    "length": 294.07832423510087,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 2,
-                    "length": 351.65093568158557,
-                    "availmthod": -1
+                    "pointb": 4,
+                    "length": 57.70452939532039,
+                    "availmthod": 1
                 },
                 {
                     "pointa": 4,
                     "pointb": 5,
                     "length": 85.17710191898739,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 6,
-                    "length": 132.66129169765227,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 8,
-                    "length": 77.51692327449112,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 23,
-                    "length": 129.70914093928667,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 4,
-                    "pointb": 25,
-                    "length": 279.94183141674836,
-                    "availmthod": -1
+                    "availmthod": 1
                 },
                 {
                     "pointa": 5,
-                    "pointb": 4,
-                    "length": 85.17710191898739,
-                    "availmthod": -1
+                    "pointb": 20,
+                    "length": 303.4224925795194,
+                    "availmthod": 1
                 },
                 {
-                    "pointa": 6,
-                    "pointb": 4,
-                    "length": 132.66129169765227,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 6,
-                    "pointb": 7,
-                    "length": 144.59493619555465,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 7,
-                    "pointb": 6,
-                    "length": 144.59493619555465,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 4,
-                    "length": 77.51692327449112,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 9,
-                    "length": 96.49195725468704,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 17,
-                    "length": 352.8668938269022,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 18,
-                    "length": 473.24848218487693,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 8,
-                    "pointb": 27,
-                    "length": 290.3454891625567,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 9,
+                    "pointa": 3,
                     "pointb": 8,
-                    "length": 96.49195725468704,
-                    "availmthod": -1
+                    "length": 53.020948839229455,
+                    "availmthod": 1
                 },
                 {
-                    "pointa": 9,
+                    "pointa": 8,
                     "pointb": 10,
-                    "length": 40.14506345899701,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 9,
-                    "pointb": 11,
-                    "length": 337.32841638304285,
-                    "availmthod": -1
+                    "length": 56.34943419757758,
+                    "availmthod": 1
                 },
                 {
                     "pointa": 10,
                     "pointb": 9,
                     "length": 40.14506345899701,
-                    "availmthod": -1
+                    "availmthod": 1
                 },
                 {
-                    "pointa": 11,
-                    "pointb": 9,
-                    "length": 337.32841638304285,
-                    "availmthod": -1
+                    "pointa": 5,
+                    "pointb": 6,
+                    "length": 105.26870175874822,
+                    "availmthod": 1
                 },
                 {
-                    "pointa": 11,
-                    "pointb": 12,
-                    "length": 83.82373737543625,
-                    "availmthod": -1
+                    "pointa": 6,
+                    "pointb": 10,
+                    "length": 139.4071647255382,
+                    "availmthod": 1
                 },
                 {
-                    "pointa": 11,
+                    "pointa": 5,
+                    "pointb": 7,
+                    "length": 96.5753107194206,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 7,
+                    "pointb": 11,
+                    "length": 64.50236054331836,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 6,
                     "pointb": 13,
+                    "length": 164.6030902409848,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 13,
+                    "pointb": 11,
                     "length": 96.63286615232528,
-                    "availmthod": -1
+                    "availmthod": 1
                 },
                 {
                     "pointa": 11,
-                    "pointb": 14,
-                    "length": 150.57738125737418,
-                    "availmthod": -1
+                    "pointb": 15,
+                    "length": 41.333740288368126,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 15,
+                    "pointb": 16,
+                    "length": 51.26427461282181,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 11,
+                    "pointb": 18,
+                    "length": 167.1263596771452,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 18,
+                    "pointb": 19,
+                    "length": 74.21584111764885,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 19,
+                    "pointb": 21,
+                    "length": 291.36939379618775,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 13,
+                    "pointb": 12,
+                    "length": 23.53147135218947,
+                    "availmthod": 1
                 },
                 {
                     "pointa": 12,
-                    "pointb": 11,
-                    "length": 83.82373737543625,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 13,
-                    "pointb": 11,
-                    "length": 96.63286615232528,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 13,
                     "pointb": 14,
-                    "length": 126.91076390982788,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 13,
-                    "pointb": 30,
-                    "length": 347.50867758358805,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 14,
-                    "pointb": 11,
-                    "length": 150.57738125737418,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 14,
-                    "pointb": 13,
-                    "length": 126.91076390982788,
-                    "availmthod": -1
+                    "length": 107.82549485806939,
+                    "availmthod": 1
                 },
                 {
                     "pointa": 15,
                     "pointb": 17,
                     "length": 41.1940355251271,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 16,
-                    "pointb": 17,
-                    "length": 33.17876560749833,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 17,
-                    "pointb": 8,
-                    "length": 352.8668938269022,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 17,
-                    "pointb": 15,
-                    "length": 41.1940355251271,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 17,
-                    "pointb": 16,
-                    "length": 33.17876560749833,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 17,
-                    "pointb": 27,
-                    "length": 270.9151540282169,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 18,
-                    "pointb": 8,
-                    "length": 473.24848218487693,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 18,
-                    "pointb": 19,
-                    "length": 74.21584111764885,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 19,
-                    "pointb": 18,
-                    "length": 74.21584111764885,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 19,
-                    "pointb": 20,
-                    "length": 406.42193005278466,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 20,
-                    "pointb": 19,
-                    "length": 406.42193005278466,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 20,
-                    "pointb": 21,
-                    "length": 361.9519749458522,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 21,
-                    "pointb": 20,
-                    "length": 361.9519749458522,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 21,
-                    "pointb": 22,
-                    "length": 474.4855849827277,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 22,
-                    "pointb": 21,
-                    "length": 474.4855849827277,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 23,
-                    "pointb": 4,
-                    "length": 129.70914093928667,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 23,
-                    "pointb": 24,
-                    "length": 85.44245402833612,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 24,
-                    "pointb": 23,
-                    "length": 85.44245402833612,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 25,
-                    "pointb": 4,
-                    "length": 279.94183141674836,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 25,
-                    "pointb": 26,
-                    "length": 41.422513747472344,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 26,
-                    "pointb": 25,
-                    "length": 41.422513747472344,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 8,
-                    "length": 290.3454891625567,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 17,
-                    "length": 270.9151540282169,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 28,
-                    "length": 67.0480480982824,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 30,
-                    "length": 59.30553329862093,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 35,
-                    "length": 142.0005785140219,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 42,
-                    "length": 380.27737800873547,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 27,
-                    "pointb": 45,
-                    "length": 312.5928482516145,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 28,
-                    "pointb": 27,
-                    "length": 67.0480480982824,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 28,
-                    "pointb": 29,
-                    "length": 59.45389690452722,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 28,
-                    "pointb": 45,
-                    "length": 334.18212960515064,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 28,
-                    "length": 59.45389690452722,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 30,
-                    "length": 43.14843883795308,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 31,
-                    "length": 59.65904152943331,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 32,
-                    "length": 48.1928063595322,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 29,
-                    "pointb": 33,
-                    "length": 67.60461112158748,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 30,
-                    "pointb": 13,
-                    "length": 347.50867758358805,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 30,
-                    "pointb": 27,
-                    "length": 59.30553329862093,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 30,
-                    "pointb": 29,
-                    "length": 43.14843883795308,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 31,
-                    "pointb": 29,
-                    "length": 59.65904152943331,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 32,
-                    "pointb": 29,
-                    "length": 48.1928063595322,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 33,
-                    "pointb": 29,
-                    "length": 67.60461112158748,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 33,
-                    "pointb": 34,
-                    "length": 17.149967777941978,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 34,
-                    "pointb": 33,
-                    "length": 17.149967777941978,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 27,
-                    "length": 142.0005785140219,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 36,
-                    "length": 51.64254225040407,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 37,
-                    "length": 25.97873381656417,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 35,
-                    "pointb": 39,
-                    "length": 53.82079693475694,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 36,
-                    "pointb": 35,
-                    "length": 51.64254225040407,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 36,
-                    "pointb": 39,
-                    "length": 89.31657359723856,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 36,
-                    "pointb": 41,
-                    "length": 195.3403797379276,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 37,
-                    "pointb": 35,
-                    "length": 25.97873381656417,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 37,
-                    "pointb": 38,
-                    "length": 18.823714121577293,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 38,
-                    "pointb": 37,
-                    "length": 18.823714121577293,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 39,
-                    "pointb": 35,
-                    "length": 53.82079693475694,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 39,
-                    "pointb": 36,
-                    "length": 89.31657359723856,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 39,
-                    "pointb": 40,
-                    "length": 207.64132629299235,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 39,
-                    "pointb": 41,
-                    "length": 266.4627555705023,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 40,
-                    "pointb": 39,
-                    "length": 207.64132629299235,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 41,
-                    "pointb": 36,
-                    "length": 195.3403797379276,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 41,
-                    "pointb": 39,
-                    "length": 266.4627555705023,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 42,
-                    "pointb": 27,
-                    "length": 380.27737800873547,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 42,
-                    "pointb": 43,
-                    "length": 250.25881852769075,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 43,
-                    "pointb": 42,
-                    "length": 250.25881852769075,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 43,
-                    "pointb": 44,
-                    "length": 85.06976691125922,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 44,
-                    "pointb": 43,
-                    "length": 85.06976691125922,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 45,
-                    "pointb": 27,
-                    "length": 312.5928482516145,
-                    "availmthod": -1
-                },
-                {
-                    "pointa": 45,
-                    "pointb": 28,
-                    "length": 334.18212960515064,
-                    "availmthod": -1
+                    "availmthod": 1
                 }
             ]
         }

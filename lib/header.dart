@@ -356,12 +356,12 @@ class MapData {
 
   //随机拥挤度函数
   void randomCrowding() {
-    int randomSeed = DateTime.now().millisecondsSinceEpoch;
     mapEdge.forEach((element) {
       if (!element.crowded) {
         element.listEdge.forEach((element) {
-          element.crowding = 1.0 - Random(randomSeed).nextDouble();
+          element.crowding = 1.0 - Random().nextDouble();
         });
+        element.crowded = true;
       }
     });
   }
@@ -372,6 +372,7 @@ class MapData {
         element.listEdge.forEach((element) {
           element.crowding = 1;
         });
+        element.crowded = false;
       }
     });
   }
@@ -556,17 +557,17 @@ class NaviTools {
   //导航道路，传入dijstra得到的route和某校区点集，返回直线
   static void displayRoute(List<int> path, int campusNum) {
     const Map<int, dynamic> colortype = {
-      2: Colors.green,
-      1: Colors.amber,
-      0: Colors.red
+      3: Colors.green,
+      2: Colors.amber,
+      1: Colors.red,
+      0: Colors.black,
     };
     List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
     List<LatLng> listvertex = mapData.mapVertex[campusNum].listVertex;
     for (int i = 0; i < path.length - 1; i++) {
-      int a = edgevertex[path[i]][path[i + 1]].availmthod * 3 ~/ 1;
+      int a = edgevertex[path[i]][path[i + 1]].crowding * 3 ~/ 1;
       Polyline polyline = Polyline(
-          points: <LatLng>[listvertex[i], listvertex[i + 1]],
-          dashLineType: DashLineType.none,
+          points: <LatLng>[listvertex[path[i]], listvertex[path[i + 1]]],
           color: colortype[a]);
       mapPolylines[(mapPolylines.length).toString()] = polyline;
     }
