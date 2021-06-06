@@ -1128,7 +1128,7 @@
     ],
     "mapEdge": [
         {
-                "listEdge": [
+                "listEdge": 
                     [
                         {
                             "pointa": 0,
@@ -1641,7 +1641,7 @@
                             "availmthod": 1
                         }
                     ]
-                ]
+                
         }
     ],
     "busTimeTable": [

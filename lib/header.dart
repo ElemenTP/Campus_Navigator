@@ -296,10 +296,12 @@ class MapData {
     mapCampusJson.forEach((element) {
       mapCampus.add(MapCampus.fromJson(element));
     });
+    /*
     List mapBuildingJson = json['mapBuilding'] as List;
     mapBuildingJson.forEach((element) {
       mapBuilding.add(MapBuilding.fromJson(element));
     });
+    */
     List mapVertexJson = json['mapVertex'] as List;
     mapVertexJson.forEach((element) {
       mapVertex.add(MapVertex.fromJson(element));
@@ -308,10 +310,12 @@ class MapData {
     mapEdgeJson.forEach((element) {
       mapEdge.add(MapEdge.fromJson(element));
     });
+    /*
     List busTimeTableJson = json['busTimeTable'] as List;
     busTimeTableJson.forEach((element) {
       busTimeTable.add(BusTimeTable.fromJson(element));
     });
+    */
   }
 
   Map<String, dynamic> toJson() {

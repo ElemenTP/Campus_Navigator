@@ -23,21 +23,21 @@ void main() async {
   prefs = await SharedPreferences.getInstance();
   int i = 0;
   mapData = MapData.fromJson(
-      jsonDecode(await rootBundle.loadString('mapdata/buildnew.json')));
+      jsonDecode(await rootBundle.loadString('mapdata/example.json')));
   mapData.mapVertex[0].listVertex.forEach((element) {
     markerlist.add(Marker(
         position: element,
         infoWindow: InfoWindow(
             title: mapData.mapVertex[0].detail[i++],
             snippet: (i - 1).toString()),
-        visible: false));
+        visible: true));
   });
 
   mapData.mapEdge[0].listEdge.forEach((element) {
     Polyline polyline = Polyline(points: <LatLng>[
       mapData.mapVertex[0].listVertex[element.pointa],
       mapData.mapVertex[0].listVertex[element.pointb]
-    ]);
+    ], color: Colors.white);
     polylineset.add(polyline);
   });
 
@@ -48,7 +48,7 @@ void main() async {
         infoWindow: InfoWindow(
             title: mapData.mapVertex[1].detail[j++],
             snippet: (j - 1).toString()),
-        visible: false));
+        visible: true));
   });
 
   Offset a = Offset(mapData.mapVertex[0].listVertex[20].latitude,
@@ -85,7 +85,7 @@ void main() async {
             position: e2,
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueOrange),
-            visible: false));
+            visible: true));
       });
     });
   });
