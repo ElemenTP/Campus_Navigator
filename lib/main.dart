@@ -80,12 +80,14 @@ void main() async {
   polygonlist.add(circle);
   mapData.mapBuilding.forEach((element) {
     element.listBuilding.forEach((e1) {
+      int index = 0;
       e1.doors.forEach((e2) {
         markerlist.add(Marker(
             position: e2,
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueOrange),
-            visible: true));
+            visible: true,
+            infoWindow: InfoWindow(title: e1.description[index++])));
       });
     });
   });

@@ -296,12 +296,12 @@ class MapData {
     mapCampusJson.forEach((element) {
       mapCampus.add(MapCampus.fromJson(element));
     });
-    /*
+
     List mapBuildingJson = json['mapBuilding'] as List;
     mapBuildingJson.forEach((element) {
       mapBuilding.add(MapBuilding.fromJson(element));
     });
-    */
+
     List mapVertexJson = json['mapVertex'] as List;
     mapVertexJson.forEach((element) {
       mapVertex.add(MapVertex.fromJson(element));
