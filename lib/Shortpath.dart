@@ -39,7 +39,6 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
           pointTemp = j;
         }
       }
-      if (pointTemp == -1) break;
       points[pointTemp] = 1;
       for (int j = 0; j < mapmatrix.length; ++j) {
         //重新调成起点到各个节点间的最短距离
