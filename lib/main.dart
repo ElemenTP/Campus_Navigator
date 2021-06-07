@@ -1,6 +1,6 @@
 import 'dart:io';
 
-//import 'package:path_provider/path_provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
 import 'package:flutter/services.dart';
@@ -18,13 +18,20 @@ import 'settingpage.dart'; //设置界面
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
+  logEnabled = prefs.getBool('logEnabled') ?? false;
+  Directory logFileDir = await getApplicationDocumentsDirectory();
+  logFile = File(logFileDir.path + '/NaviLog.txt');
+  logSink = logFile.openWrite(mode: FileMode.append);
   String? filedir = prefs.getString('filedir');
   if (filedir == null) {
     mapData = MapData.fromJson(
         jsonDecode(await rootBundle.loadString('mapdata/default.json')));
+    if (logEnabled) logSink.write(DateTime.now().toString() + ': 读取默认地图数据。\n');
   } else {
     File datafile = File(filedir);
     mapData = MapData.fromJson(jsonDecode(await datafile.readAsString()));
+    if (logEnabled)
+      logSink.write(DateTime.now().toString() + ': 读取地图数据' + filedir + '\n');
   }
   runApp(MyApp());
 }
@@ -76,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onMapTapped(LatLng taplocation) async {
     if (mapData.locationInCampus(taplocation) >= 0) {
       setState(() {
-        mapMarkers['onTapMarker'] =
+        mapMarkers['onTap'] =
             Marker(position: taplocation, onTap: _onTapMarkerTapped);
       });
     } else {
@@ -112,17 +119,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: navistate.startOnUserLoc
                       ? null
                       : () {
-                          _addStartLocation(
-                              mapMarkers['onTapMarker']!.position);
-                          mapMarkers.remove('onTapMarker');
+                          _addStartLocation(mapMarkers['onTap']!.position);
+                          mapMarkers.remove('onTap');
                           Navigator.of(context).pop(true);
                         }, //关闭对话框
                 ),
                 TextButton(
                   child: Text('终点'),
                   onPressed: () {
-                    _addEndLocation(mapMarkers['onTapMarker']!.position);
-                    mapMarkers.remove('onTapMarker');
+                    _addEndLocation(mapMarkers['onTap']!.position);
+                    mapMarkers.remove('onTap');
                     Navigator.of(context).pop(true);
                   }, //关闭对话框
                 ),
@@ -205,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
   //地图视角改变回调函数，移除所有点击添加的标志。
   void _onMapCamMoved(CameraPosition newPosition) {
     setState(() {
-      mapMarkers.remove('onTapMarker');
+      mapMarkers.remove('onTap');
     });
   }
 
@@ -227,12 +233,34 @@ class _MyHomePageState extends State<MyHomePage> {
     if (await navistate.manageNaviState(context)) {
       if (navistate.naviStatus) {
         mapPolylines.clear();
-        if (!await showRoute(context)) {
-          navistate.naviStatus = false;
-          mapPolylines.clear();
+        navistate.routeLength.clear();
+        try {
+          if (!await showRoute(context)) {
+            navistate.naviStatus = false;
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 停止导航。\n');
+            mapPolylines.clear();
+            navistate.routeLength.clear();
+          }
+        } catch (_) {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('未找到路线。请检查地图数据。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
         }
       } else {
         mapPolylines.clear();
+        navistate.routeLength.clear();
       }
     }
     setState(() {});
@@ -317,7 +345,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // 申请位置权限
     locatePermissionStatus = await Permission.location.status;
     if (!locatePermissionStatus.isGranted) {
-      await showDialog(
+      showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
