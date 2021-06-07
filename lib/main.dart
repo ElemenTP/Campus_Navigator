@@ -51,51 +51,26 @@ void main() async {
         visible: true));
   });
 
-  Offset a = Offset(
-      cos(mapData.mapVertex[0].listVertex[44].latitude / 90 * pi / 2) *
-          cos(pi -
-              (mapData.mapVertex[0].listVertex[44].longitude) / 90 * pi / 2),
-      cos(mapData.mapVertex[0].listVertex[44].latitude / 90 * pi / 2) *
-          sin((mapData.mapVertex[0].listVertex[44].longitude) / 90 * pi / 2));
-  Offset p1 = Offset(
-      cos(mapData.mapVertex[0].listVertex[47].latitude / 90 * pi / 2) *
-          cos(pi -
-              (mapData.mapVertex[0].listVertex[47].longitude) / 90 * pi / 2),
-      cos(mapData.mapVertex[0].listVertex[47].latitude / 90 * pi / 2) *
-          sin((mapData.mapVertex[0].listVertex[47].longitude) / 90 * pi / 2));
-  Offset p2 = Offset(
-      cos(mapData.mapVertex[0].listVertex[48].latitude / 90 * pi / 2) *
-          cos(pi -
-              (mapData.mapVertex[0].listVertex[48].longitude) / 90 * pi / 2),
-      cos(mapData.mapVertex[0].listVertex[48].latitude / 90 * pi / 2) *
-          sin((mapData.mapVertex[0].listVertex[48].longitude) / 90 * pi / 2));
-
-  Offset res = AMapTools.getVerticalPointOnLine(a, p1, p2);
-  double alat = acos(sqrt(res.dx * res.dx + res.dy * res.dy)) / pi * 180;
-  double alon = 180 - acos(res.dx / cos(alat / 180 * pi)) * 180 / pi;
-  LatLng vertical = LatLng(alat, alon);
-
-  Offset b = Offset(mapData.mapVertex[0].listVertex[44].latitude,
-      mapData.mapVertex[0].listVertex[44].longitude);
-  Offset p3 = Offset(mapData.mapVertex[0].listVertex[47].latitude,
-      mapData.mapVertex[0].listVertex[47].longitude);
-  Offset p4 = Offset(mapData.mapVertex[0].listVertex[48].latitude,
-      mapData.mapVertex[0].listVertex[48].longitude);
-  Offset res2 = AMapTools.getVerticalPointOnLine(b, p3, p4);
-
-  markerlist.add(Marker(
-      position: LatLng(res.dx, res.dy),
-      infoWindow: InfoWindow(title: "vertical"),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen)));
+  LatLng vertical = verticalTract(mapData.mapVertex[0].listVertex[1],
+      mapData.mapVertex[0].listVertex[3], mapData.mapVertex[0].listVertex[8]);
+  Offset a = Offset(mapData.mapVertex[0].listVertex[3].latitude,
+      mapData.mapVertex[0].listVertex[3].longitude);
+  Offset b = Offset(mapData.mapVertex[0].listVertex[8].latitude,
+      mapData.mapVertex[0].listVertex[8].longitude);
+  Offset s = Offset(mapData.mapVertex[0].listVertex[1].latitude,
+      mapData.mapVertex[0].listVertex[1].longitude);
+  LatLng vertical2 = LatLng(AMapTools.getVerticalPointOnLine(s, a, b).dx,
+      AMapTools.getVerticalPointOnLine(s, a, b).dy);
   polylineset.add(Polyline(
-      points: <LatLng>[vertical, mapData.mapVertex[0].listVertex[44]],
+      points: <LatLng>[vertical, mapData.mapVertex[0].listVertex[1]],
       color: Colors.red.shade600));
-  polylineset.add(Polyline(points: <LatLng>[
-    LatLng(res2.dx, res2.dy),
-    mapData.mapVertex[0].listVertex[44]
-  ], color: Colors.grey.shade600));
+  polylineset.add(Polyline(
+      points: <LatLng>[vertical2, mapData.mapVertex[0].listVertex[1]],
+      color: Colors.grey.shade600));
   List<LatLng> circlelist = [];
   const int times = 36;
+  Offset res = Offset(mapData.mapVertex[0].listVertex[3].latitude,
+      mapData.mapVertex[0].listVertex[3].longitude);
   for (int i = 0; i < times; i++) {
     Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
     Offset c1 =
