@@ -25,7 +25,11 @@ class _MySearchPageState extends State<MySearchPage> {
 
   late FocusNode textFocusNode;
 
+  ///搜索函数
   void _onStartSearch() {
+    if (logEnabled)
+      logSink.write(
+          DateTime.now().toString() + ': 搜索开始，关键字${textcontroller.text}。\n');
     setState(() {
       textFocusNode.unfocus();
       searchResult.clear();
@@ -40,8 +44,10 @@ class _MySearchPageState extends State<MySearchPage> {
         });
       });
     });
+    if (logEnabled) logSink.write(DateTime.now().toString() + ': 搜索结束。\n');
   }
 
+  ///列表元素点击回调函数
   void _onListTileTapped(int index) async {
     if (navistate.start == searchResult[index]) {
       await showDialog(
