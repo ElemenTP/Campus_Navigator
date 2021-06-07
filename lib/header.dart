@@ -4,10 +4,13 @@ import 'dart:math';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
-import 'package:campnavi/shortpath.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'shortpath.dart';
+
+const double BIKESPEED = 0.5;
 
 LatLng latLngfromJson(Map<String, dynamic> json) {
   return LatLng(json['latitude'] as double, json['longitude'] as double);
@@ -159,25 +162,6 @@ class Edge {
   //边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
 
-  //构造可用的边函数，默认可通行自行车
-  /*Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
-      {int iptavailmthod = 1})
-      : pointa = (iptpointa < 0
-            ? 0
-            : (iptpointa > listVertex.length ? listVertex.length : iptpointa)),
-        pointb = (iptpointb < 0
-            ? 0
-            : (iptpointb > listVertex.length ? listVertex.length : iptpointb)),
-        availmthod =
-            (iptavailmthod < 0 ? 0 : (iptavailmthod > 1 ? 1 : iptavailmthod)) {
-    if (pointa == pointb)
-      availmthod = pointa = pointb = -1;
-    else {
-      length =
-          AMapTools.distanceBetween(listVertex[pointa], listVertex[pointb]);
-    }
-  }*/
-
   //默认构造函数，将生成不通的边
   Edge();
 
@@ -194,10 +178,7 @@ class Edge {
     pointa = json['pointa'] ?? -1;
     pointb = json['pointb'] ?? -1;
     length = json['length'] ?? double.infinity;
-    if (pointa == -1 || pointb == -1 || length == double.infinity)
-      availmthod = -1;
-    else
-      availmthod = json['availmthod'] ?? -1;
+    availmthod = json['availmthod'] ?? -1;
   }
 }
 
@@ -297,6 +278,17 @@ class MapData {
     busTimeTableJson.forEach((element) {
       busTimeTable.add(BusTimeTable.fromJson(element));
     });
+    for (int i = 0; i < mapEdge.length; ++i) {
+      List<Edge> curListEdge = mapEdge[i].listEdge;
+      for (int j = 0; j < curListEdge.length; ++j) {
+        Edge curEdge = curListEdge[j];
+        if (curEdge.availmthod >= 0 && curEdge.length == double.infinity) {
+          curEdge.length = AMapTools.distanceBetween(
+              mapVertex[i].listVertex[curEdge.pointa],
+              mapVertex[i].listVertex[curEdge.pointb]);
+        }
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -391,99 +383,101 @@ class NaviState {
 
   Future<bool> manageNaviState(BuildContext context) async {
     return await showDialog(
-        context: context,
-        builder: (context) => StatefulBuilder(
-              builder: (context, _setState) => AlertDialog(
-                title: Text('导航'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _getStartWidget(_setState),
-                      Row(
+            context: context,
+            builder: (context) => StatefulBuilder(
+                  builder: (context, _setState) => AlertDialog(
+                    title: Text('导航'),
+                    content: SingleChildScrollView(
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('以当前位置为起点：'),
-                          Switch(
-                              value: startOnUserLoc,
-                              onChanged: (state) {
-                                _setState(() => startOnUserLoc = state);
-                                start = null;
-                                mapMarkers.remove('startLocationMarker');
-                              })
+                          _getStartWidget(_setState),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('以当前位置为起点：'),
+                              Switch(
+                                  value: startOnUserLoc,
+                                  onChanged: (state) {
+                                    _setState(() => startOnUserLoc = state);
+                                    start = null;
+                                    mapMarkers.remove('start');
+                                  })
+                            ],
+                          ),
+                          LimitedBox(
+                            maxHeight: 270,
+                            child: SingleChildScrollView(
+                              child: _getEndWidget(_setState),
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              _setState(() => end.clear());
+                              mapMarkers.removeWhere(
+                                  (key, value) => key.contains('end'));
+                            },
+                            icon: Icon(Icons.delete),
+                            label: Text('清除全部终点'),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('骑车：'),
+                              Switch(
+                                  value: onbike,
+                                  onChanged: (state) {
+                                    _setState(() => onbike = state);
+                                  })
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('拥挤：'),
+                              Switch(
+                                  value: crowding,
+                                  onChanged: (state) =>
+                                      _setState(() => crowding = state))
+                            ],
+                          ),
+                          Text(
+                            '提示：点击可删除起点/终点',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.normal),
+                          ),
                         ],
                       ),
-                      LimitedBox(
-                        maxHeight: 270,
-                        child: SingleChildScrollView(
-                          child: _getEndWidget(_setState),
-                        ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () =>
+                            Navigator.of(context).pop(false), //关闭对话框
                       ),
-                      TextButton.icon(
-                        onPressed: () {
-                          _setState(() => end.clear());
-                          mapMarkers.removeWhere((key, value) =>
-                              key.contains('endLocationMarker'));
-                        },
-                        icon: Icon(Icons.delete),
-                        label: Text('清除全部终点'),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('骑车：'),
-                          Switch(
-                              value: onbike,
-                              onChanged: (state) {
-                                _setState(() => onbike = state);
-                              })
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('拥挤：'),
-                          Switch(
-                              value: crowding,
-                              onChanged: (state) =>
-                                  _setState(() => crowding = state))
-                        ],
-                      ),
-                      Text(
-                        '提示：点击可删除起点/终点',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.normal),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('停止'),
-                    onPressed: naviStatus
-                        ? () {
-                            naviStatus = false;
-                            Navigator.of(context).pop(true);
-                          }
-                        : null, //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('开始'),
-                    onPressed:
-                        (startOnUserLoc || start != null) && end.isNotEmpty
+                      TextButton(
+                        child: Text('停止'),
+                        onPressed: naviStatus
                             ? () {
-                                naviStatus = true;
+                                naviStatus = false;
                                 Navigator.of(context).pop(true);
                               }
                             : null, //关闭对话框
+                      ),
+                      TextButton(
+                        child: Text('开始'),
+                        onPressed:
+                            (startOnUserLoc || start != null) && end.isNotEmpty
+                                ? () {
+                                    naviStatus = true;
+                                    Navigator.of(context).pop(true);
+                                  }
+                                : null, //关闭对话框
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ));
+                )) ??
+        false;
   }
 
   Widget _getStartWidget(void Function(void Function()) setState) {
@@ -499,7 +493,7 @@ class NaviState {
           title: Text('坐标：${start!.longitude}，${start!.latitude}。'),
           onTap: () {
             setState(() => start = null);
-            mapMarkers.remove('startLocationMarker');
+            mapMarkers.remove('start');
           },
         ),
       );
@@ -507,7 +501,10 @@ class NaviState {
       return Card(
         child: ListTile(
           title: Text('建筑：${start!.description[0]}。'),
-          onTap: () => setState(() => start = null),
+          onTap: () {
+            setState(() => start = null);
+            mapMarkers.remove('start');
+          },
         ),
       );
     } else {
@@ -528,15 +525,17 @@ class NaviState {
                 title: Text('坐标：${element.longitude}，${element.latitude}。'),
                 onTap: () {
                   setState(() => end.remove(element));
-                  mapMarkers.remove(
-                      'endLocationMarker' + element.toJson().toString());
+                  mapMarkers.remove('end' + element.hashCode.toString());
                 },
               ),
             )
           : Card(
               child: ListTile(
                 title: Text('建筑：${element.description[0]}。'),
-                onTap: () => setState(() => end.remove(element)),
+                onTap: () {
+                  setState(() => end.remove(element));
+                  mapMarkers.remove('end' + element.hashCode.toString());
+                },
               ),
             ));
     });
@@ -564,11 +563,14 @@ class NaviTools {
     };
     List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
     List<LatLng> listvertex = mapData.mapVertex[campusNum].listVertex;
-    for (int i = 0; i < path.length - 1; i++) {
+    for (int i = 0; i < path.length - 1; ++i) {
       int a = edgevertex[path[i]][path[i + 1]].crowding * 3 ~/ 1;
       Polyline polyline = Polyline(
-          points: <LatLng>[listvertex[path[i]], listvertex[path[i + 1]]],
-          color: colortype[a]);
+        points: <LatLng>[listvertex[path[i]], listvertex[path[i + 1]]],
+        color: colortype[a],
+        capType: CapType.arrow,
+        joinType: JoinType.round,
+      );
       mapPolylines[(mapPolylines.length).toString()] = polyline;
     }
   }
@@ -576,7 +578,9 @@ class NaviTools {
   //传入两点（建筑点和路径点），返回虚线
   static void entryRoute(LatLng road, LatLng entry) {
     Polyline polyline = Polyline(
-        points: <LatLng>[road, entry], dashLineType: DashLineType.circle);
+      points: <LatLng>[road, entry],
+      dashLineType: DashLineType.circle,
+    );
     mapPolylines[(mapPolylines.length).toString()] = polyline;
   }
 
@@ -585,7 +589,7 @@ class NaviTools {
     const int times = 36; //多边形的点数
     Offset res = Offset(center.latitude, center.longitude);
     List<LatLng> circlelist = [];
-    for (int i = 0; i < times; i++) {
+    for (int i = 0; i < times; ++i) {
       Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
       Offset c1 = Offset(
           res.dx + c.dx, res.dy + c.dy / cos((res.dx + c.dx) / 180 * pi));
@@ -621,7 +625,7 @@ Map<String, Polyline> mapPolylines = {};
 AMapController? mapController;
 
 //用户位置
-AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
+AMapLocation userLocation = AMapLocation(latLng: LatLng(39.909187, 116.397451));
 
 //定位权限状态
 PermissionStatus locatePermissionStatus = PermissionStatus.denied;
@@ -653,7 +657,7 @@ bool stateLocationReqiurement(BuildContext context) {
     return false;
   }
   //定位不正常（时间time为0），提示用户打开定位开关
-  else if (userPosition.time == 0) {
+  else if (userLocation.time == 0) {
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -675,9 +679,9 @@ bool stateLocationReqiurement(BuildContext context) {
 Future<bool> showRoute(BuildContext context) async {
   if (navistate.startOnUserLoc) {
     if (stateLocationReqiurement(context)) {
-      int startCampus = mapData.locationInCampus(userPosition.latLng);
+      int startCampus = mapData.locationInCampus(userLocation.latLng);
       if (startCampus >= 0) {
-        navistate.start = userPosition.latLng;
+        navistate.start = userLocation.latLng;
       } else {
         showDialog(
             context: context,
@@ -699,20 +703,6 @@ Future<bool> showRoute(BuildContext context) async {
   }
   List naviOrder = [navistate.start];
   naviOrder.addAll(navistate.end);
-  /*if (navistate.start.runtimeType == LatLng) {
-    int startCampus = mapData.locationInCampus(navistate.start);
-    SpecRoute tmp =
-        mapData.mapVertex[startCampus].nearestVertex(navistate.start!);
-    listNaviLoc.add(NaviLoc(startCampus, tmp.endVertexNum, tmp.endLocation));
-    listSpecRoute.add(tmp);
-  } else {
-    int startCampus = mapData.buildingInCampus(navistate.start);
-    listNaviLoc.add(NaviLoc(
-        startCampus,
-        navistate.start.doors.first,
-        mapData
-            .mapVertex[startCampus].listVertex[navistate.start.doors.first]));
-  }*/
   for (int i = 0; i < naviOrder.length - 2; ++i) {
     int nextEnd = i + 1;
     double minDistance = double.infinity;
@@ -730,13 +720,19 @@ Future<bool> showRoute(BuildContext context) async {
       naviOrder[nextEnd] = tmp;
     }
   }
+  int transmethod = navistate.onbike ? 1 : 0;
+  navistate.crowding ? mapData.randomCrowding() : mapData.disableCrowding();
+  double relativeLength = 0;
   for (int i = 0; i < naviOrder.length; ++i) {
     int campusNum = 0;
     if (naviOrder[i].runtimeType == LatLng) {
       campusNum = mapData.locationInCampus(naviOrder[i]);
       int nearVertex = mapData.nearestVertex(campusNum, naviOrder[i]);
-      NaviTools.entryRoute(
-          mapData.getVertexLatLng(campusNum, nearVertex), naviOrder[i]);
+      LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
+      relativeLength += (AMapTools.distanceBetween(nearLatLng, naviOrder[i]) *
+              (navistate.onbike ? BIKESPEED : 1)) /
+          (navistate.crowding ? 1 - Random().nextDouble() : 1);
+      NaviTools.entryRoute(nearLatLng, naviOrder[i]);
       naviOrder[i] = NaviLoc(campusNum, nearVertex, naviOrder[i]);
     } else if (naviOrder[i].runtimeType == Building) {
       Building curBuilding = naviOrder[i] as Building;
@@ -756,34 +752,49 @@ Future<bool> showRoute(BuildContext context) async {
           }
         }
       }
-      NaviTools.entryRoute(
-          mapData.getVertexLatLng(
-              campusNum, curBuilding.juncpoint[choosedDoor]),
-          curBuilding.doors[choosedDoor]);
+      LatLng juncLatLng = mapData.getVertexLatLng(
+          campusNum, curBuilding.juncpoint[choosedDoor]);
+      relativeLength += (AMapTools.distanceBetween(
+                  juncLatLng, curBuilding.doors[choosedDoor]) *
+              (navistate.onbike ? BIKESPEED : 1)) /
+          (navistate.crowding ? 1 - Random().nextDouble() : 1);
+      NaviTools.entryRoute(juncLatLng, curBuilding.doors[choosedDoor]);
       naviOrder[i] = NaviLoc(campusNum, curBuilding.juncpoint[choosedDoor],
-          curBuilding.getApproxLocation());
+          curBuilding.doors[choosedDoor]);
     }
   }
-  int transmethod = navistate.onbike ? 1 : 0;
-  navistate.crowding ? mapData.randomCrowding() : mapData.disableCrowding();
-  double relativeLength = 0;
   for (int i = 0; i < naviOrder.length - 1; ++i) {
     NaviLoc startVertex = naviOrder[i] as NaviLoc;
     NaviLoc endVertex = naviOrder[i + 1] as NaviLoc;
     if (startVertex.campusNum == endVertex.campusNum) {
-      Shortpath path = Shortpath(
-          mapData.getAdjacentMatrix(startVertex.campusNum),
-          startVertex.vertexNum,
-          endVertex.vertexNum,
-          transmethod);
-      relativeLength += path.getrelativelen();
-      NaviTools.displayRoute(path.getroute(), startVertex.campusNum);
+      if (startVertex.vertexNum == endVertex.vertexNum) {
+        relativeLength += (AMapTools.distanceBetween(
+                    startVertex.location, endVertex.location) *
+                (navistate.onbike ? BIKESPEED : 1)) /
+            (navistate.crowding ? 1 - Random().nextDouble() : 1);
+      } else {
+        Shortpath path = Shortpath(
+            mapData.getAdjacentMatrix(startVertex.campusNum),
+            startVertex.vertexNum,
+            endVertex.vertexNum,
+            transmethod);
+        if (path.getroute().isEmpty) {
+          notAWay(context);
+          return false;
+        }
+        relativeLength += path.getrelativelen();
+        NaviTools.displayRoute(path.getroute(), startVertex.campusNum);
+      }
     } else {
       Shortpath patha = Shortpath(
           mapData.getAdjacentMatrix(startVertex.campusNum),
           startVertex.vertexNum,
           mapData.mapCampus[startVertex.campusNum].busstop,
           transmethod);
+      if (patha.getroute().isEmpty) {
+        notAWay(context);
+        return false;
+      }
       relativeLength += patha.getrelativelen();
       NaviTools.displayRoute(patha.getroute(), startVertex.campusNum);
       Shortpath pathb = Shortpath(
@@ -791,11 +802,30 @@ Future<bool> showRoute(BuildContext context) async {
           mapData.mapCampus[endVertex.campusNum].busstop,
           endVertex.vertexNum,
           transmethod);
+      if (pathb.getroute().isEmpty) {
+        notAWay(context);
+        return false;
+      }
       relativeLength += pathb.getrelativelen();
       NaviTools.displayRoute(pathb.getroute(), endVertex.campusNum);
     }
   }
   return true;
+}
+
+void notAWay(BuildContext context) async {
+  await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text('提示'),
+            content: Text('未找到路线。请检查地图数据。'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('取消'),
+                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+              ),
+            ],
+          ));
 }
 
 LatLng getLocation(dynamic element) {

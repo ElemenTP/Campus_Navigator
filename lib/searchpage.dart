@@ -1,3 +1,4 @@
+import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:flutter/material.dart';
 
 import 'header.dart';
@@ -57,6 +58,7 @@ class _MySearchPageState extends State<MySearchPage> {
                     child: Text('删除该起点'),
                     onPressed: () {
                       navistate.start = null;
+                      mapMarkers.remove('start');
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -77,6 +79,8 @@ class _MySearchPageState extends State<MySearchPage> {
                     child: Text('删除该终点'),
                     onPressed: () {
                       navistate.end.remove(searchResult[index]);
+                      mapMarkers.remove(
+                          'end' + searchResult[index].hashCode.toString());
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -99,7 +103,13 @@ class _MySearchPageState extends State<MySearchPage> {
                         ? null
                         : () {
                             navistate.start = searchResult[index];
-                            mapMarkers.remove('startLocationMarker');
+                            mapMarkers['start'] = Marker(
+                              position: searchResult[index].getApproxLocation(),
+                              icon: BitmapDescriptor.defaultMarkerWithHue(
+                                  BitmapDescriptor.hueOrange),
+                              infoWindow: InfoWindow(
+                                  title: searchResult[index].description[0]),
+                            );
                             Navigator.of(context).pop();
                           }, //关闭对话框
                   ),
@@ -107,12 +117,21 @@ class _MySearchPageState extends State<MySearchPage> {
                     child: Text('终点'),
                     onPressed: () {
                       navistate.end.add(searchResult[index]);
+                      mapMarkers['end' +
+                          searchResult[index].hashCode.toString()] = Marker(
+                        position: searchResult[index].getApproxLocation(),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                            BitmapDescriptor.hueGreen),
+                        infoWindow: InfoWindow(
+                            title: searchResult[index].description[0]),
+                      );
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],
               ));
     }
+    setState(() {});
   }
 
   @override
@@ -174,18 +193,20 @@ class _MySearchPageState extends State<MySearchPage> {
           ),
           Expanded(
             child: ListView.builder(
+              itemCount: searchResult.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   child: ListTile(
                     title: Text(searchResult[index].description[0]),
                     subtitle: Text('Matched String'),
+                    selected: searchResult[index] == navistate.start ||
+                        navistate.end.contains(searchResult[index]),
                     onTap: () {
                       _onListTileTapped(index);
                     },
                   ),
                 );
               },
-              itemCount: searchResult.length,
             ),
           )
         ],

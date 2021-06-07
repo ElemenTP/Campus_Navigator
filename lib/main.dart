@@ -134,24 +134,22 @@ class _MyHomePageState extends State<MyHomePage> {
   //从地图上添加坐标形式的出发地
   void _addStartLocation(LatLng location) {
     navistate.start = location;
-    mapMarkers['startLocationMarker'] = Marker(
+    mapMarkers['start'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-      onTap: (markerid) => _onStartMarkerTapped(),
+      onTap: (_) => _onStartMarkerTapped(),
     );
   }
 
   //从地图上添加坐标形式的目的地
   void _addEndLocation(LatLng location) {
-    if (!navistate.end.contains(location)) {
-      navistate.end.add(location);
-      String tmpid = 'endLocationMarker' + location.toJson().toString();
-      mapMarkers[tmpid] = Marker(
-        position: location,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        onTap: (markerid) => _onEndMarkerTapped(tmpid),
-      );
-    }
+    navistate.end.add(location);
+    String tmpid = 'end' + location.hashCode.toString();
+    mapMarkers[tmpid] = Marker(
+      position: location,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      onTap: (_) => _onEndMarkerTapped(tmpid),
+    );
   }
 
   //出发地Marker点击回调
@@ -170,7 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text('确定'),
                   onPressed: () {
                     navistate.start = null;
-                    mapMarkers.remove('startLocationMarker');
+                    mapMarkers.remove('start');
                     Navigator.of(context).pop();
                   }, //关闭对话框
                 ),
@@ -221,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //用户位置改变回调函数，记录用户位置。
   void _onLocationChanged(AMapLocation aMapLocation) {
-    userPosition = aMapLocation;
+    userLocation = aMapLocation;
   }
 
   //导航按钮功能函数
@@ -231,6 +229,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mapPolylines.clear();
         if (!await showRoute(context)) {
           navistate.naviStatus = false;
+          mapPolylines.clear();
         }
       } else {
         mapPolylines.clear();
@@ -240,10 +239,55 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //定位按钮按下回调函数，将地图widget视角调整至用户位置。
-  void _setCamUserLoaction() async {
-    if (stateLocationReqiurement(context)) {
+  void _setCameraPosition() async {
+    late LatLng newLocation;
+    if (await showDialog(
+            context: context,
+            builder: (context) {
+              List<Widget> listWidget = <Widget>[
+                Card(
+                  child: ListTile(
+                    title: Text('当前位置'),
+                    onTap: () {
+                      if (stateLocationReqiurement(context)) {
+                        newLocation = userLocation.latLng;
+                        Navigator.of(context).pop(true);
+                      }
+                    },
+                  ),
+                )
+              ];
+              for (int i = 0; i < mapData.mapCampus.length; ++i) {
+                listWidget.add(Card(
+                  child: ListTile(
+                    title: Text(mapData.mapCampus[i].name),
+                    onTap: () {
+                      newLocation =
+                          mapData.getVertexLatLng(i, mapData.mapCampus[i].gate);
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ));
+              }
+              return AlertDialog(
+                title: Text('选择目标视角'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: listWidget,
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                  ),
+                ],
+              );
+            }) ??
+        false) {
       await mapController?.moveCamera(
-          CameraUpdate.newLatLngZoom(userPosition.latLng, 17.5),
+          CameraUpdate.newLatLngZoom(newLocation, 17.5),
           duration: 500);
     }
   }
@@ -349,7 +393,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: map,
         floatingActionButton: FloatingActionButton(
           heroTag: 'locatebtn',
-          onPressed: _setCamUserLoaction,
+          onPressed: _setCameraPosition,
           tooltip: '回到当前位置' /*'Locate'*/,
           child: Icon(Icons.location_searching),
           mini: true,
