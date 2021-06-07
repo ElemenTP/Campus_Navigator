@@ -234,14 +234,9 @@ class _MyHomePageState extends State<MyHomePage> {
       if (navistate.naviStatus) {
         mapPolylines.clear();
         navistate.routeLength.clear();
+        bool showRouteResult = false;
         try {
-          if (!await showRoute(context)) {
-            navistate.naviStatus = false;
-            if (logEnabled)
-              logSink.write(DateTime.now().toString() + ': 停止导航。\n');
-            mapPolylines.clear();
-            navistate.routeLength.clear();
-          }
+          showRouteResult = await showRoute(context);
         } catch (_) {
           showDialog(
               context: context,
@@ -257,6 +252,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   ));
           if (logEnabled)
             logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+        }
+        if (!showRouteResult) {
+          navistate.naviStatus = false;
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 停止导航。\n');
+          mapPolylines.clear();
+          navistate.routeLength.clear();
         }
       } else {
         mapPolylines.clear();
