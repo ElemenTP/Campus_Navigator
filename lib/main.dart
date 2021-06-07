@@ -78,18 +78,33 @@ void main() async {
       strokeColor: col,
       strokeWidth: 0.4);
   polygonlist.add(circle);
+  int campusn = 0;
   mapData.mapBuilding.forEach((element) {
     element.listBuilding.forEach((e1) {
-      int index = 0;
+      int indextmp = 0;
+      dynamic last;
       e1.doors.forEach((e2) {
         markerlist.add(Marker(
             position: e2,
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueOrange),
             visible: true,
-            infoWindow: InfoWindow(title: e1.description[index++])));
+            infoWindow: InfoWindow(title: e1.description[indextmp])));
+        //if (last.runtimeType == LatLng)//
+        //polylineset.add(Polyline(
+        //points: <LatLng>[e2, last], color: Colors.deepOrange.shade300));
+        polylineset.add(Polyline(
+            points: <LatLng>[
+              e2,
+              mapData.mapVertex[campusn].listVertex[e1.points[indextmp]]
+            ],
+            dashLineType: DashLineType.circle,
+            color: Colors.blueAccent.shade400));
+        last = e2;
+        indextmp++;
       });
     });
+    campusn++;
   });
 
   runApp(MyApp());
