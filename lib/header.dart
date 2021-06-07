@@ -604,6 +604,30 @@ class NaviTools {
         strokeColor: col,
         strokeWidth: 0.4);
   }
+
+  //生成一个点到一条边的垂足（存在误差），适用地区范围有限制北京地区
+  static void verticalTract(LatLng point, LatLng pointa, LatLng pointb) {
+    Offset a = Offset(
+        cos(point.latitude / 90 * pi / 2) *
+            cos(pi - (point.longitude) / 90 * pi / 2),
+        cos(point.latitude / 90 * pi / 2) *
+            sin((point.longitude) / 90 * pi / 2));
+    Offset p1 = Offset(
+        cos(pointa.latitude / 90 * pi / 2) *
+            cos(pi - (pointa.longitude) / 90 * pi / 2),
+        cos(pointa.latitude / 90 * pi / 2) *
+            sin((pointa.longitude) / 90 * pi / 2));
+    Offset p2 = Offset(
+        cos(pointb.latitude / 90 * pi / 2) *
+            cos(pi - (pointb.longitude) / 90 * pi / 2),
+        cos(pointb.latitude / 90 * pi / 2) *
+            sin((pointb.longitude) / 90 * pi / 2));
+
+    Offset res = AMapTools.getVerticalPointOnLine(a, p1, p2);
+    double alat = acos(sqrt(res.dx * res.dx + res.dy * res.dy)) / pi * 180;
+    double alon = 180 - acos(res.dx / cos(alat / 180 * pi)) * 180 / pi;
+    LatLng vertical = LatLng(alat, alon);
+  }
 }
 
 //用户设置
