@@ -70,6 +70,11 @@ void main() async {
       cos(mapData.mapVertex[0].listVertex[48].latitude / 90 * pi / 2) *
           sin((mapData.mapVertex[0].listVertex[48].longitude) / 90 * pi / 2));
 
+  Offset res = AMapTools.getVerticalPointOnLine(a, p1, p2);
+  double alat = acos(sqrt(res.dx * res.dx + res.dy * res.dy)) / pi * 180;
+  double alon = 180 - acos(res.dx / cos(alat / 180 * pi)) * 180 / pi;
+  LatLng vertical = LatLng(alat, alon);
+
   Offset b = Offset(mapData.mapVertex[0].listVertex[44].latitude,
       mapData.mapVertex[0].listVertex[44].longitude);
   Offset p3 = Offset(mapData.mapVertex[0].listVertex[47].latitude,
@@ -78,13 +83,6 @@ void main() async {
       mapData.mapVertex[0].listVertex[48].longitude);
   Offset res2 = AMapTools.getVerticalPointOnLine(b, p3, p4);
 
-  Offset res = AMapTools.getVerticalPointOnLine(a, p1, p2);
-
-  double alat = acos(sqrt(res.dx * res.dx + res.dy * res.dy)) / pi * 180;
-  double tmp = cos(alat / 180 * pi);
-  double alon = 180 - acos(res.dx / cos(alat / 180 * pi)) * 180 / pi;
-
-  LatLng vertical = LatLng(alat, alon);
   markerlist.add(Marker(
       position: LatLng(res.dx, res.dy),
       infoWindow: InfoWindow(title: "vertical"),
