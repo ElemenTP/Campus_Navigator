@@ -117,7 +117,7 @@ class _MySettingPageState extends State<MySettingPage> {
             newData.mapCampus.length > newData.mapBuilding.length ||
             newData.mapCampus.length > newData.mapVertex.length ||
             newData.mapCampus.length > newData.mapEdge.length) {
-          throw {'!'};
+          throw '!';
         }
       } catch (_) {
         showDialog(

@@ -1,4 +1,6 @@
+import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
+import 'package:campnavi/shortpath.dart';
 import 'package:flutter/material.dart';
 
 import 'header.dart';
@@ -7,7 +9,7 @@ import 'header.dart';
 TextEditingController textcontroller = TextEditingController();
 
 //搜索结果列表
-List<Building> searchResult = [];
+List<SearchResult> searchResult = [];
 
 class MySearchPage extends StatefulWidget {
   MySearchPage({Key key = const Key('search')}) : super(key: key);
@@ -37,7 +39,7 @@ class _MySearchPageState extends State<MySearchPage> {
         element1.listBuilding.forEach((element2) {
           for (String item in element2.description) {
             if (item.contains(textcontroller.text)) {
-              searchResult.add(element2);
+              searchResult.add(SearchResult(element2, '匹配字符串: ' + item));
               break;
             }
           }
@@ -49,7 +51,8 @@ class _MySearchPageState extends State<MySearchPage> {
 
   ///列表元素点击回调函数
   void _onListTileTapped(int index) async {
-    if (navistate.start == searchResult[index]) {
+    textFocusNode.unfocus();
+    if (naviState.start == searchResult[index].result) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -63,14 +66,14 @@ class _MySearchPageState extends State<MySearchPage> {
                   TextButton(
                     child: Text('删除该起点'),
                     onPressed: () {
-                      navistate.start = null;
+                      naviState.start = null;
                       mapMarkers.remove('start');
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
                 ],
               ));
-    } else if (navistate.end.contains(searchResult[index])) {
+    } else if (naviState.end.contains(searchResult[index].result)) {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -84,9 +87,9 @@ class _MySearchPageState extends State<MySearchPage> {
                   TextButton(
                     child: Text('删除该终点'),
                     onPressed: () {
-                      navistate.end.remove(searchResult[index]);
-                      mapMarkers.remove(
-                          'end' + searchResult[index].hashCode.toString());
+                      naviState.end.remove(searchResult[index].result);
+                      mapMarkers.remove('end' +
+                          searchResult[index].result.hashCode.toString());
                       Navigator.of(context).pop();
                     }, //关闭对话框
                   ),
@@ -105,16 +108,20 @@ class _MySearchPageState extends State<MySearchPage> {
                   ),
                   TextButton(
                     child: Text('起点'),
-                    onPressed: navistate.startOnUserLoc
+                    onPressed: naviState.startOnUserLoc
                         ? null
                         : () {
-                            navistate.start = searchResult[index];
+                            naviState.start = searchResult[index].result;
                             mapMarkers['start'] = Marker(
-                              position: searchResult[index].getApproxLocation(),
+                              position: searchResult[index]
+                                  .result
+                                  .getApproxLocation(),
                               icon: BitmapDescriptor.defaultMarkerWithHue(
                                   BitmapDescriptor.hueOrange),
                               infoWindow: InfoWindow(
-                                  title: searchResult[index].description[0]),
+                                  title: searchResult[index]
+                                      .result
+                                      .description[0]),
                             );
                             Navigator.of(context).pop();
                           }, //关闭对话框
@@ -122,14 +129,16 @@ class _MySearchPageState extends State<MySearchPage> {
                   TextButton(
                     child: Text('终点'),
                     onPressed: () {
-                      navistate.end.add(searchResult[index]);
+                      naviState.end.add(searchResult[index].result);
                       mapMarkers['end' +
-                          searchResult[index].hashCode.toString()] = Marker(
-                        position: searchResult[index].getApproxLocation(),
+                              searchResult[index].result.hashCode.toString()] =
+                          Marker(
+                        position:
+                            searchResult[index].result.getApproxLocation(),
                         icon: BitmapDescriptor.defaultMarkerWithHue(
                             BitmapDescriptor.hueGreen),
                         infoWindow: InfoWindow(
-                            title: searchResult[index].description[0]),
+                            title: searchResult[index].result.description[0]),
                       );
                       Navigator.of(context).pop();
                     }, //关闭对话框
@@ -138,6 +147,114 @@ class _MySearchPageState extends State<MySearchPage> {
               ));
     }
     setState(() {});
+  }
+
+  ///搜索附近建筑函数
+  void _searchNearBuilding() async {
+    textFocusNode.unfocus();
+    if (NaviTools.stateLocationReqiurement(context)) {
+      int campusNum = mapData.locationInCampus(userLocation.latLng);
+      if (campusNum >= 0) {
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 开始搜索附近建筑。\n');
+        try {
+          mapData.mapEdge[campusNum].disableCrowding();
+          List<LatLng> circlePolygon =
+              NaviTools.circleAround(userLocation.latLng);
+          List<Building> nearBuilding = [];
+          int nearVertex =
+              mapData.nearestVertex(campusNum, userLocation.latLng);
+          LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
+          double juncLength =
+              AMapTools.distanceBetween(nearLatLng, userLocation.latLng);
+          mapData.mapBuilding[campusNum].listBuilding.forEach((element) {
+            for (LatLng doors in element.doors) {
+              if (AMapTools.latLngIsInPolygon(doors, circlePolygon)) {
+                nearBuilding.add(element);
+                break;
+              }
+            }
+          });
+          if (nearBuilding.isEmpty) {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text('未搜索到任何建筑。'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('取消'),
+                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        ),
+                      ],
+                    ));
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 未搜索到附近建筑。\n');
+            return;
+          } else {
+            searchResult.clear();
+            nearBuilding.forEach((element) {
+              double distance = juncLength;
+              int choosedDoor = 0;
+              if (element.doors.length > 1) {
+                double minDistance = double.infinity;
+                for (int j = 0; j < element.doors.length; ++j) {
+                  double curDistance = AMapTools.distanceBetween(
+                      userLocation.latLng, element.doors[j]);
+                  if (curDistance < minDistance) {
+                    minDistance = curDistance;
+                    choosedDoor = j;
+                  }
+                }
+              }
+              LatLng juncLatLng = mapData.getVertexLatLng(
+                  campusNum, element.juncpoint[choosedDoor]);
+              distance += AMapTools.distanceBetween(
+                  juncLatLng, element.doors[choosedDoor]);
+              if (nearLatLng != juncLatLng) {
+                Shortpath path = Shortpath(mapData.getAdjacentMatrix(campusNum),
+                    nearVertex, element.juncpoint[choosedDoor], 0);
+                distance += path.getrelativelen();
+              }
+              searchResult.add(SearchResult(
+                  element, '约' + distance.toStringAsFixed(0) + '米'));
+            });
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
+            setState(() {});
+          }
+        } catch (_) {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('未找到路线。请检查地图数据。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+        }
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('您不在任何校区内。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+        return;
+      }
+    }
   }
 
   @override
@@ -177,7 +294,7 @@ class _MySearchPageState extends State<MySearchPage> {
             children: [
               TextButton.icon(
                 icon: Icon(Icons.filter_alt),
-                label: Text('筛选'),
+                label: Text('校区'),
                 onPressed: _onStartSearch,
               ),
               TextButton.icon(
@@ -203,10 +320,10 @@ class _MySearchPageState extends State<MySearchPage> {
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   child: ListTile(
-                    title: Text(searchResult[index].description[0]),
-                    subtitle: Text('Matched String'),
-                    selected: searchResult[index] == navistate.start ||
-                        navistate.end.contains(searchResult[index]),
+                    title: Text(searchResult[index].result.description[0]),
+                    subtitle: Text(searchResult[index].matched),
+                    selected: searchResult[index].result == naviState.start ||
+                        naviState.end.contains(searchResult[index].result),
                     onTap: () {
                       _onListTileTapped(index);
                     },
@@ -217,6 +334,19 @@ class _MySearchPageState extends State<MySearchPage> {
           )
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'nearBuilding',
+        onPressed: _searchNearBuilding,
+        tooltip: '搜索附近建筑',
+        child: Icon(Icons.near_me),
+      ),
     );
   }
+}
+
+class SearchResult {
+  late Building result;
+  late String matched;
+
+  SearchResult(this.result, this.matched);
 }
