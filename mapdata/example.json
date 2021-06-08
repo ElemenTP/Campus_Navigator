@@ -847,99 +847,1037 @@
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.959884,
+                            "longitude": 116.356033                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        83
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.9594,
+                            "longitude": 116.355939                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        85
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.958998,
+                            "longitude": 116.356252                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        87
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.958643,
+                            "longitude": 116.356252                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        89
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.958645,
+                            "longitude": 116.357072                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        90
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.958296,
+                            "longitude": 116.357153                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        91
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.961899,
-                            "longitude": 116.360621
+                            "latitude": 39.959571,
+                            "longitude": 116.357515                            
                         }
                     ],
                     "descriptions": [
-                        "游泳馆"
+                        "家属区"
                     ],
                     "begins": [
-                        133
+                        30
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959258,
+                            "longitude": 116.357863                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        35
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958643,
+                            "longitude": 116.357889                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        58
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958293,
+                            "longitude": 116.358151                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        61
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959631,
+                            "longitude": 116.359427                            
+                        }
+                    ],
+                    "descriptions": [
+                        "北京邮电大学幼儿园"
+                    ],
+                    "begins": [
+                        142
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958471,
+                            "longitude": 116.359986
+                        }
+                    ],
+                    "descriptions": [
+                        "北京交通大学附属中学"
+                    ],
+                    "begins": [
+                        103
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958682,
+                            "longitude": 116.358968                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        59
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959092,
+                            "longitude": 116.358942                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        55
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958941,
+                            "longitude": 116.356695                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        89
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.95954,
+                            "longitude": 116.357167                            
+                        }
+                    ],
+                    "descriptions": [
+                        "南区超市"
+                    ],
+                    "begins": [
+                        30
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.95902,
+                            "longitude": 116.357174                            
+                        }
+                    ],
+                    "descriptions": [
+                        "电信营业厅"
+                    ],
+                    "begins": [
+                        36
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959987,
+                            "longitude": 116.358367                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        51
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961081,
+                            "longitude": 116.356134                            
+                        }
+                    ],
+                    "descriptions": [
+                        "校训石"
+                    ],
+                    "begins": [
+                        21
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961316,
+                            "longitude": 116.356884                            
+                        }
+                    ],
+                    "descriptions": [
+                        "主席像"
+                    ],
+                    "begins": [
+                        22
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.962111,
+                            "longitude": 116.357488                            
+                        }
+                    ],
+                    "descriptions": [
+                        "后勤楼"
+                    ],
+                    "begins": [
+                        18
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961844,
+                            "longitude": 116.358035                            
+                        }
+                    ],
+                    "descriptions": [
+                        "研究生院"
+                    ],
+                    "begins": [
+                        47
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96149,
+                            "longitude": 116.358891                            
+                        }
+                    ],
+                    "descriptions": [
+                        "科学会堂"
+                    ],
+                    "begins": [
+                        46
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.960359,
+                            "longitude": 116.359054                            
+                        }
+                    ],
+                    "descriptions": [
+                        "通信网络综合研究所"
+                    ],
+                    "begins": [
+                        51
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959626,
+                            "longitude": 116.360661                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        144
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959343,
+                            "longitude": 116.360611                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        145
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958114,
+                            "longitude": 116.358055                            
+                        }
+                    ],
+                    "descriptions": [
+                        "西土城南门"
+                    ],
+                    "begins": [
+                        62
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.95871,
+                            "longitude": 116.361226                            
+                        }
+                    ],
+                    "descriptions": [
+                        "西土城东南门"
+                    ],
+                    "begins": [
+                        147
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.962417,
+                            "longitude": 116.361068                            
+                        }
+                    ],
+                    "descriptions": [
+                        "西土城东门"
+                    ],
+                    "begins": [
+                        125
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96003,
+                            "longitude": 116.359248                            
+                        }
+                    ],
+                    "descriptions": [
+                        "家属区"
+                    ],
+                    "begins": [
+                        141
                     ]
                 }
             ]
