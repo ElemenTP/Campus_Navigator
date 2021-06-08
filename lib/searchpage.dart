@@ -32,25 +32,41 @@ class _MySearchPageState extends State<MySearchPage> {
 
   ///建筑搜索函数
   void _onStartSearch() {
+    textFocusNode.unfocus();
+    searchResult.clear();
+    String toSearch = textcontroller.text;
     if (logEnabled)
-      logSink.write(
-          DateTime.now().toString() + ': 搜索开始，关键字${textcontroller.text}。\n');
-    setState(() {
-      textFocusNode.unfocus();
-      searchResult.clear();
-      for (int i = 0; i < mapData.mapCampus.length; ++i) {
-        if (campusFilter[i]) {
-          mapData.mapBuilding[i].listBuilding.forEach((element2) {
-            for (String item in element2.description) {
-              if (item.contains(textcontroller.text)) {
-                searchResult.add(SearchResult(element2, '匹配字符串: ' + item));
-                break;
-              }
+      logSink.write(DateTime.now().toString() + ': 搜索开始，关键字"$toSearch"。\n');
+    for (int i = 0; i < mapData.mapCampus.length; ++i) {
+      String curCampusName = mapData.mapCampus[i].name;
+      if (campusFilter[i]) {
+        mapData.mapBuilding[i].listBuilding.forEach((element) {
+          if (toSearch.isEmpty) {
+            searchResult.add(SearchResult(element, curCampusName));
+          } else {
+            List<String> listLogicLoc = [];
+            mapLogicLoc.logicLoc[element.description.first]
+                ?.forEach((element1) {
+              if (element1.contains(toSearch)) listLogicLoc.add(element1);
+            });
+            if (listLogicLoc.isNotEmpty) {
+              searchResult.add(SearchResult(element,
+                  curCampusName + ' 逻辑位置: ' + listLogicLoc.join(', ')));
+              return;
             }
-          });
-        }
+            List<String> listMatched = [];
+            element.description.forEach((element1) {
+              if (element1.contains(toSearch)) listMatched.add(element1);
+            });
+            if (listMatched.isNotEmpty)
+              searchResult.add(SearchResult(
+                  element, curCampusName + ' 建筑描述: ' + listMatched.join(', ')));
+            return;
+          }
+        });
       }
-    });
+    }
+    setState(() {});
     if (logEnabled) logSink.write(DateTime.now().toString() + ': 搜索结束。\n');
   }
 

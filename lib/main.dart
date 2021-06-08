@@ -21,16 +21,29 @@ void main() async {
   Directory logFileDir = await getApplicationDocumentsDirectory();
   logFile = File(logFileDir.path + '/NaviLog.txt');
   logSink = logFile.openWrite(mode: FileMode.append);
-  String? filedir = prefs.getString('filedir');
-  if (filedir == null) {
+  String? dataFileDir = prefs.getString('dataFileDir');
+  if (dataFileDir == null) {
     mapData = MapData.fromJson(
         jsonDecode(await rootBundle.loadString('mapdata/default.json')));
     if (logEnabled) logSink.write(DateTime.now().toString() + ': 读取默认地图数据。\n');
   } else {
-    File datafile = File(filedir);
-    mapData = MapData.fromJson(jsonDecode(await datafile.readAsString()));
+    File dataFile = File(dataFileDir);
+    mapData = MapData.fromJson(jsonDecode(await dataFile.readAsString()));
     if (logEnabled)
-      logSink.write(DateTime.now().toString() + ': 读取地图数据' + filedir + '\n');
+      logSink
+          .write(DateTime.now().toString() + ': 读取地图数据' + dataFileDir + '\n');
+  }
+  String? logicLocFileDir = prefs.getString('logicLocFileDir');
+  if (logicLocFileDir == null) {
+    mapLogicLoc = LogicLoc();
+    if (logEnabled) logSink.write(DateTime.now().toString() + ': 没有逻辑位置数据。\n');
+  } else {
+    File logicLocFile = File(logicLocFileDir);
+    mapLogicLoc =
+        LogicLoc.fromJson(jsonDecode(await logicLocFile.readAsString()));
+    if (logEnabled)
+      logSink.write(
+          DateTime.now().toString() + ': 读取逻辑位置数据' + logicLocFileDir + '\n');
   }
   runApp(MyApp());
 }

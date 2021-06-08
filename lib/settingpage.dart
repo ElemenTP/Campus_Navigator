@@ -110,9 +110,9 @@ class _MySettingPageState extends State<MySettingPage> {
         allowedExtensions: ['json']);
     if (pickedFile != null) {
       File iptFile = File(pickedFile.files.single.path!);
-      String iptJson = await iptFile.readAsString();
+      late MapData newData;
       try {
-        MapData newData = MapData.fromJson(jsonDecode(iptJson));
+        newData = MapData.fromJson(jsonDecode(await iptFile.readAsString()));
         if (newData.mapCampus.length == 0 ||
             newData.mapCampus.length > newData.mapBuilding.length ||
             newData.mapCampus.length > newData.mapVertex.length ||
@@ -139,8 +139,11 @@ class _MySettingPageState extends State<MySettingPage> {
           '/CustomMapData/' +
           pickedFile.files.single.name;
       File customMapDataFile = File(customMapDataPath);
-      await customMapDataFile.writeAsString(iptJson);
-      prefs.setString('filedir', customMapDataPath);
+      if (!await customMapDataFile.exists()) {
+        customMapDataFile = await customMapDataFile.create(recursive: true);
+      }
+      await customMapDataFile.writeAsString(jsonEncode(newData));
+      prefs.setString('dataFileDir', customMapDataPath);
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -160,7 +163,60 @@ class _MySettingPageState extends State<MySettingPage> {
   void _manageMapData() async {}
 
   ///导入逻辑位置文件函数
-  void _pickLogicData() async {}
+  void _pickLogicData() async {
+    FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowMultiple: false,
+        allowedExtensions: ['json']);
+    if (pickedFile != null) {
+      File iptFile = File(pickedFile.files.single.path!);
+      late LogicLoc newLogicLoc;
+      try {
+        newLogicLoc =
+            LogicLoc.fromJson(jsonDecode(await iptFile.readAsString()));
+        if (newLogicLoc.logicLoc.isEmpty) throw '!';
+      } catch (_) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text("提示"),
+                  content: Text("逻辑位置数据格式不正确，请检查逻辑位置数据。"),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text("确定"),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+        return;
+      }
+      Directory customLogicLocDataDir =
+          await getApplicationDocumentsDirectory();
+      String customLogicLocDataPath = customLogicLocDataDir.path +
+          '/CustomLogicLocData/' +
+          pickedFile.files.single.name;
+      File customLogicLocDataFile = File(customLogicLocDataPath);
+      if (!await customLogicLocDataFile.exists()) {
+        customLogicLocDataFile =
+            await customLogicLocDataFile.create(recursive: true);
+      }
+      await customLogicLocDataFile.writeAsString(jsonEncode(newLogicLoc));
+      prefs.setString('logicLocFileDir', customLogicLocDataPath);
+      mapLogicLoc = newLogicLoc;
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("提示"),
+                content: Text("逻辑位置数据已成功应用。"),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text("确定"),
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  ),
+                ],
+              ));
+    }
+  }
 
   ///管理逻辑位置文件函数
   void _manageLogicData() async {}

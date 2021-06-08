@@ -951,11 +951,35 @@ class NaviLoc {
   NaviLoc(this.campusNum, this.vertexNum, this.location);
 }
 
+///逻辑位置类
+class LogicLoc {
+  ///建筑名:建筑别名
+  Map<String, List<String>> logicLoc = {};
+
+  LogicLoc();
+
+  LogicLoc.fromJson(Map<String, dynamic> json) {
+    Map logicLocJson = json['logicLoc'] as Map;
+    logicLocJson.forEach((key, value) {
+      logicLoc[key] = List<String>.from(value);
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'logicLoc': logicLoc,
+    };
+  }
+}
+
 ///用户设置
 late SharedPreferences prefs;
 
 ///地图数据
 late MapData mapData;
+
+///逻辑位置
+late LogicLoc mapLogicLoc;
 
 ///导航状态
 NaviState naviState = NaviState();
