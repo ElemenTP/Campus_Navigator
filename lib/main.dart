@@ -268,8 +268,10 @@ class _MyHomePageState extends State<MyHomePage> {
         }
         if (AMapTools.distanceBetween(
                 userLocation.latLng, expectedRoutePolyline.points[1]) <
-            5) {
-          setState(() => mapPolylines.remove(0));
+            10) {
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
+          setState(() => mapPolylines.removeAt(0));
         }
       }
     }
