@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 
 import 'header.dart';
 
-//输入框控制器
+///输入框控制器
 TextEditingController textcontroller = TextEditingController();
 
-//搜索结果列表
+///搜索结果列表
 List<SearchResult> searchResult = [];
+
+///筛选用校区列表
+List<bool> campusFilter = List.filled(mapData.mapCampus.length, true);
 
 class MySearchPage extends StatefulWidget {
   MySearchPage({Key key = const Key('search')}) : super(key: key);
@@ -27,7 +30,7 @@ class _MySearchPageState extends State<MySearchPage> {
 
   late FocusNode textFocusNode;
 
-  ///搜索函数
+  ///建筑搜索函数
   void _onStartSearch() {
     if (logEnabled)
       logSink.write(
@@ -35,16 +38,18 @@ class _MySearchPageState extends State<MySearchPage> {
     setState(() {
       textFocusNode.unfocus();
       searchResult.clear();
-      mapData.mapBuilding.forEach((element1) {
-        element1.listBuilding.forEach((element2) {
-          for (String item in element2.description) {
-            if (item.contains(textcontroller.text)) {
-              searchResult.add(SearchResult(element2, '匹配字符串: ' + item));
-              break;
+      for (int i = 0; i < mapData.mapCampus.length; ++i) {
+        if (campusFilter[i]) {
+          mapData.mapBuilding[i].listBuilding.forEach((element2) {
+            for (String item in element2.description) {
+              if (item.contains(textcontroller.text)) {
+                searchResult.add(SearchResult(element2, '匹配字符串: ' + item));
+                break;
+              }
             }
-          }
-        });
-      });
+          });
+        }
+      }
     });
     if (logEnabled) logSink.write(DateTime.now().toString() + ': 搜索结束。\n');
   }
@@ -257,6 +262,46 @@ class _MySearchPageState extends State<MySearchPage> {
     }
   }
 
+  ///校区筛选函数
+  void _campusFilter() async {
+    textFocusNode.unfocus();
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, _setState) {
+          List<Widget> listCampusCheckBox = [];
+          for (int index = 0; index < mapData.mapCampus.length; ++index) {
+            listCampusCheckBox.add(Card(
+              child: ListTile(
+                title: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(mapData.mapCampus[index].name),
+                    Checkbox(
+                      value: campusFilter[index],
+                      onChanged: (value) =>
+                          _setState(() => campusFilter[index] = value!),
+                    )
+                  ],
+                ),
+              ),
+            ));
+          }
+          return AlertDialog(
+            title: Text('校区'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: listCampusCheckBox,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   void initState() {
     //创建FocusNode
@@ -295,7 +340,7 @@ class _MySearchPageState extends State<MySearchPage> {
               TextButton.icon(
                 icon: Icon(Icons.filter_alt),
                 label: Text('校区'),
-                onPressed: _onStartSearch,
+                onPressed: _campusFilter,
               ),
               TextButton.icon(
                 icon: Icon(Icons.search),
