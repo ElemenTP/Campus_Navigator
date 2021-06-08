@@ -3959,10 +3959,404 @@
     ],
     "busTimeTable": [
         {
-            "campusFrom": 0,
+            "campusFrom": 1,
             "campusTo": 0,
-            "setOutHour": 0,
+            "setOutHour": 6,
+            "setOutMinute": 50,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 8,
+            "setOutMinute": 30,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 12,
             "setOutMinute": 0,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 13,
+            "setOutMinute": 30,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 14,
+            "setOutMinute": 20,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 16,
+            "setOutMinute": 50,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 6,
+            "setOutMinute": 50,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 8,
+            "setOutMinute": 30,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 12,
+            "setOutMinute": 0,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 13,
+            "setOutMinute": 30,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 14,
+            "setOutMinute": 20,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 16,
+            "setOutMinute": 50,
+            "dayOfWeek": 2
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 6,
+            "setOutMinute": 50,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 8,
+            "setOutMinute": 30,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 12,
+            "setOutMinute": 0,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 13,
+            "setOutMinute": 30,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 16,
+            "setOutMinute": 50,
+            "dayOfWeek": 3
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 6,
+            "setOutMinute": 50,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 8,
+            "setOutMinute": 30,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 12,
+            "setOutMinute": 0,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 13,
+            "setOutMinute": 30,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 14,
+            "setOutMinute": 20,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 16,
+            "setOutMinute": 50,
+            "dayOfWeek": 4
+        },{
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 6,
+            "setOutMinute": 50,
+            "dayOfWeek": 5
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 8,
+            "setOutMinute": 30,
+            "dayOfWeek": 5
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 12,
+            "setOutMinute": 0,
+            "dayOfWeek": 5
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 13,
+            "setOutMinute": 30,
+            "dayOfWeek": 5
+        },
+        {
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": 14,
+            "setOutMinute": 20,
+            "dayOfWeek": 5
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 9,
+            "setOutMinute": 50,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 11,
+            "setOutMinute": 40,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 13,
+            "setOutMinute": 0,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 15,
+            "setOutMinute": 45,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 17,
+            "setOutMinute": 10,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 18,
+            "setOutMinute": 25,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 21,
+            "setOutMinute": 10,
+            "dayOfWeek": 1
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 9,
+            "setOutMinute": 50,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 11,
+            "setOutMinute": 40,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 13,
+            "setOutMinute": 0,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 15,
+            "setOutMinute": 45,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 17,
+            "setOutMinute": 10,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 18,
+            "setOutMinute": 25,
+            "dayOfWeek": 2
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 21,
+            "setOutMinute": 10,
+            "dayOfWeek": 2
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 9,
+            "setOutMinute": 50,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 11,
+            "setOutMinute": 40,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 13,
+            "setOutMinute": 0,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 17,
+            "setOutMinute": 10,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 18,
+            "setOutMinute": 25,
+            "dayOfWeek": 3
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 9,
+            "setOutMinute": 50,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 11,
+            "setOutMinute": 40,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 13,
+            "setOutMinute": 0,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 15,
+            "setOutMinute": 45,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 17,
+            "setOutMinute": 10,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 18,
+            "setOutMinute": 25,
+            "dayOfWeek": 4
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 21,
+            "setOutMinute": 10,
+            "dayOfWeek": 4
+        },{
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 9,
+            "setOutMinute": 50,
+            "dayOfWeek": 1
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 11,
+            "setOutMinute": 40,
+            "dayOfWeek": 1
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 13,
+            "setOutMinute": 0,
+            "dayOfWeek": 1
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 15,
+            "setOutMinute": 45,
+            "dayOfWeek": 1
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 17,
+            "setOutMinute": 10,
+            "dayOfWeek": 1
+        },
+        {
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": 18,
+            "setOutMinute": 25,
             "dayOfWeek": 1
         }
     ]

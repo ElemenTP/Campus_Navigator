@@ -29,7 +29,7 @@ void main() async {
     markerlist.add(Marker(
         position: element,
         infoWindow: InfoWindow(
-            //title: mapData.mapVertex[0].detail[i++],
+            title: mapData.mapVertex[0].detail[i++],
             snippet: (i - 1).toString()),
         visible: true));
   });
@@ -60,8 +60,9 @@ void main() async {
         visible: true));
   });
 
-  LatLng vertical = verticalTract(mapData.mapVertex[0].listVertex[1],
-      mapData.mapVertex[0].listVertex[3], mapData.mapVertex[0].listVertex[8]);
+  LatLng vertical = verticalTract(mapData.mapVertex[0].listVertex[52],
+      mapData.mapVertex[0].listVertex[12], mapData.mapVertex[0].listVertex[13]);
+
   Offset a = Offset(mapData.mapVertex[0].listVertex[3].latitude,
       mapData.mapVertex[0].listVertex[3].longitude);
   Offset b = Offset(mapData.mapVertex[0].listVertex[8].latitude,
@@ -71,7 +72,7 @@ void main() async {
   LatLng vertical2 = LatLng(AMapTools.getVerticalPointOnLine(s, a, b).dx,
       AMapTools.getVerticalPointOnLine(s, a, b).dy);
   polylineset.add(Polyline(
-      points: <LatLng>[vertical, mapData.mapVertex[0].listVertex[1]],
+      points: <LatLng>[vertical, mapData.mapVertex[0].listVertex[6]],
       color: Colors.red.shade600));
   polylineset.add(Polyline(
       points: <LatLng>[vertical2, mapData.mapVertex[0].listVertex[1]],
