@@ -18,6 +18,7 @@ import 'settingpage.dart'; //设置界面
 Set<Marker> markerlist = {};
 Set<Polyline> polylineset = {};
 Set<Polygon> polygonlist = {};
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();

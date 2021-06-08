@@ -467,11 +467,12 @@
                     "begins": [
                         2
                     ]
-                },{
+                },
+                {
                     "doors": [
                         {
                             "latitude": 39.964294,
-                            "longitude": 116.355822                            
+                            "longitude": 116.355822
                         }
                     ],
                     "descriptions": [
@@ -480,13 +481,12 @@
                     "begins": [
                         2
                     ]
-                }
-                ,
+                },
                 {
                     "doors": [
                         {
                             "latitude": 39.964548,
-                            "longitude": 116.356381                            
+                            "longitude": 116.356381
                         }
                     ],
                     "descriptions": [
@@ -500,7 +500,7 @@
                     "doors": [
                         {
                             "latitude": 39.964448,
-                            "longitude": 116.356893                            
+                            "longitude": 116.356893
                         }
                     ],
                     "descriptions": [
@@ -509,11 +509,12 @@
                     "begins": [
                         63
                     ]
-                },{
+                },
+                {
                     "doors": [
                         {
                             "latitude": 39.964838,
-                            "longitude": 116.357231                            
+                            "longitude": 116.357231
                         }
                     ],
                     "descriptions": [
@@ -527,7 +528,7 @@
                     "doors": [
                         {
                             "latitude": 39.96449,
-                            "longitude": 116.357714                            
+                            "longitude": 116.357714
                         }
                     ],
                     "descriptions": [
@@ -555,7 +556,7 @@
                     "doors": [
                         {
                             "latitude": 39.964492,
-                            "longitude": 116.358084                            
+                            "longitude": 116.358084
                         }
                     ],
                     "descriptions": [
@@ -569,7 +570,7 @@
                     "doors": [
                         {
                             "latitude": 39.964104,
-                            "longitude": 116.357336                            
+                            "longitude": 116.357336
                         }
                     ],
                     "descriptions": [
@@ -583,7 +584,7 @@
                     "doors": [
                         {
                             "latitude": 39.964032,
-                            "longitude": 116.356453                            
+                            "longitude": 116.356453
                         }
                     ],
                     "descriptions": [
@@ -597,7 +598,7 @@
                     "doors": [
                         {
                             "latitude": 39.963903,
-                            "longitude": 116.355624                            
+                            "longitude": 116.355624
                         }
                     ],
                     "descriptions": [
@@ -611,7 +612,7 @@
                     "doors": [
                         {
                             "latitude": 39.963563,
-                            "longitude": 116.356139                            
+                            "longitude": 116.356139
                         }
                     ],
                     "descriptions": [
@@ -625,7 +626,7 @@
                     "doors": [
                         {
                             "latitude": 39.963471,
-                            "longitude": 116.356699                            
+                            "longitude": 116.356699
                         }
                     ],
                     "descriptions": [
@@ -634,11 +635,12 @@
                     "begins": [
                         66
                     ]
-                },{
+                },
+                {
                     "doors": [
                         {
                             "latitude": 39.962918,
-                            "longitude": 116.356693                            
+                            "longitude": 116.356693
                         }
                     ],
                     "descriptions": [
@@ -652,7 +654,7 @@
                     "doors": [
                         {
                             "latitude": 39.962931,
-                            "longitude": 116.355826                            
+                            "longitude": 116.355826
                         }
                     ],
                     "descriptions": [
@@ -666,7 +668,7 @@
                     "doors": [
                         {
                             "latitude": 39.962494,
-                            "longitude": 116.3565                            
+                            "longitude": 116.3565
                         }
                     ],
                     "descriptions": [
@@ -680,7 +682,7 @@
                     "doors": [
                         {
                             "latitude": 39.962494,
-                            "longitude": 116.356144                            
+                            "longitude": 116.356144
                         }
                     ],
                     "descriptions": [
@@ -694,7 +696,7 @@
                     "doors": [
                         {
                             "latitude": 39.961968,
-                            "longitude": 116.356329                            
+                            "longitude": 116.356329
                         }
                     ],
                     "descriptions": [
@@ -708,7 +710,7 @@
                     "doors": [
                         {
                             "latitude": 39.960279,
-                            "longitude": 116.356412                            
+                            "longitude": 116.356412
                         }
                     ],
                     "descriptions": [
@@ -722,7 +724,7 @@
                     "doors": [
                         {
                             "latitude": 39.960613,
-                            "longitude": 116.357539                            
+                            "longitude": 116.357539
                         }
                     ],
                     "descriptions": [
@@ -736,7 +738,7 @@
                     "doors": [
                         {
                             "latitude": 39.960567,
-                            "longitude": 116.358104                            
+                            "longitude": 116.358104
                         }
                     ],
                     "descriptions": [
@@ -750,7 +752,7 @@
                     "doors": [
                         {
                             "latitude": 39.961251,
-                            "longitude": 116.358269                            
+                            "longitude": 116.358269
                         }
                     ],
                     "descriptions": [
@@ -764,7 +766,7 @@
                     "doors": [
                         {
                             "latitude": 39.959911,
-                            "longitude": 116.356702                            
+                            "longitude": 116.356702
                         }
                     ],
                     "descriptions": [
@@ -778,7 +780,7 @@
                     "doors": [
                         {
                             "latitude": 39.958509,
-                            "longitude": 116.360434                            
+                            "longitude": 116.360434
                         }
                     ],
                     "descriptions": [
@@ -792,7 +794,7 @@
                     "doors": [
                         {
                             "latitude": 39.960726,
-                            "longitude": 116.359465                            
+                            "longitude": 116.359465
                         }
                     ],
                     "descriptions": [
@@ -806,7 +808,7 @@
                     "doors": [
                         {
                             "latitude": 39.961173,
-                            "longitude": 116.360114                            
+                            "longitude": 116.360114
                         }
                     ],
                     "descriptions": [
@@ -820,7 +822,7 @@
                     "doors": [
                         {
                             "latitude": 39.961899,
-                            "longitude": 116.360621                            
+                            "longitude": 116.360621
                         }
                     ],
                     "descriptions": [
@@ -834,7 +836,7 @@
                     "doors": [
                         {
                             "latitude": 39.961952,
-                            "longitude": 116.359496                            
+                            "longitude": 116.359496
                         }
                     ],
                     "descriptions": [
@@ -848,7 +850,7 @@
                     "doors": [
                         {
                             "latitude": 39.959884,
-                            "longitude": 116.356033                            
+                            "longitude": 116.356033
                         }
                     ],
                     "descriptions": [
@@ -862,7 +864,7 @@
                     "doors": [
                         {
                             "latitude": 39.9594,
-                            "longitude": 116.355939                            
+                            "longitude": 116.355939
                         }
                     ],
                     "descriptions": [
@@ -876,7 +878,7 @@
                     "doors": [
                         {
                             "latitude": 39.958998,
-                            "longitude": 116.356252                            
+                            "longitude": 116.356252
                         }
                     ],
                     "descriptions": [
@@ -890,7 +892,7 @@
                     "doors": [
                         {
                             "latitude": 39.958643,
-                            "longitude": 116.356252                            
+                            "longitude": 116.356252
                         }
                     ],
                     "descriptions": [
@@ -904,7 +906,7 @@
                     "doors": [
                         {
                             "latitude": 39.958645,
-                            "longitude": 116.357072                            
+                            "longitude": 116.357072
                         }
                     ],
                     "descriptions": [
@@ -918,7 +920,7 @@
                     "doors": [
                         {
                             "latitude": 39.958296,
-                            "longitude": 116.357153                            
+                            "longitude": 116.357153
                         }
                     ],
                     "descriptions": [
@@ -932,7 +934,7 @@
                     "doors": [
                         {
                             "latitude": 39.959571,
-                            "longitude": 116.357515                            
+                            "longitude": 116.357515
                         }
                     ],
                     "descriptions": [
@@ -946,7 +948,7 @@
                     "doors": [
                         {
                             "latitude": 39.959258,
-                            "longitude": 116.357863                            
+                            "longitude": 116.357863
                         }
                     ],
                     "descriptions": [
@@ -960,7 +962,7 @@
                     "doors": [
                         {
                             "latitude": 39.958643,
-                            "longitude": 116.357889                            
+                            "longitude": 116.357889
                         }
                     ],
                     "descriptions": [
@@ -974,7 +976,7 @@
                     "doors": [
                         {
                             "latitude": 39.958293,
-                            "longitude": 116.358151                            
+                            "longitude": 116.358151
                         }
                     ],
                     "descriptions": [
@@ -988,7 +990,7 @@
                     "doors": [
                         {
                             "latitude": 39.959631,
-                            "longitude": 116.359427                            
+                            "longitude": 116.359427
                         }
                     ],
                     "descriptions": [
@@ -1016,7 +1018,7 @@
                     "doors": [
                         {
                             "latitude": 39.958682,
-                            "longitude": 116.358968                            
+                            "longitude": 116.358968
                         }
                     ],
                     "descriptions": [
@@ -1030,7 +1032,7 @@
                     "doors": [
                         {
                             "latitude": 39.959092,
-                            "longitude": 116.358942                            
+                            "longitude": 116.358942
                         }
                     ],
                     "descriptions": [
@@ -1044,7 +1046,7 @@
                     "doors": [
                         {
                             "latitude": 39.958941,
-                            "longitude": 116.356695                            
+                            "longitude": 116.356695
                         }
                     ],
                     "descriptions": [
@@ -1058,7 +1060,7 @@
                     "doors": [
                         {
                             "latitude": 39.95954,
-                            "longitude": 116.357167                            
+                            "longitude": 116.357167
                         }
                     ],
                     "descriptions": [
@@ -1072,7 +1074,7 @@
                     "doors": [
                         {
                             "latitude": 39.95902,
-                            "longitude": 116.357174                            
+                            "longitude": 116.357174
                         }
                     ],
                     "descriptions": [
@@ -1086,7 +1088,7 @@
                     "doors": [
                         {
                             "latitude": 39.959987,
-                            "longitude": 116.358367                            
+                            "longitude": 116.358367
                         }
                     ],
                     "descriptions": [
@@ -1100,7 +1102,7 @@
                     "doors": [
                         {
                             "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "longitude": 116.359248
                         }
                     ],
                     "descriptions": [
@@ -1114,7 +1116,7 @@
                     "doors": [
                         {
                             "latitude": 39.961081,
-                            "longitude": 116.356134                            
+                            "longitude": 116.356134
                         }
                     ],
                     "descriptions": [
@@ -1128,7 +1130,7 @@
                     "doors": [
                         {
                             "latitude": 39.961316,
-                            "longitude": 116.356884                            
+                            "longitude": 116.356884
                         }
                     ],
                     "descriptions": [
@@ -1142,7 +1144,7 @@
                     "doors": [
                         {
                             "latitude": 39.962111,
-                            "longitude": 116.357488                            
+                            "longitude": 116.357488
                         }
                     ],
                     "descriptions": [
@@ -1156,7 +1158,7 @@
                     "doors": [
                         {
                             "latitude": 39.961844,
-                            "longitude": 116.358035                            
+                            "longitude": 116.358035
                         }
                     ],
                     "descriptions": [
@@ -1170,7 +1172,7 @@
                     "doors": [
                         {
                             "latitude": 39.96149,
-                            "longitude": 116.358891                            
+                            "longitude": 116.358891
                         }
                     ],
                     "descriptions": [
@@ -1184,7 +1186,7 @@
                     "doors": [
                         {
                             "latitude": 39.960359,
-                            "longitude": 116.359054                            
+                            "longitude": 116.359054
                         }
                     ],
                     "descriptions": [
@@ -1198,7 +1200,7 @@
                     "doors": [
                         {
                             "latitude": 39.959626,
-                            "longitude": 116.360661                            
+                            "longitude": 116.360661
                         }
                     ],
                     "descriptions": [
@@ -1212,7 +1214,7 @@
                     "doors": [
                         {
                             "latitude": 39.959343,
-                            "longitude": 116.360611                            
+                            "longitude": 116.360611
                         }
                     ],
                     "descriptions": [
@@ -1226,7 +1228,7 @@
                     "doors": [
                         {
                             "latitude": 39.958114,
-                            "longitude": 116.358055                            
+                            "longitude": 116.358055
                         }
                     ],
                     "descriptions": [
@@ -1240,7 +1242,7 @@
                     "doors": [
                         {
                             "latitude": 39.95871,
-                            "longitude": 116.361226                            
+                            "longitude": 116.361226
                         }
                     ],
                     "descriptions": [
@@ -1254,7 +1256,7 @@
                     "doors": [
                         {
                             "latitude": 39.962417,
-                            "longitude": 116.361068                            
+                            "longitude": 116.361068
                         }
                     ],
                     "descriptions": [
@@ -1267,617 +1269,254 @@
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.962492,
+                            "longitude": 116.358928
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "篮球场"
                     ],
                     "begins": [
-                        141
+                        44
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.962536,
+                            "longitude": 116.360064
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "排球场",
+                        "网球场"
                     ],
                     "begins": [
-                        141
+                        126
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.962798,
+                            "longitude": 116.35796
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "图书馆",
+                        "数字校史馆"
                     ],
                     "begins": [
-                        141
+                        92
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.962872,
+                            "longitude": 116.360558                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生公寓29号楼"
                     ],
                     "begins": [
-                        141
+                        124
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963148,
+                            "longitude": 116.360027                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生公寓28号楼"
                     ],
                     "begins": [
-                        141
+                        124
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963645,
+                            "longitude": 116.360487                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生公寓26号楼"
                     ],
                     "begins": [
-                        141
+                        118
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963963,
+                            "longitude": 116.359933                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生公寓27号楼"
                     ],
                     "begins": [
-                        141
+                        115
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.964083,
+                            "longitude": 116.360603                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生公寓10号楼"
                     ],
                     "begins": [
-                        141
+                        114
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963305,
+                            "longitude": 116.360637                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "保卫处"
                     ],
                     "begins": [
-                        141
+                        122
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.964368,
+                            "longitude": 116.360631                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生公寓25号楼"
                     ],
                     "begins": [
-                        141
+                        109
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963358,
+                            "longitude": 116.358875                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学生餐厅"
                     ],
                     "begins": [
-                        141
+                        42
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963596,
+                            "longitude": 116.358509                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "教工餐厅"
                     ],
                     "begins": [
-                        141
+                        40
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.963704,
+                            "longitude": 116.35776                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "学苑超市"
                     ],
                     "begins": [
-                        141
+                        37
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.96398,
+                            "longitude": 116.357733                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "浴室"
                     ],
                     "begins": [
-                        141
+                        37
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.964336,
+                            "longitude": 116.359098                     
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "科研大楼"
                     ],
                     "begins": [
-                        141
+                        106
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.964835,
+                            "longitude": 116.359491                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "北家属区"
                     ],
                     "begins": [
-                        141
+                        104
                     ]
                 },
                 {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.96463,
+                            "longitude": 116.360359                            
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "北家属区"
                     ],
                     "begins": [
-                        141
+                        111
                     ]
-                },
-                {
+                }    ,           {
                     "doors": [
                         {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
+                            "latitude": 39.96113,
+                            "longitude": 116.355104
                         }
                     ],
                     "descriptions": [
-                        "家属区"
+                        "西门"
                     ],
                     "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
-                    ]
-                },
-                {
-                    "doors": [
-                        {
-                            "latitude": 39.96003,
-                            "longitude": 116.359248                            
-                        }
-                    ],
-                    "descriptions": [
-                        "家属区"
-                    ],
-                    "begins": [
-                        141
+                        20
                     ]
                 }
             ]
@@ -2176,8 +1815,8 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96410465073405,
-                    "longitude": 116.35532344009704,
+                    "latitude": 39.96400465073405,
+                    "longitude": 116.35539344009704,
                     "detail": "0"
                 },
                 {
@@ -2186,8 +1825,8 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96367807692044,
-                    "longitude": 116.35534489776876,
+                    "latitude": 39.96361807692044,
+                    "longitude": 116.35541489776876,
                     "detail": "0"
                 },
                 {
@@ -2196,7 +1835,7 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.963725359932134,
+                    "latitude": 39.963815359932134,
                     "longitude": 116.35713124894215,
                     "detail": "0"
                 },
@@ -2206,8 +1845,8 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96321346819666,
-                    "longitude": 116.35711247347933,
+                    "latitude": 39.9632846819666,
+                    "longitude": 116.35717247347933,
                     "detail": "0"
                 },
                 {
@@ -2217,12 +1856,12 @@
                 },
                 {
                     "latitude": 39.96317132432881,
-                    "longitude": 116.35533685114189,
+                    "longitude": 116.35543685114189,
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.962594670259236,
-                    "longitude": 116.3554280462468,
+                    "latitude": 39.962624670259236,
+                    "longitude": 116.3554680462468,
                     "detail": "0"
                 },
                 {
@@ -2232,22 +1871,22 @@
                 },
                 {
                     "latitude": 39.96263270285213,
-                    "longitude": 116.35638023043077,
+                    "longitude": 116.35630023043077,
                     "detail": "0"
                 },
                 {
                     "latitude": 39.962200980284436,
-                    "longitude": 116.35553533460558,
+                    "longitude": 116.35550533460558,
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.962180421998944,
-                    "longitude": 116.35634267950525,
+                    "latitude": 39.96223421998944,
+                    "longitude": 116.35630267950525,
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96220920359692,
-                    "longitude": 116.35731229804753,
+                    "latitude": 39.96225920359692,
+                    "longitude": 116.35724229804753,
                     "detail": "0"
                 },
                 {
@@ -2256,38 +1895,38 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96119670081324,
-                    "longitude": 116.35555008675487,
+                    "latitude": 39.96113670081324,
+                    "longitude": 116.35553008675487,
                     "detail": "0"
                 },
                 {
                     "latitude": 39.96117614222578,
-                    "longitude": 116.3563842537443,
+                    "longitude": 116.3563242537443,
                     "detail": "0"
                 },
                 {
                     "latitude": 39.96123062246903,
-                    "longitude": 116.35737264774934,
+                    "longitude": 116.35730264774934,
                     "detail": "0"
                 },
                 {
                     "latitude": 39.96117100257795,
-                    "longitude": 116.3556292119195,
+                    "longitude": 116.3556992119195,
                     "detail": "0"
                 },
                 {
                     "latitude": 39.960620030089906,
-                    "longitude": 116.35563859965089,
+                    "longitude": 116.35554859965089,
                     "detail": "0"
                 },
                 {
                     "latitude": 39.960675538713325,
-                    "longitude": 116.35645265007298,
+                    "longitude": 116.35637265007298,
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96076702504987,
-                    "longitude": 116.35742897413769,
+                    "latitude": 39.96070702504987,
+                    "longitude": 116.35731897413769,
                     "detail": "0"
                 },
                 {
@@ -2321,9 +1960,9 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96332132432881,
-                    "longitude": 116.35533685114189,
-                    "detail": "?"
+                    "latitude": 39.96335132432881,
+                    "longitude": 116.35542685114189,
+                    "detail": "0"
                 },
                 {
                     "latitude": 39.95882111512365,
@@ -2721,8 +2360,8 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96416015652857,
-                    "longitude": 116.36078441755797,
+                    "latitude": 39.964163240182494,
+                    "longitude": 116.3607951463938,
                     "detail": "0"
                 },
                 {
@@ -2756,8 +2395,8 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.964163240182494,
-                    "longitude": 116.3607951463938,
+                    "latitude": 39.96452402673218,
+                    "longitude": 116.3609368872208,
                     "detail": "0"
                 },
                 {
@@ -2904,6 +2543,11 @@
                     "latitude": 39.95807994839203,
                     "longitude": 116.36031771319733,
                     "detail": "0"
+                },
+                {
+                    "latitude":39.95887,
+                    "longitude":116.359591,
+                    "detail":"0"
                 }
             ]
         }
@@ -4283,6 +3927,31 @@
                 {
                     "pointa": 133,
                     "pointb": 134,
+                    "availmthod": 1
+                },
+                {
+                    "pointa":65,
+                    "pointb":33,
+                    "availmthod":1
+                },
+                {
+                    "pointa": 40,
+                    "pointb": 116,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 110,
+                    "pointb": 120,
+                    "availmthod": 1
+                },
+                {
+                    "pointa":99,
+                    "pointb":150,
+                    "availmthod":1
+                },
+                {
+                    "pointa": 142,
+                    "pointb": 143,
                     "availmthod": 1
                 }
             ]
