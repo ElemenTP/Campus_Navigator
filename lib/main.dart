@@ -1,8 +1,7 @@
 import 'dart:io';
-
-import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -116,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 TextButton(
                   child: Text('起点'),
-                  onPressed: navistate.startOnUserLoc
+                  onPressed: naviState.startOnUserLoc
                       ? null
                       : () {
                           _addStartLocation(mapMarkers['onTap']!.position);
@@ -139,7 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //从地图上添加坐标形式的出发地
   void _addStartLocation(LatLng location) {
-    navistate.start = location;
+    naviState.start = location;
     mapMarkers['start'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
@@ -149,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //从地图上添加坐标形式的目的地
   void _addEndLocation(LatLng location) {
-    navistate.end.add(location);
+    naviState.end.add(location);
     String tmpid = 'end' + location.hashCode.toString();
     mapMarkers[tmpid] = Marker(
       position: location,
@@ -173,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    navistate.start = null;
+                    naviState.start = null;
                     mapMarkers.remove('start');
                     Navigator.of(context).pop();
                   }, //关闭对话框
@@ -198,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    navistate.end.remove(mapMarkers[markerid]!.position);
+                    naviState.end.remove(mapMarkers[markerid]!.position);
                     mapMarkers.remove(markerid);
                     Navigator.of(context).pop();
                   }, //关闭对话框
@@ -224,46 +223,62 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //用户位置改变回调函数，记录用户位置。
-  void _onLocationChanged(AMapLocation aMapLocation) {
+  void _onLocationChanged(AMapLocation aMapLocation) async {
     userLocation = aMapLocation;
-  }
-
-  //导航按钮功能函数
-  void _setNavigation() async {
-    if (await navistate.manageNaviState(context)) {
-      if (navistate.naviStatus) {
-        mapPolylines.clear();
-        navistate.routeLength.clear();
-        bool showRouteResult = false;
-        try {
-          showRouteResult = await showRoute(context);
-        } catch (_) {
+    if (naviState.naviStatus && naviState.realTime) {
+      if (mapPolylines.isEmpty) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('已到达全部终点，实时导航结束。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。\n');
+        naviState.naviStatus = false;
+        naviState.routeLength = 0;
+        setState(() {});
+      } else {
+        Polyline expectedRoutePolyline = mapPolylines[0];
+        LatLng hangingFeet = NaviTools.trailTract(userLocation.latLng,
+            expectedRoutePolyline.points[0], expectedRoutePolyline.points[1]);
+        if (AMapTools.distanceBetween(userLocation.latLng, hangingFeet) > 50) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
                     title: Text('提示'),
-                    content: Text('未找到路线。请检查地图数据。'),
+                    content: Text('已偏离路线，重新规划路线。'),
                     actions: <Widget>[
                       TextButton(
-                        child: Text('取消'),
+                        child: Text('确定'),
                         onPressed: () => Navigator.of(context).pop(), //关闭对话框
                       ),
                     ],
                   ));
           if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+            logSink.write(DateTime.now().toString() + ': 偏离路线，重新规划路线。\n');
+          await NaviTools.showRoute(context);
+          setState(() {});
         }
-        if (!showRouteResult) {
-          navistate.naviStatus = false;
-          if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 停止导航。\n');
-          mapPolylines.clear();
-          navistate.routeLength.clear();
+        if (AMapTools.distanceBetween(
+                userLocation.latLng, expectedRoutePolyline.points[1]) <
+            5) {
+          setState(() => mapPolylines.remove(0));
         }
-      } else {
-        mapPolylines.clear();
-        navistate.routeLength.clear();
       }
+    }
+  }
+
+  //导航按钮功能函数
+  void _setNavigation() async {
+    if (await naviState.manageNaviState(context)) {
+      await NaviTools.showRoute(context);
     }
     setState(() {});
   }
@@ -279,7 +294,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ListTile(
                     title: Text('当前位置'),
                     onTap: () {
-                      if (stateLocationReqiurement(context)) {
+                      if (NaviTools.stateLocationReqiurement(context)) {
                         newLocation = userLocation.latLng;
                         Navigator.of(context).pop(true);
                       }
@@ -410,9 +425,18 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图上的标志
       markers: Set<Marker>.of(mapMarkers.values),
       //地图上的线
-      polylines: Set<Polyline>.of(mapPolylines.values),
+      polylines: Set<Polyline>.of(mapPolylines),
     );
 
+    List<Widget> listWidget = <Widget>[
+      map,
+    ];
+    if (naviState.naviStatus) {
+      listWidget.add(Positioned(
+        left: 18.0,
+        child: Chip(label: Text(naviState.getlengthString())),
+      ));
+    }
     return Scaffold(
       //顶栏
       appBar: AppBar(
@@ -420,7 +444,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       //中央内容区
       body: Scaffold(
-        body: map,
+        body: ConstrainedBox(
+          constraints: BoxConstraints.expand(),
+          child: Stack(
+            alignment: Alignment.center,
+            children: listWidget,
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           heroTag: 'locatebtn',
           onPressed: _setCameraPosition,
@@ -439,10 +469,10 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'navibtn',
         onPressed: _setNavigation,
-        tooltip: navistate.naviStatus
+        tooltip: naviState.naviStatus
             ? '停止导航'
             : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
-        child: navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+        child: naviState.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
