@@ -635,7 +635,8 @@ class NaviTools {
     1: Colors.amber,
     0: Colors.red,
   };
-  //导航道路，传入dijstra得到的route和某校区点集，返回直线
+
+  ///导航道路，传入dijstra得到的route和某校区点集，返回直线
   static void displayRoute(List<int> path, int campusNum) {
     List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
     List<LatLng> listvertex = mapData.mapVertex[campusNum].listVertex;
@@ -651,7 +652,7 @@ class NaviTools {
     }
   }
 
-  //传入两点（建筑点和路径点），返回虚线
+  ///传入两点（建筑点和路径点），返回虚线
   static void entryRoute(LatLng from, LatLng to) {
     Polyline polyline = Polyline(
       points: <LatLng>[from, to],
@@ -662,7 +663,7 @@ class NaviTools {
     mapPolylines.add(polyline);
   }
 
-  //生成一个以某点为中心的近似圆
+  ///生成一个以某点为中心的近似圆
   static List<LatLng> circleAround(LatLng center) {
     const int times = 36; //多边形的点数
     Offset res = Offset(center.latitude, center.longitude);
@@ -675,22 +676,6 @@ class NaviTools {
       circlelist.add(LatLng(c1.dx, c1.dy));
     }
     return circlelist;
-    /*Color col = Colors.deepOrange.shade100;
-
-    Polygon circle = Polygon(
-        points: circlelist,
-        fillColor: Color(0),
-        strokeColor: col,
-        strokeWidth: 0.4);*/
-  }
-
-  //生成一个点到一条边的垂足（存在误差）
-  static LatLng trailTract(LatLng point, LatLng pointa, LatLng pointb) {
-    Offset a = Offset(pointa.latitude, pointa.longitude);
-    Offset b = Offset(pointb.latitude, pointb.longitude);
-    Offset s = Offset(point.latitude, point.longitude);
-    Offset res = AMapTools.getVerticalPointOnLine(s, a, b);
-    return LatLng(res.dx, res.dy);
   }
 
   ///检查定位是否正常

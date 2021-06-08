@@ -246,14 +246,15 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {});
       } else {
         Polyline expectedRoutePolyline = mapPolylines[0];
-        LatLng hangingFeet = NaviTools.trailTract(userLocation.latLng,
-            expectedRoutePolyline.points[0], expectedRoutePolyline.points[1]);
-        if (AMapTools.distanceBetween(userLocation.latLng, hangingFeet) > 50) {
+        LatLng destLatLng = expectedRoutePolyline.points[1];
+        double distanceDest =
+            AMapTools.distanceBetween(userLocation.latLng, destLatLng);
+        if (distanceDest > 40) {
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
                     title: Text('提示'),
-                    content: Text('已偏离路线，重新规划路线。'),
+                    content: Text('重新规划路线。'),
                     actions: <Widget>[
                       TextButton(
                         child: Text('确定'),
@@ -262,13 +263,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ));
           if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 偏离路线，重新规划路线。\n');
+            logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
           await NaviTools.showRoute(context);
           setState(() {});
-        }
-        if (AMapTools.distanceBetween(
-                userLocation.latLng, expectedRoutePolyline.points[1]) <
-            10) {
+        } else if (distanceDest < 10) {
           if (logEnabled)
             logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
           setState(() => mapPolylines.removeAt(0));
