@@ -28,7 +28,7 @@ void main() async {
     markerlist.add(Marker(
         position: element,
         infoWindow: InfoWindow(
-            title: mapData.mapVertex[0].detail[i++],
+            //title: mapData.mapVertex[0].detail[i++],
             snippet: (i - 1).toString()),
         visible: true));
   });
@@ -38,6 +38,14 @@ void main() async {
       mapData.mapVertex[0].listVertex[element.pointa],
       mapData.mapVertex[0].listVertex[element.pointb]
     ], color: Colors.white);
+    polylineset.add(polyline);
+  });
+
+  mapData.mapEdge[1].listEdge.forEach((element) {
+    Polyline polyline = Polyline(points: <LatLng>[
+      mapData.mapVertex[1].listVertex[element.pointa],
+      mapData.mapVertex[1].listVertex[element.pointb]
+    ], color: Colors.amberAccent);
     polylineset.add(polyline);
   });
 
@@ -96,7 +104,8 @@ void main() async {
             icon: BitmapDescriptor.defaultMarkerWithHue(
                 BitmapDescriptor.hueOrange),
             visible: true,
-            infoWindow: InfoWindow(title: e1.description[indextmp])));
+            infoWindow: InfoWindow(title: e1.description[indextmp]),
+            clickable: true));
         //if (last.runtimeType == LatLng)//
         //polylineset.add(Polyline(
         //points: <LatLng>[e2, last], color: Colors.deepOrange.shade300));
@@ -384,7 +393,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //开启显示用户位置功能
       myLocationStyleOptions: MyLocationStyleOptions(true),
       //地图类型，使用卫星地图
-      mapType: MapType.satellite,
+      mapType: MapType.normal,
       //地图上的标志
       //markers: Set<Marker>.of(_mapMarkers.values),
       markers: markerlist,

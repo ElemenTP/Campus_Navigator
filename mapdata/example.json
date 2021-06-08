@@ -267,12 +267,12 @@
                             "longitude": 116.28809282318343
                         },
                         {
-                            "latitude":40.158465,
-                            "longitude":116.288943                            
+                            "latitude": 40.158465,
+                            "longitude": 116.288943
                         },
                         {
-                            "latitude":40.15877,
-                            "longitude":116.288076                            
+                            "latitude": 40.15877,
+                            "longitude": 116.288076
                         }
                     ],
                     "descriptions": [
@@ -282,7 +282,9 @@
                         "雁北男生宿舍"
                     ],
                     "begins": [
-                        44,46,47
+                        44,
+                        46,
+                        47
                     ]
                 },
                 {
@@ -451,7 +453,496 @@
             ]
         },
         {
-            "listBuilding": []
+            "listBuilding": [
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964673,
+                            "longitude": 116.355802
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓11号楼"
+                    ],
+                    "begins": [
+                        2
+                    ]
+                },{
+                    "doors": [
+                        {
+                            "latitude": 39.964294,
+                            "longitude": 116.355822                            
+                        }
+                    ],
+                    "descriptions": [
+                        "9号楼"
+                    ],
+                    "begins": [
+                        2
+                    ]
+                }
+                ,
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964548,
+                            "longitude": 116.356381                            
+                        }
+                    ],
+                    "descriptions": [
+                        "新学生公寓"
+                    ],
+                    "begins": [
+                        1
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964448,
+                            "longitude": 116.356893                            
+                        }
+                    ],
+                    "descriptions": [
+                        "10号楼"
+                    ],
+                    "begins": [
+                        63
+                    ]
+                },{
+                    "doors": [
+                        {
+                            "latitude": 39.964838,
+                            "longitude": 116.357231                            
+                        }
+                    ],
+                    "descriptions": [
+                        "快递邮驿站"
+                    ],
+                    "begins": [
+                        9
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.96449,
+                            "longitude": 116.357714                            
+                        }
+                    ],
+                    "descriptions": [
+                        "北京邮电大学经管楼"
+                    ],
+                    "begins": [
+                        97
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964838,
+                            "longitude": 116.357231
+                        }
+                    ],
+                    "descriptions": [
+                        "快递邮驿站"
+                    ],
+                    "begins": [
+                        9
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964492,
+                            "longitude": 116.358084                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓6号楼"
+                    ],
+                    "begins": [
+                        97
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964104,
+                            "longitude": 116.357336                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生活动中心"
+                    ],
+                    "begins": [
+                        7
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.964032,
+                            "longitude": 116.356453                            
+                        }
+                    ],
+                    "descriptions": [
+                        "综合食堂"
+                    ],
+                    "begins": [
+                        3
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.963903,
+                            "longitude": 116.355624                            
+                        }
+                    ],
+                    "descriptions": [
+                        "留学生公寓"
+                    ],
+                    "begins": [
+                        4
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.963563,
+                            "longitude": 116.356139                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓5号楼"
+                    ],
+                    "begins": [
+                        5
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.963471,
+                            "longitude": 116.356699                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓8号楼"
+                    ],
+                    "begins": [
+                        66
+                    ]
+                },{
+                    "doors": [
+                        {
+                            "latitude": 39.962918,
+                            "longitude": 116.356693                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓4号楼"
+                    ],
+                    "begins": [
+                        67
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.962931,
+                            "longitude": 116.355826                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓3号楼"
+                    ],
+                    "begins": [
+                        74
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.962494,
+                            "longitude": 116.3565                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓2号楼"
+                    ],
+                    "begins": [
+                        15
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.962494,
+                            "longitude": 116.356144                            
+                        }
+                    ],
+                    "descriptions": [
+                        "学生公寓1号楼"
+                    ],
+                    "begins": [
+                        15
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961968,
+                            "longitude": 116.356329                            
+                        }
+                    ],
+                    "descriptions": [
+                        "教学楼4号楼"
+                    ],
+                    "begins": [
+                        17
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.960279,
+                            "longitude": 116.356412                            
+                        }
+                    ],
+                    "descriptions": [
+                        "教学楼3号楼"
+                    ],
+                    "begins": [
+                        28
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.960613,
+                            "longitude": 116.357539                            
+                        }
+                    ],
+                    "descriptions": [
+                        "教学楼2号楼"
+                    ],
+                    "begins": [
+                        26
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.960567,
+                            "longitude": 116.358104                            
+                        }
+                    ],
+                    "descriptions": [
+                        "信通楼"
+                    ],
+                    "begins": [
+                        49
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961251,
+                            "longitude": 116.358269                            
+                        }
+                    ],
+                    "descriptions": [
+                        "教学楼主楼"
+                    ],
+                    "begins": [
+                        48
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.959911,
+                            "longitude": 116.356702                            
+                        }
+                    ],
+                    "descriptions": [
+                        "校医院"
+                    ],
+                    "begins": [
+                        31
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.958509,
+                            "longitude": 116.360434                            
+                        }
+                    ],
+                    "descriptions": [
+                        "篮球场"
+                    ],
+                    "begins": [
+                        148
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.960726,
+                            "longitude": 116.359465                            
+                        }
+                    ],
+                    "descriptions": [
+                        "体育部"
+                    ],
+                    "begins": [
+                        140
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961173,
+                            "longitude": 116.360114                            
+                        }
+                    ],
+                    "descriptions": [
+                        "足球场"
+                    ],
+                    "begins": [
+                        132
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621                            
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961952,
+                            "longitude": 116.359496                            
+                        }
+                    ],
+                    "descriptions": [
+                        "体育馆"
+                    ],
+                    "begins": [
+                        136
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                },
+                {
+                    "doors": [
+                        {
+                            "latitude": 39.961899,
+                            "longitude": 116.360621
+                        }
+                    ],
+                    "descriptions": [
+                        "游泳馆"
+                    ],
+                    "begins": [
+                        133
+                    ]
+                }
+            ]
         }
     ],
     "mapVertex": [
@@ -693,34 +1184,34 @@
                     "detail": "雁北男生宿舍鸿雁路二段标记点"
                 },
                 {
-                    "latitude":40.158822,
-                    "longitude":116.287854,                    
-                    "detail":"雁北苑道路标记点1"
+                    "latitude": 40.158822,
+                    "longitude": 116.287854,
+                    "detail": "雁北苑道路标记点1"
                 },
                 {
-                    "latitude":40.158972,
-                    "longitude":116.288532,                    
+                    "latitude": 40.158972,
+                    "longitude": 116.288532,
                     "detail": "雁北苑道路标记点2"
                 },
                 {
-                    "latitude":40.158941,
-                    "longitude":116.292238,                    
-                    "detail":"鸿雁路三段拐点"
+                    "latitude": 40.158941,
+                    "longitude": 116.292238,
+                    "detail": "鸿雁路三段拐点"
                 },
                 {
-                    "latitude":40.158868,
-                    "longitude":116.289812,                    
-                    "detail":"二维码广场南拐点"
+                    "latitude": 40.158868,
+                    "longitude": 116.289812,
+                    "detail": "二维码广场南拐点"
                 },
                 {
-                    "latitude":40.159114,
-                    "longitude":116.289326,
-                    "detail":"二维码广场西拐点"
+                    "latitude": 40.159114,
+                    "longitude": 116.289326,
+                    "detail": "二维码广场西拐点"
                 },
                 {
-                    "latitude":40.159355,
-                    "longitude":116.290333,                    
-                    "detail":"二维码广场东拐点"
+                    "latitude": 40.159355,
+                    "longitude": 116.290333,
+                    "detail": "二维码广场东拐点"
                 }
             ]
         },
@@ -892,9 +1383,9 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.95842329153826,
-                    "longitude": 116.3580177190064,
-                    "detail": "0"
+                    "latitude": 39.96332132432881,
+                    "longitude": 116.35533685114189,
+                    "detail": "?"
                 },
                 {
                     "latitude": 39.95882111512365,
@@ -927,7 +1418,7 @@
                     "detail": "0"
                 },
                 {
-                    "latitude": 39.96331214641977,
+                    "latitude": 39.963614641977,
                     "longitude": 116.35870034118898,
                     "detail": "0"
                 },
@@ -1790,6 +2281,1070 @@
                 {
                     "pointa": 44,
                     "pointb": 45,
+                    "availmthod": 1
+                }
+            ]
+        },
+        {
+            "listEdge": [
+                {
+                    "pointa": 0,
+                    "pointb": 1,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 0,
+                    "pointb": 9,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 1,
+                    "pointb": 2,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 1,
+                    "pointb": 63,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 63,
+                    "pointb": 9,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 63,
+                    "pointb": 64,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 64,
+                    "pointb": 7,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 1,
+                    "pointb": 3,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 3,
+                    "pointb": 4,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 4,
+                    "pointb": 6,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 6,
+                    "pointb": 33,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 12,
+                    "pointb": 33,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 12,
+                    "pointb": 72,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 13,
+                    "pointb": 72,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 16,
+                    "pointb": 13,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 16,
+                    "pointb": 77,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 77,
+                    "pointb": 78,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 78,
+                    "pointb": 20,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 20,
+                    "pointb": 24,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 24,
+                    "pointb": 27,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 20,
+                    "pointb": 23,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 5,
+                    "pointb": 3,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 5,
+                    "pointb": 65,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 5,
+                    "pointb": 6,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 11,
+                    "pointb": 65,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 65,
+                    "pointb": 71,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 11,
+                    "pointb": 76,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 76,
+                    "pointb": 74,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 75,
+                    "pointb": 76,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 75,
+                    "pointb": 73,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 71,
+                    "pointb": 74,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 12,
+                    "pointb": 75,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 72,
+                    "pointb": 73,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 74,
+                    "pointb": 73,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 71,
+                    "pointb": 15,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 15,
+                    "pointb": 13,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 15,
+                    "pointb": 17,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 16,
+                    "pointb": 17,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 7,
+                    "pointb": 3,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 7,
+                    "pointb": 8,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 8,
+                    "pointb": 5,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 8,
+                    "pointb": 70,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 70,
+                    "pointb": 66,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 70,
+                    "pointb": 10,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 66,
+                    "pointb": 65,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 66,
+                    "pointb": 68,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 68,
+                    "pointb": 10,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 68,
+                    "pointb": 11,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 68,
+                    "pointb": 67,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 67,
+                    "pointb": 69,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 67,
+                    "pointb": 71,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 10,
+                    "pointb": 69,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 69,
+                    "pointb": 94,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 94,
+                    "pointb": 14,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 14,
+                    "pointb": 15,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 14,
+                    "pointb": 18,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 18,
+                    "pointb": 17,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 18,
+                    "pointb": 19,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 22,
+                    "pointb": 19,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 79,
+                    "pointb": 19,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 79,
+                    "pointb": 77,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 79,
+                    "pointb": 80,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 80,
+                    "pointb": 78,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 80,
+                    "pointb": 23,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 21,
+                    "pointb": 23,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 21,
+                    "pointb": 22,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 21,
+                    "pointb": 81,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 80,
+                    "pointb": 21,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 25,
+                    "pointb": 24,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 25,
+                    "pointb": 26,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 25,
+                    "pointb": 81,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 82,
+                    "pointb": 81,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 82,
+                    "pointb": 26,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 22,
+                    "pointb": 26,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 26,
+                    "pointb": 29,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 27,
+                    "pointb": 28,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 28,
+                    "pointb": 29,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 29,
+                    "pointb": 30,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 31,
+                    "pointb": 30,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 31,
+                    "pointb": 83,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 31,
+                    "pointb": 84,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 85,
+                    "pointb": 83,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 85,
+                    "pointb": 84,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 85,
+                    "pointb": 86,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 87,
+                    "pointb": 86,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 87,
+                    "pointb": 89,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 87,
+                    "pointb": 84,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 88,
+                    "pointb": 86,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 88,
+                    "pointb": 89,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 30,
+                    "pointb": 35,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 35,
+                    "pointb": 36,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 34,
+                    "pointb": 36,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 34,
+                    "pointb": 32,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 34,
+                    "pointb": 58,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 34,
+                    "pointb": 90,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 90,
+                    "pointb": 89,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 90,
+                    "pointb": 91,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 98,
+                    "pointb": 95,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 95,
+                    "pointb": 96,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 96,
+                    "pointb": 97,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 97,
+                    "pointb": 64,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 97,
+                    "pointb": 41,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 18,
+                    "pointb": 19,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 37,
+                    "pointb": 8,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 37,
+                    "pointb": 39,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 41,
+                    "pointb": 39,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 40,
+                    "pointb": 42,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 40,
+                    "pointb": 39,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 38,
+                    "pointb": 10,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 38,
+                    "pointb": 42,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 43,
+                    "pointb": 42,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 43,
+                    "pointb": 44,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 44,
+                    "pointb": 45,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 44,
+                    "pointb": 18,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 44,
+                    "pointb": 127,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 47,
+                    "pointb": 19,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 47,
+                    "pointb": 46,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 47,
+                    "pointb": 48,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 48,
+                    "pointb": 22,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 48,
+                    "pointb": 49,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 49,
+                    "pointb": 26,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 49,
+                    "pointb": 50,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 50,
+                    "pointb": 51,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 50,
+                    "pointb": 139,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 46,
+                    "pointb": 138,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 46,
+                    "pointb": 139,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 137,
+                    "pointb": 136,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 137,
+                    "pointb": 138,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 137,
+                    "pointb": 45,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 45,
+                    "pointb": 46,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 127,
+                    "pointb": 128,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 128,
+                    "pointb": 136,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 50,
+                    "pointb": 139,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 134,
+                    "pointb": 135,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 136,
+                    "pointb": 135,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 138,
+                    "pointb": 135,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 140,
+                    "pointb": 139,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 140,
+                    "pointb": 141,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 140,
+                    "pointb": 134,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 51,
+                    "pointb": 29,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 51,
+                    "pointb": 141,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 52,
+                    "pointb": 142,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 52,
+                    "pointb": 30,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 52,
+                    "pointb": 53,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 53,
+                    "pointb": 54,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 54,
+                    "pointb": 55,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 55,
+                    "pointb": 56,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 56,
+                    "pointb": 57,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 57,
+                    "pointb": 58,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 56,
+                    "pointb": 99,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 35,
+                    "pointb": 54,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 99,
+                    "pointb": 59,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 59,
+                    "pointb": 60,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 60,
+                    "pointb": 32,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 61,
+                    "pointb": 60,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 61,
+                    "pointb": 62,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 61,
+                    "pointb": 91,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 59,
+                    "pointb": 100,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 100,
+                    "pointb": 101,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 100,
+                    "pointb": 103,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 101,
+                    "pointb": 102,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 102,
+                    "pointb": 103,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 103,
+                    "pointb": 148,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 148,
+                    "pointb": 149,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 144,
+                    "pointb": 145,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 145,
+                    "pointb": 146,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 146,
+                    "pointb": 147,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 142,
+                    "pointb": 144,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 143,
+                    "pointb": 145,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 106,
+                    "pointb": 105,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 106,
+                    "pointb": 107,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 106,
+                    "pointb": 41,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 104,
+                    "pointb": 105,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 104,
+                    "pointb": 107,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 104,
+                    "pointb": 108,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 108,
+                    "pointb": 109,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 109,
+                    "pointb": 110,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 110,
+                    "pointb": 111,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 111,
+                    "pointb": 112,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 112,
+                    "pointb": 105,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 112,
+                    "pointb": 115,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 114,
+                    "pointb": 115,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 116,
+                    "pointb": 115,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 111,
+                    "pointb": 114,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 113,
+                    "pointb": 114,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 118,
+                    "pointb": 114,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 118,
+                    "pointb": 116,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 118,
+                    "pointb": 119,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 118,
+                    "pointb": 122,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 122,
+                    "pointb": 121,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 122,
+                    "pointb": 124,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 117,
+                    "pointb": 43,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 117,
+                    "pointb": 116,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 117,
+                    "pointb": 124,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 110,
+                    "pointb": 113,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 113,
+                    "pointb": 119,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 119,
+                    "pointb": 121,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 121,
+                    "pointb": 123,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 123,
+                    "pointb": 125,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 125,
+                    "pointb": 130,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 124,
+                    "pointb": 123,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 124,
+                    "pointb": 126,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 50,
+                    "pointb": 139,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 126,
+                    "pointb": 125,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 126,
+                    "pointb": 127,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 126,
+                    "pointb": 129,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 128,
+                    "pointb": 129,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 129,
+                    "pointb": 130,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 130,
+                    "pointb": 131,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 131,
+                    "pointb": 132,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 132,
+                    "pointb": 133,
+                    "availmthod": 1
+                },
+                {
+                    "pointa": 133,
+                    "pointb": 134,
                     "availmthod": 1
                 }
             ]
