@@ -280,6 +280,120 @@ class _MySearchPageState extends State<MySearchPage> {
     }
   }
 
+  ///食堂负载均衡函数
+  void _onCanteenArrange() async {
+    textFocusNode.unfocus();
+    if (NaviTools.stateLocationReqiurement(context)) {
+      int campusNum = mapData.locationInCampus(userLocation.latLng);
+      if (campusNum >= 0) {
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 开始食堂负载均衡。\n');
+        try {
+          mapData.mapEdge[campusNum].disableCrowding();
+          List<Building> canteens = [];
+          int nearVertex =
+              mapData.nearestVertex(campusNum, userLocation.latLng);
+          LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
+          double juncLength =
+              AMapTools.distanceBetween(nearLatLng, userLocation.latLng);
+          mapData.mapBuilding[campusNum].listBuilding.forEach((element) {
+            for (String des in element.description) {
+              if (des.contains(CANTEEN_NAME)) {
+                canteens.add(element);
+                break;
+              }
+            }
+          });
+          if (canteens.isEmpty) {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text('未搜索到符合条件的食堂。'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('取消'),
+                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        ),
+                      ],
+                    ));
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 未搜索到符合条件的食堂。\n');
+            return;
+          } else {
+            searchResult.clear();
+            canteens.forEach((element) {
+              double distance = juncLength;
+              int choosedDoor = 0;
+              if (element.doors.length > 1) {
+                double minDistance = double.infinity;
+                for (int j = 0; j < element.doors.length; ++j) {
+                  double curDistance = AMapTools.distanceBetween(
+                      userLocation.latLng, element.doors[j]);
+                  if (curDistance < minDistance) {
+                    minDistance = curDistance;
+                    choosedDoor = j;
+                  }
+                }
+              }
+              LatLng juncLatLng = mapData.getVertexLatLng(
+                  campusNum, element.juncpoint[choosedDoor]);
+              distance += AMapTools.distanceBetween(
+                  juncLatLng, element.doors[choosedDoor]);
+              if (nearLatLng != juncLatLng) {
+                Shortpath path = Shortpath(mapData.getAdjacentMatrix(campusNum),
+                    nearVertex, element.juncpoint[choosedDoor], 0);
+                distance += path.getrelativelen();
+              }
+              CanteenArrange arrangeObject = CanteenArrange(distance);
+              searchResult.add(SearchResult(
+                  element,
+                  '约' +
+                      distance.toStringAsFixed(0) +
+                      '米，预计到达时负载' +
+                      arrangeObject.getPayload().toStringAsFixed(0) +
+                      '%，用餐耗时' +
+                      (arrangeObject.getTime() / 60).toStringAsFixed(0) +
+                      '分钟。'));
+            });
+            setState(() {});
+          }
+        } catch (_) {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('未找到路线。请检查地图数据。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+        }
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 结束食堂负载均衡。\n');
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('您不在任何校区内。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+        return;
+      }
+    }
+  }
+
   ///校区筛选函数
   void _campusFilter() async {
     textFocusNode.unfocus();
@@ -291,18 +405,10 @@ class _MySearchPageState extends State<MySearchPage> {
           for (int index = 0; index < mapData.mapCampus.length; ++index) {
             listCampusCheckBox.add(Card(
               child: ListTile(
-                title: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(mapData.mapCampus[index].name),
-                    Checkbox(
-                      value: campusFilter[index],
-                      onChanged: (value) =>
-                          _setState(() => campusFilter[index] = value!),
-                    )
-                  ],
-                ),
+                title: Text(mapData.mapCampus[index].name),
+                selected: campusFilter[index],
+                onTap: () =>
+                    _setState(() => campusFilter[index] = !campusFilter[index]),
               ),
             ));
           }
@@ -314,6 +420,12 @@ class _MySearchPageState extends State<MySearchPage> {
                 children: listCampusCheckBox,
               ),
             ),
+            actions: <Widget>[
+              TextButton(
+                child: Text("返回"),
+                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+              ),
+            ],
           );
         },
       ),
@@ -380,28 +492,39 @@ class _MySearchPageState extends State<MySearchPage> {
           Expanded(
             child: ListView.builder(
               itemCount: searchResult.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  child: ListTile(
-                    title: Text(searchResult[index].result.description.first),
-                    subtitle: Text(searchResult[index].matched),
-                    selected: searchResult[index].result == naviState.start ||
-                        naviState.end.contains(searchResult[index].result),
-                    onTap: () {
-                      _onListTileTapped(index);
-                    },
-                  ),
-                );
-              },
+              itemBuilder: (BuildContext context, int index) => Card(
+                child: ListTile(
+                  title: Text(searchResult[index].result.description.first),
+                  subtitle: Text(searchResult[index].matched),
+                  selected: searchResult[index].result == naviState.start ||
+                      naviState.end.contains(searchResult[index].result),
+                  onTap: () => _onListTileTapped(index),
+                ),
+              ),
             ),
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'nearBuilding',
-        onPressed: _searchNearBuilding,
-        tooltip: '搜索附近建筑',
-        child: Icon(Icons.near_me),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          FloatingActionButton(
+            heroTag: 'arrangeCanteen',
+            onPressed: _onCanteenArrange,
+            tooltip: '推荐食堂',
+            child: Icon(Icons.food_bank),
+          ),
+          SizedBox(
+            width: 8,
+            height: 8,
+          ),
+          FloatingActionButton(
+            heroTag: 'nearBuilding',
+            onPressed: _searchNearBuilding,
+            tooltip: '搜索附近建筑',
+            child: Icon(Icons.near_me),
+          ),
+        ],
       ),
     );
   }

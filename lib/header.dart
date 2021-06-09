@@ -15,6 +15,9 @@ const double BIKESPEED = 0.5;
 ///默认地图缩放比例
 const double DEFAULT_ZOOM = 18;
 
+///食堂名称
+const String CANTEEN_NAME = '食堂';
+
 ///自定义LatLng类的fromJson构建函数
 LatLng latLngfromJson(Map<String, dynamic> json) {
   return LatLng(json['latitude'] as double, json['longitude'] as double);
@@ -727,7 +730,7 @@ class NaviTools {
 
   ///生成一个以某点为中心的近似圆
   static List<LatLng> circleAround(LatLng center) {
-    const int times = 36; //多边形的点数
+    const int times = 8; //多边形的点数
     Offset res = Offset(center.latitude, center.longitude);
     List<LatLng> circlelist = [];
     for (int i = 0; i < times; ++i) {
@@ -1189,11 +1192,12 @@ class CanteenArrange {
   late int flowin;
   late int flowout;
   late int result;
-  int capacity = 150;
+  static const int capacity = 150;
   static const Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
   static const Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
-  CanteenArrange(int number, double pathtime) {
-    for (double i = 0.5; i <= pathtime; i += 0.5) {
+  CanteenArrange(this.pathtime) {
+    int number = Random().nextInt(150);
+    for (double i = 0; i <= pathtime; i += 30) {
       int tmp = 0;
 
       if (number / capacity <= 0.25) {
@@ -1215,6 +1219,10 @@ class CanteenArrange {
     if (result > capacity)
       return double.infinity;
     else
-      return 0.2 * result + pathtime;
+      return 12 * result + pathtime;
+  }
+
+  double getPayload() {
+    return (result / capacity) * 100;
   }
 }
