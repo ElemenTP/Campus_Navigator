@@ -4082,424 +4082,624 @@
     ],
     "busTimeTable": [
         {
+            "isSchoolBus": false,
+            "campusFrom": 1,
+            "campusTo": 0,
+            "setOutHour": -1,
+            "setOutMinute": -1,
+            "dayOfWeek": 0,
+            "description": "地铁 本部往沙河",
+            "takeTime": 120
+        },
+        {
+            "isSchoolBus": false,
+            "campusFrom": 0,
+            "campusTo": 1,
+            "setOutHour": -1,
+            "setOutMinute": -1,
+            "dayOfWeek": 0,
+            "description": "地铁 沙河往本部",
+            "takeTime": 120
+        },
+        {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 6,
             "setOutMinute": 50,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车本部往沙河 周一 6:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 8,
             "setOutMinute": 30,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车本部往沙河 周一 8:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 12,
             "setOutMinute": 0,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车本部往沙河 周一 12:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 13,
             "setOutMinute": 30,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车本部往沙河 周一 13:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 14,
             "setOutMinute": 20,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车本部往沙河 周一 14:20",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 16,
             "setOutMinute": 50,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车本部往沙河 周一 16:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 6,
             "setOutMinute": 50,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车本部往沙河 周二 6:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 8,
             "setOutMinute": 30,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车本部往沙河 周二 8:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 12,
             "setOutMinute": 0,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车本部往沙河 周二 12:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 13,
             "setOutMinute": 30,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车本部往沙河 周二 13:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 14,
             "setOutMinute": 20,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车本部往沙河 周二 14:20",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 16,
             "setOutMinute": 50,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车本部往沙河 周二 16:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 6,
             "setOutMinute": 50,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车本部往沙河 周三 6:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 8,
             "setOutMinute": 30,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车本部往沙河 周三 8:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 12,
             "setOutMinute": 0,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车本部往沙河 周三 12:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 13,
             "setOutMinute": 30,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车本部往沙河 周三 13:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 16,
             "setOutMinute": 50,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车本部往沙河 周三 16:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 6,
             "setOutMinute": 50,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车本部往沙河 周四 6:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 8,
             "setOutMinute": 30,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车本部往沙河 周四 8:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 12,
             "setOutMinute": 0,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车本部往沙河 周四 12:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 13,
             "setOutMinute": 30,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车本部往沙河 周四 13:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 14,
             "setOutMinute": 20,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车本部往沙河 周四 14:20",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 16,
             "setOutMinute": 50,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车本部往沙河 周四 16:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 6,
             "setOutMinute": 50,
-            "dayOfWeek": 5
+            "dayOfWeek": 5,
+            "description": "校车本部往沙河 周五 6:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 8,
             "setOutMinute": 30,
-            "dayOfWeek": 5
+            "dayOfWeek": 5,
+            "description": "校车本部往沙河 周五 8:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 12,
             "setOutMinute": 0,
-            "dayOfWeek": 5
+            "dayOfWeek": 5,
+            "description": "校车本部往沙河 周五 12:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 13,
             "setOutMinute": 30,
-            "dayOfWeek": 5
+            "dayOfWeek": 5,
+            "description": "校车本部往沙河 周五 13:30",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 1,
             "campusTo": 0,
             "setOutHour": 14,
             "setOutMinute": 20,
-            "dayOfWeek": 5
+            "dayOfWeek": 5,
+            "description": "校车本部往沙河 周五 14:20",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 9,
             "setOutMinute": 50,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 9:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 11,
             "setOutMinute": 40,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 11:40",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 13,
             "setOutMinute": 0,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 13:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 15,
             "setOutMinute": 45,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 15:45",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 17,
             "setOutMinute": 10,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 17:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 18,
             "setOutMinute": 25,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 18:25",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 21,
             "setOutMinute": 10,
-            "dayOfWeek": 1
+            "dayOfWeek": 1,
+            "description": "校车沙河往本部 周一 21:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 9,
             "setOutMinute": 50,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 9:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 11,
             "setOutMinute": 40,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 11:40",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 13,
             "setOutMinute": 0,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 13:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 15,
             "setOutMinute": 45,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 15:45",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 17,
             "setOutMinute": 10,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 17:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 18,
             "setOutMinute": 25,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 18:25",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 21,
             "setOutMinute": 10,
-            "dayOfWeek": 2
+            "dayOfWeek": 2,
+            "description": "校车沙河往本部 周二 21:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 9,
             "setOutMinute": 50,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车沙河往本部 周三 9:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 11,
             "setOutMinute": 40,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车沙河往本部 周三 11:40",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 13,
             "setOutMinute": 0,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车沙河往本部 周三 13:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 17,
             "setOutMinute": 10,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车沙河往本部 周三 17:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 18,
             "setOutMinute": 25,
-            "dayOfWeek": 3
+            "dayOfWeek": 3,
+            "description": "校车沙河往本部 周三 18:25",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 9,
             "setOutMinute": 50,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 9:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 11,
             "setOutMinute": 40,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 11:40",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 13,
             "setOutMinute": 0,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 13:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 15,
             "setOutMinute": 45,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 15:45",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 17,
             "setOutMinute": 10,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 17:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 18,
             "setOutMinute": 25,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 18:25",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 21,
             "setOutMinute": 10,
-            "dayOfWeek": 4
+            "dayOfWeek": 4,
+            "description": "校车沙河往本部 周四 21:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 9,
             "setOutMinute": 50,
-            "dayOfWeek": 1
+            "dayOfWeek": 5,
+            "description": "校车沙河往本部 周五 9:50",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 11,
             "setOutMinute": 40,
-            "dayOfWeek": 1
+            "dayOfWeek": 5,
+            "description": "校车沙河往本部 周五 11:40",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 13,
             "setOutMinute": 0,
-            "dayOfWeek": 1
+            "dayOfWeek": 5,
+            "description": "校车沙河往本部 周五 13:00",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 15,
             "setOutMinute": 45,
-            "dayOfWeek": 1
+            "dayOfWeek": 5,
+            "description": "校车沙河往本部 周五 15:45",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 17,
             "setOutMinute": 10,
-            "dayOfWeek": 1
+            "dayOfWeek": 5,
+            "description": "校车沙河往本部 周五 17:10",
+            "takeTime": 60
         },
         {
+            "isSchoolBus": true,
             "campusFrom": 0,
             "campusTo": 1,
             "setOutHour": 18,
             "setOutMinute": 25,
-            "dayOfWeek": 1
+            "dayOfWeek": 5,
+            "description": "校车沙河往本部 周五 18:25",
+            "takeTime": 60
         }
     ]
 }
