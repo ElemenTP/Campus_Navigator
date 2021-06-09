@@ -240,7 +240,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ///用户位置改变回调函数，记录用户位置，当选择了实时导航时进行导航
   void _onLocationChanged(AMapLocation aMapLocation) async {
     userLocation = aMapLocation;
-    if (naviState.naviStatus && naviState.realTime) {
+    if (naviState.naviStatus && naviState.realTime && userLocation.time != 0) {
       if (mapPolylines.isEmpty) {
         showDialog(
             context: context,
@@ -260,27 +260,30 @@ class _MyHomePageState extends State<MyHomePage> {
         naviState.routeLength = 0;
         setState(() {});
       } else {
-        Polyline expectedRoutePolyline = mapPolylines[0];
-        LatLng destLatLng = expectedRoutePolyline.points[1];
+        Polyline expectedRoutePolyline = mapPolylines.first;
+        LatLng destLatLng = expectedRoutePolyline.points.last;
         double distanceDest =
             AMapTools.distanceBetween(userLocation.latLng, destLatLng);
-        if (distanceDest > 40) {
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                    title: Text('提示'),
-                    content: Text('重新规划路线。'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('确定'),
-                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                      ),
-                    ],
-                  ));
-          if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
-          await NaviTools.showRoute(context);
-          setState(() {});
+        if (distanceDest > 50) {
+          if (mapData.locationInCampus(userLocation.latLng) ==
+              mapData.locationInCampus(destLatLng)) {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text('重新规划路线。'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('确定'),
+                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        ),
+                      ],
+                    ));
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
+            await NaviTools.showRoute(context);
+            setState(() {});
+          }
         } else if (distanceDest < 10) {
           if (logEnabled)
             logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
