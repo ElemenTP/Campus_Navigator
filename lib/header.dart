@@ -9,14 +9,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'shortpath.dart';
 
+///自行车速度
 const double BIKESPEED = 0.5;
 
-const double DEFAULT_ZOOM = 17.5;
+///默认地图缩放比例
+const double DEFAULT_ZOOM = 18;
 
+///自定义LatLng类的fromJson构建函数
 LatLng latLngfromJson(Map<String, dynamic> json) {
   return LatLng(json['latitude'] as double, json['longitude'] as double);
 }
 
+///自定义LatLng类的toJson构建函数
 Map<String, dynamic> latLngtoJson(LatLng latLng) {
   return <String, dynamic>{
     'latitude': latLng.latitude,
@@ -124,7 +128,7 @@ class MapCampus {
   List<LatLng> campusShape = [];
   int gate = 0;
   int busstop = 0;
-  String name = 'My Campus';
+  String name = '校区';
 
   MapCampus();
 
@@ -133,9 +137,9 @@ class MapCampus {
     campusShapeJson.forEach((element) {
       campusShape.add(latLngfromJson(element));
     });
-    gate = json['gate'] as int;
-    busstop = json['busstop'] as int;
-    name = json['name'] as String;
+    gate = json['gate'] as int? ?? 0;
+    busstop = json['busstop'] as int? ?? 0;
+    name = json['name'] as String? ?? '校区';
   }
 
   Map<String, dynamic> toJson() {
@@ -176,10 +180,10 @@ class Edge {
   }
 
   Edge.fromJson(Map<String, dynamic> json) {
-    pointa = json['pointa'] ?? -1;
-    pointb = json['pointb'] ?? -1;
-    length = json['length'] ?? double.infinity;
-    availmthod = json['availmthod'] ?? -1;
+    pointa = json['pointa'] as int? ?? -1;
+    pointb = json['pointb'] as int? ?? -1;
+    length = json['length'] as double? ?? double.infinity;
+    availmthod = json['availmthod'] as int? ?? -1;
   }
 }
 
@@ -230,34 +234,53 @@ class MapEdge {
 
 ///校车时间表类
 class BusTimeTable {
-  //始发校区编号
+  ///是否是校车
+  bool isSchoolBus = false;
+
+  ///始发校区编号
   int campusFrom = 0;
-  //目的校区编号
+
+  ///目的校区编号
   int campusTo = 0;
-  //出发时间的时
-  int setOutHour = 0;
-  //出发时间的分
-  int setOutMinute = 0;
-  //星期几？1-7，7是周日
-  int dayOfWeek = 1;
+
+  ///出发时间的时，0-23，违例视为任何时间
+  int setOutHour = -1;
+
+  ///出发时间的分，0-59，违例视为任何时间
+  int setOutMinute = -1;
+
+  ///星期几？1-7，7是周日，违例视为任何时间
+  int dayOfWeek = 0;
+
+  ///时间表描述
+  String description = '公共交通';
+
+  ///预计乘坐时间，单位分钟
+  int takeTime = 3600;
 
   BusTimeTable();
 
   BusTimeTable.fromJson(Map<String, dynamic> json) {
-    campusFrom = json['campusFrom'] as int;
-    campusTo = json['campusTo'] as int;
-    setOutHour = json['setOutHour'] as int;
-    setOutMinute = json['setOutMinute'] as int;
-    dayOfWeek = json['dayOfWeek'] as int;
+    isSchoolBus = json['isSchoolBus'] as bool? ?? false;
+    campusFrom = json['campusFrom'] as int? ?? 0;
+    campusTo = json['campusTo'] as int? ?? 0;
+    setOutHour = json['setOutHour'] as int? ?? -1;
+    setOutMinute = json['setOutMinute'] as int? ?? -1;
+    dayOfWeek = json['dayOfWeek'] as int? ?? 0;
+    description = json['description'] as String? ?? '公共交通';
+    takeTime = json['takeTime'] as int? ?? 3600;
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
+      'isSchoolBus': isSchoolBus,
       'campusFrom': campusFrom,
       'campusTo': campusTo,
       'setOutHour': setOutHour,
       'setOutMinute': setOutMinute,
       'dayOfWeek': dayOfWeek,
+      'description': description,
+      'takeTime': takeTime,
     };
   }
 }
@@ -387,6 +410,43 @@ class MapData {
         element.crowded = false;
       }
     });
+  }
+
+  List getBestTimeTable(int campusFrom, int campusTo, DateTime timeAtGetOn,
+      {bool? onlySchoolBus}) {
+    BusTimeTable? target;
+    int takenTime = 114514;
+    busTimeTable.forEach((element) {
+      if (onlySchoolBus != null) if (onlySchoolBus ^ element.isSchoolBus)
+        return;
+      if (element.campusFrom != campusFrom || element.campusTo != campusTo)
+        return;
+      if (element.dayOfWeek > 0 &&
+          element.dayOfWeek < 8 &&
+          element.dayOfWeek != timeAtGetOn.weekday) return;
+      int thisTakenTime = 0;
+      if (element.setOutHour >= 0 &&
+          element.setOutHour < 24 &&
+          element.setOutHour < timeAtGetOn.hour)
+        return;
+      else if (element.setOutHour >= 0 && element.setOutHour < 24)
+        thisTakenTime += (element.setOutHour - timeAtGetOn.hour) * 60;
+      if (element.setOutMinute >= 0 &&
+          element.setOutMinute < 60 &&
+          element.setOutMinute < timeAtGetOn.minute)
+        return;
+      else if (element.setOutMinute >= 0 && element.setOutMinute < 60)
+        thisTakenTime += element.setOutMinute - timeAtGetOn.minute;
+      thisTakenTime += element.takeTime;
+      if (thisTakenTime < takenTime) {
+        target = element;
+        takenTime = thisTakenTime;
+      }
+    });
+    if (target == null)
+      return [];
+    else
+      return [target, takenTime];
   }
 }
 
@@ -566,7 +626,7 @@ class NaviState {
     } else if (start.runtimeType == Building) {
       return Card(
         child: ListTile(
-          title: Text('建筑：${start!.description[0]}。'),
+          title: Text('建筑：${start!.description.first}。'),
           onTap: () {
             setState(() => start = null);
             mapMarkers.remove('start');
@@ -598,7 +658,7 @@ class NaviState {
             )
           : Card(
               child: ListTile(
-                title: Text('建筑：${element.description[0]}。'),
+                title: Text('建筑：${element.description.first}。'),
                 onTap: () {
                   setState(() => end.remove(element));
                   mapMarkers.remove('end' + element.hashCode.toString());
@@ -733,8 +793,9 @@ class NaviTools {
       naviState.routeLength = 0;
       bool showRouteResult = false;
       try {
+        DateTime routeBeginTime = DateTime.now();
         if (logEnabled)
-          logSink.write(DateTime.now().toString() + ': 路线计算函数开始。\n');
+          logSink.write(routeBeginTime.toString() + ': 路线计算函数开始。\n');
         if (naviState.startOnUserLoc) {
           if (stateLocationReqiurement(context)) {
             int startCampus = mapData.locationInCampus(userLocation.latLng);
@@ -791,7 +852,7 @@ class NaviTools {
                 ': ' +
                 (element.runtimeType == LatLng
                     ? '坐标: ' + element.toJson().toString()
-                    : '建筑: ' + (element as Building).description[0]) +
+                    : '建筑: ' + (element as Building).description.first) +
                 '\n');
           });
           logSink.write(DateTime.now().toString() + ': 开始类型转换。\n');
@@ -917,35 +978,78 @@ class NaviTools {
               lengthPublicTransEnd = endGatePath.getrelativelen();
               routePublicTransEnd = endGatePath.getroute();
             }
+            DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
+              seconds: (naviState.routeLength + lengthPublicTransStart).toInt(),
+            ));
+            DateTime timeAtGetOnSchoolBus = routeBeginTime.add(Duration(
+                seconds:
+                    (naviState.routeLength + lengthSchoolBusStart).toInt()));
+            List bestPubTrans = mapData.getBestTimeTable(
+                startVertex.campusNum, endVertex.campusNum, timeAtGetOnPubTrans,
+                onlySchoolBus: false);
+            List bestSchoolBus = mapData.getBestTimeTable(startVertex.campusNum,
+                endVertex.campusNum, timeAtGetOnSchoolBus,
+                onlySchoolBus: true);
+            if (bestPubTrans.isEmpty && bestSchoolBus.isEmpty) throw '!';
             late String toPrint;
-            if (naviState.minTime) {
+            String startCampusName =
+                mapData.mapCampus[startVertex.campusNum].name;
+            String endCampusName = mapData.mapCampus[endVertex.campusNum].name;
+            if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
+              naviState.routeLength += (lengthSchoolBusStart +
+                  lengthSchoolBusEnd +
+                  (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
+              if (routeSchoolBusStart.isNotEmpty)
+                displayRoute(routeSchoolBusStart, startVertex.campusNum);
+              if (routeSchoolBusEnd.isNotEmpty)
+                displayRoute(routeSchoolBusEnd, endVertex.campusNum);
+              toPrint = (bestSchoolBus.first as BusTimeTable).description;
+            } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
+              naviState.routeLength += (lengthPublicTransStart +
+                  lengthPublicTransEnd +
+                  (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
+              if (routePublicTransStart.isNotEmpty)
+                displayRoute(routePublicTransStart, startVertex.campusNum);
+              if (routePublicTransEnd.isNotEmpty)
+                displayRoute(routePublicTransEnd, endVertex.campusNum);
+              toPrint = (bestPubTrans.first as BusTimeTable).description;
             } else {
-              if ((lengthSchoolBusStart + lengthSchoolBusEnd) >
-                  (lengthPublicTransStart + lengthPublicTransEnd)) {
-                naviState.routeLength +=
-                    (lengthPublicTransStart + lengthPublicTransEnd);
+              if ((lengthSchoolBusStart +
+                      lengthSchoolBusEnd +
+                      (naviState.minTime
+                          ? (bestSchoolBus.last as int) * 60
+                          : 0)) >
+                  (lengthPublicTransStart +
+                      lengthPublicTransEnd +
+                      (naviState.minTime
+                          ? (bestPubTrans.last as int) * 60
+                          : 0))) {
+                naviState.routeLength += (lengthPublicTransStart +
+                    lengthPublicTransEnd +
+                    (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
                 if (routePublicTransStart.isNotEmpty)
                   displayRoute(routePublicTransStart, startVertex.campusNum);
                 if (routePublicTransEnd.isNotEmpty)
-                  displayRoute(routePublicTransEnd, startVertex.campusNum);
-                toPrint =
-                    '请乘坐公共交通工具从${mapData.mapCampus[startVertex.campusNum].name}移动到${mapData.mapCampus[endVertex.campusNum].name}';
+                  displayRoute(routePublicTransEnd, endVertex.campusNum);
+                toPrint = (bestPubTrans.first as BusTimeTable).description;
               } else {
-                naviState.routeLength +=
-                    (lengthSchoolBusStart + lengthSchoolBusEnd);
+                naviState.routeLength += (lengthSchoolBusStart +
+                    lengthSchoolBusEnd +
+                    (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
                 if (routeSchoolBusStart.isNotEmpty)
                   displayRoute(routeSchoolBusStart, startVertex.campusNum);
                 if (routeSchoolBusEnd.isNotEmpty)
-                  displayRoute(routeSchoolBusEnd, startVertex.campusNum);
-                toPrint =
-                    '请乘坐校车从${mapData.mapCampus[startVertex.campusNum].name}移动到${mapData.mapCampus[endVertex.campusNum].name}';
+                  displayRoute(routeSchoolBusEnd, endVertex.campusNum);
+                toPrint = (bestSchoolBus.first as BusTimeTable).description;
               }
             }
-            showDialog(
+            await showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
                       title: Text('提示'),
-                      content: Text(toPrint),
+                      content: Text('从$startCampusName移动到$endCampusName，请乘坐' +
+                          toPrint +
+                          '。'),
                       actions: <Widget>[
                         TextButton(
                           child: Text('取消'),
@@ -1080,15 +1184,15 @@ late File logFile;
 ///日志写IOSink
 late IOSink logSink;
 
-class canteenArrange {
+class CanteenArrange {
   late double pathtime;
   late int flowin;
   late int flowout;
   late int result;
   int capacity = 150;
-  Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
-  Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
-  canteenArrange(int number, double pathtime) {
+  static const Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
+  static const Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
+  CanteenArrange(int number, double pathtime) {
     for (double i = 0.5; i <= pathtime; i += 0.5) {
       int tmp = 0;
 
