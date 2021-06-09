@@ -62,7 +62,6 @@ class _MySearchPageState extends State<MySearchPage> {
             if (listMatched.isNotEmpty)
               searchResult.add(SearchResult(
                   element, curCampusName + ' 建筑描述: ' + listMatched.join(', ')));
-            return;
           }
         });
       }
@@ -143,7 +142,8 @@ class _MySearchPageState extends State<MySearchPage> {
                               infoWindow: InfoWindow(
                                   title: searchResult[index]
                                       .result
-                                      .description[0]),
+                                      .description
+                                      .first),
                             );
                             Navigator.of(context).pop();
                           }, //关闭对话框
@@ -160,7 +160,8 @@ class _MySearchPageState extends State<MySearchPage> {
                         icon: BitmapDescriptor.defaultMarkerWithHue(
                             BitmapDescriptor.hueGreen),
                         infoWindow: InfoWindow(
-                            title: searchResult[index].result.description[0]),
+                            title:
+                                searchResult[index].result.description.first),
                       );
                       Navigator.of(context).pop();
                     }, //关闭对话框
@@ -382,7 +383,7 @@ class _MySearchPageState extends State<MySearchPage> {
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   child: ListTile(
-                    title: Text(searchResult[index].result.description[0]),
+                    title: Text(searchResult[index].result.description.first),
                     subtitle: Text(searchResult[index].matched),
                     selected: searchResult[index].result == naviState.start ||
                         naviState.end.contains(searchResult[index].result),
