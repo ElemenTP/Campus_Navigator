@@ -11,7 +11,7 @@ TextEditingController textcontroller = TextEditingController();
 ///搜索结果列表
 List<SearchResult> searchResult = [];
 
-///筛选用校区列表
+///筛选校区用布尔列表
 List<bool> campusFilter = List.filled(mapData.mapCampus.length, true);
 
 class MySearchPage extends StatefulWidget {
@@ -22,12 +22,13 @@ class MySearchPage extends StatefulWidget {
 }
 
 class _MySearchPageState extends State<MySearchPage> {
-  //输入框风格
+  ///输入框风格
   static const InputDecoration _decoration = InputDecoration(
     icon: Icon(Icons.school),
     labelText: '搜索校园建筑',
   );
 
+  ///输入框焦点控制器
   late FocusNode textFocusNode;
 
   ///建筑搜索函数
@@ -240,8 +241,6 @@ class _MySearchPageState extends State<MySearchPage> {
               searchResult.add(SearchResult(
                   element, '约' + distance.toStringAsFixed(0) + '米'));
             });
-            if (logEnabled)
-              logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
             setState(() {});
           }
         } catch (_) {
@@ -260,6 +259,8 @@ class _MySearchPageState extends State<MySearchPage> {
           if (logEnabled)
             logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
         }
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
       } else {
         showDialog(
             context: context,
@@ -327,7 +328,7 @@ class _MySearchPageState extends State<MySearchPage> {
 
   @override
   void dispose() {
-    // Clean up the focus node when the Form is disposed.
+    //移除FocusNode
     textFocusNode.dispose();
     super.dispose();
   }

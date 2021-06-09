@@ -11,6 +11,8 @@ import 'shortpath.dart';
 
 const double BIKESPEED = 0.5;
 
+const double DEFAULT_ZOOM = 17.5;
+
 LatLng latLngfromJson(Map<String, dynamic> json) {
   return LatLng(json['latitude'] as double, json['longitude'] as double);
 }
@@ -867,20 +869,90 @@ class NaviTools {
               displayRoute(path.getroute(), startVertex.campusNum);
             }
           } else {
-            Shortpath patha = Shortpath(
-                mapData.getAdjacentMatrix(startVertex.campusNum),
-                startVertex.vertexNum,
-                mapData.mapCampus[startVertex.campusNum].busstop,
-                transmethod);
-            naviState.routeLength += patha.getrelativelen();
-            displayRoute(patha.getroute(), startVertex.campusNum);
-            Shortpath pathb = Shortpath(
-                mapData.getAdjacentMatrix(endVertex.campusNum),
-                mapData.mapCampus[endVertex.campusNum].busstop,
-                endVertex.vertexNum,
-                transmethod);
-            naviState.routeLength += pathb.getrelativelen();
-            displayRoute(pathb.getroute(), endVertex.campusNum);
+            double lengthPublicTransStart = 0;
+            double lengthPublicTransEnd = 0;
+            double lengthSchoolBusStart = 0;
+            double lengthSchoolBusEnd = 0;
+            List<int> routePublicTransStart = [];
+            List<int> routePublicTransEnd = [];
+            List<int> routeSchoolBusStart = [];
+            List<int> routeSchoolBusEnd = [];
+            int startBusStop = mapData.mapCampus[startVertex.campusNum].busstop;
+            int endBusStop = mapData.mapCampus[endVertex.campusNum].busstop;
+            int startGate = mapData.mapCampus[startVertex.campusNum].gate;
+            int endGate = mapData.mapCampus[endVertex.campusNum].gate;
+            if (startVertex.vertexNum != startBusStop) {
+              Shortpath startBusStopPath = Shortpath(
+                  mapData.getAdjacentMatrix(startVertex.campusNum),
+                  startVertex.vertexNum,
+                  startBusStop,
+                  transmethod);
+              lengthSchoolBusStart = startBusStopPath.getrelativelen();
+              routeSchoolBusStart = startBusStopPath.getroute();
+            }
+            if (startVertex.vertexNum != startGate) {
+              Shortpath startGatePath = Shortpath(
+                  mapData.getAdjacentMatrix(startVertex.campusNum),
+                  startVertex.vertexNum,
+                  startGate,
+                  transmethod);
+              lengthPublicTransStart = startGatePath.getrelativelen();
+              routePublicTransStart = startGatePath.getroute();
+            }
+            if (endVertex.vertexNum != endBusStop) {
+              Shortpath endBusStopPath = Shortpath(
+                  mapData.getAdjacentMatrix(endVertex.campusNum),
+                  endBusStop,
+                  endVertex.vertexNum,
+                  transmethod);
+              lengthSchoolBusEnd = endBusStopPath.getrelativelen();
+              routeSchoolBusEnd = endBusStopPath.getroute();
+            }
+            if (endVertex.vertexNum != endGate) {
+              Shortpath endGatePath = Shortpath(
+                  mapData.getAdjacentMatrix(endVertex.campusNum),
+                  endGate,
+                  endVertex.vertexNum,
+                  transmethod);
+              lengthPublicTransEnd = endGatePath.getrelativelen();
+              routePublicTransEnd = endGatePath.getroute();
+            }
+            late String toPrint;
+            if (naviState.minTime) {
+            } else {
+              if ((lengthSchoolBusStart + lengthSchoolBusEnd) >
+                  (lengthPublicTransStart + lengthPublicTransEnd)) {
+                naviState.routeLength +=
+                    (lengthPublicTransStart + lengthPublicTransEnd);
+                if (routePublicTransStart.isNotEmpty)
+                  displayRoute(routePublicTransStart, startVertex.campusNum);
+                if (routePublicTransEnd.isNotEmpty)
+                  displayRoute(routePublicTransEnd, startVertex.campusNum);
+                toPrint =
+                    '请乘坐公共交通工具从${mapData.mapCampus[startVertex.campusNum].name}移动到${mapData.mapCampus[endVertex.campusNum].name}';
+              } else {
+                naviState.routeLength +=
+                    (lengthSchoolBusStart + lengthSchoolBusEnd);
+                if (routeSchoolBusStart.isNotEmpty)
+                  displayRoute(routeSchoolBusStart, startVertex.campusNum);
+                if (routeSchoolBusEnd.isNotEmpty)
+                  displayRoute(routeSchoolBusEnd, startVertex.campusNum);
+                toPrint =
+                    '请乘坐校车从${mapData.mapCampus[startVertex.campusNum].name}移动到${mapData.mapCampus[endVertex.campusNum].name}';
+              }
+            }
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text(toPrint),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('取消'),
+                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        ),
+                      ],
+                    ));
           }
         }
         if (logEnabled)

@@ -71,27 +71,29 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+///主界面，用于显示地图
 class _MyHomePageState extends State<MyHomePage> {
-  //底栏项目List
+  ///底部导航栏内容
   static const List<BottomNavigationBarItem> _navbaritems = [
-    //搜索标志
+    ///搜索标志
     BottomNavigationBarItem(
       icon: Icon(Icons.search),
       label: '搜索' /*'Search'*/,
     ),
-    //设置标志
+
+    ///设置标志
     BottomNavigationBarItem(
       icon: Icon(Icons.settings),
       label: '设置' /*'Setting'*/,
     )
   ];
 
-  //地图widget创建时的回调函数，获得controller并将调节视角。
+  ///地图widget创建时的回调函数，获得controller。
   void _onMapCreated(AMapController controller) {
     mapController = controller;
   }
 
-  //地图点击回调函数，在被点击处创建标志。
+  ///地图点击回调函数，在被点击处创建标志。
   void _onMapTapped(LatLng taplocation) async {
     if (mapData.locationInCampus(taplocation) >= 0) {
       setState(() {
@@ -114,7 +116,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //标志点击回调函数
+  ///点击创建的标志的点击回调函数
   void _onTapMarkerTapped(String markerid) async {
     await showDialog(
         context: context,
@@ -149,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //从地图上添加坐标形式的出发地
+  ///从地图上添加坐标形式的出发地
   void _addStartLocation(LatLng location) {
     naviState.start = location;
     mapMarkers['start'] = Marker(
@@ -159,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  //从地图上添加坐标形式的目的地
+  ///从地图上添加坐标形式的目的地
   void _addEndLocation(LatLng location) {
     naviState.end.add(location);
     String tmpid = 'end' + location.hashCode.toString();
@@ -170,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  //出发地Marker点击回调
+  ///出发地Marker点击回调
   void _onStartMarkerTapped() async {
     await showDialog(
         context: context,
@@ -195,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //目的地Marker点击回调
+  ///目的地Marker点击回调
   void _onEndMarkerTapped(String markerid) async {
     await showDialog(
         context: context,
@@ -220,14 +222,14 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //地图视角改变回调函数，移除所有点击添加的标志。
+  ///地图视角改变回调函数，移除点击添加的标志。
   void _onMapCamMoved(CameraPosition newPosition) {
     setState(() {
       mapMarkers.remove('onTap');
     });
   }
 
-  //地图视角改变结束回调函数，将视角信息记录在NVM中。
+  ///地图视角改变结束回调函数，将视角信息记录在NVM中。
   void _onCameraMoveEnd(CameraPosition endPosition) {
     prefs.setDouble('lastCamPositionbearing', endPosition.bearing);
     prefs.setDouble('lastCamPositionLat', endPosition.target.latitude);
@@ -235,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
     prefs.setDouble('lastCamPositionzoom', endPosition.zoom);
   }
 
-  //用户位置改变回调函数，记录用户位置。
+  ///用户位置改变回调函数，记录用户位置，当选择了实时导航时进行导航
   void _onLocationChanged(AMapLocation aMapLocation) async {
     userLocation = aMapLocation;
     if (naviState.naviStatus && naviState.realTime) {
@@ -288,7 +290,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //导航按钮功能函数
+  ///导航按钮按下功能函数
   void _setNavigation() async {
     if (await naviState.manageNaviState(context)) {
       await NaviTools.showRoute(context);
@@ -296,7 +298,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //定位按钮按下回调函数，将地图widget视角调整至用户位置。
+  ///定位按钮按下回调函数，将地图widget视角调整至用户位置。
   void _setCameraPosition() async {
     late LatLng newLocation;
     if (await showDialog(
@@ -345,12 +347,12 @@ class _MyHomePageState extends State<MyHomePage> {
             }) ??
         false) {
       await mapController?.moveCamera(
-          CameraUpdate.newLatLngZoom(newLocation, 17.5),
+          CameraUpdate.newLatLngZoom(newLocation, DEFAULT_ZOOM),
           duration: 500);
     }
   }
 
-  //底栏按钮点击回调函数
+  ///底栏按钮点击回调函数
   void _onBarItemTapped(int index) async {
     //按点击的底栏项目调出对应activity
     switch (index) {
@@ -370,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //定位权限申请函数
+  ///定位权限申请函数
   void _requestLocationPermission() async {
     // 申请位置权限
     locatePermissionStatus = await Permission.location.status;
@@ -398,15 +400,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //State创建时执行一次
   @override
   void initState() {
-    //检测并申请定位权限
     _requestLocationPermission();
     super.initState();
   }
 
-  //State的build函数
   @override
   Widget build(BuildContext context) {
     AMapWidget map = AMapWidget(
@@ -419,7 +418,7 @@ class _MyHomePageState extends State<MyHomePage> {
         bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
         target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
             prefs.getDouble('lastCamPositionLng') ?? 116.397451),
-        zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
+        zoom: prefs.getDouble('lastCamPositionzoom') ?? DEFAULT_ZOOM,
       ),
       //地图点击回调函数
       onTap: _onMapTapped,
