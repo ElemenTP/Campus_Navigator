@@ -1007,3 +1007,32 @@ late File logFile;
 
 ///日志写IOSink
 late IOSink logSink;
+
+class canteenArrange {
+  late double pathtime;
+  late double flowin;
+  late double flowout;
+  late int result;
+  int capacity = 150;
+  Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
+  Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
+  canteenArrange(int number, double pathtime) {
+    for (double i = 0.5; i <= pathtime; i += 0.5) {
+      int tmp = 0;
+
+      if (number / capacity <= 0.25) {
+        tmp = 1;
+      } else if (number / capacity <= 0.75) {
+        tmp = 2;
+      } else
+        tmp = 3;
+      flowin = ntovin[tmp];
+      flowout = ntovout[tmp];
+      number = number + flowin - flowout;
+    }
+    result = number;
+  }
+  int getResult() {
+    return result;
+  }
+}
