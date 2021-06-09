@@ -1010,8 +1010,8 @@ late IOSink logSink;
 
 class canteenArrange {
   late double pathtime;
-  late double flowin;
-  late double flowout;
+  late int flowin;
+  late int flowout;
   late int result;
   int capacity = 150;
   Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
@@ -1026,13 +1026,19 @@ class canteenArrange {
         tmp = 2;
       } else
         tmp = 3;
-      flowin = ntovin[tmp];
-      flowout = ntovout[tmp];
+      var fin = ntovin[tmp] ?? 0;
+      flowin = fin;
+      var fout = ntovout[tmp] ?? 0;
+      flowout = fout;
       number = number + flowin - flowout;
     }
     result = number;
   }
-  int getResult() {
-    return result;
+
+  double getTime() {
+    if (result > capacity)
+      return double.infinity;
+    else
+      return 0.2 * result + pathtime;
   }
 }
