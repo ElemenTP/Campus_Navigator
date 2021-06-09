@@ -30,8 +30,10 @@ void main() async {
     File dataFile = File(dataFileDir);
     mapData = MapData.fromJson(jsonDecode(await dataFile.readAsString()));
     if (logEnabled)
-      logSink
-          .write(DateTime.now().toString() + ': 读取地图数据' + dataFileDir + '\n');
+      logSink.write(DateTime.now().toString() +
+          ': 读取地图数据' +
+          dataFileDir.split('/').last +
+          '\n');
   }
   String? logicLocFileDir = prefs.getString('logicLocFileDir');
   if (logicLocFileDir == null) {
@@ -42,8 +44,10 @@ void main() async {
     mapLogicLoc =
         LogicLoc.fromJson(jsonDecode(await logicLocFile.readAsString()));
     if (logEnabled)
-      logSink.write(
-          DateTime.now().toString() + ': 读取逻辑位置数据' + logicLocFileDir + '\n');
+      logSink.write(DateTime.now().toString() +
+          ': 读取逻辑位置数据' +
+          logicLocFileDir.split('/').last +
+          '\n');
   }
   runApp(MyApp());
 }

@@ -134,8 +134,8 @@ class _MySettingPageState extends State<MySettingPage> {
                 ));
         return;
       }
-      Directory customMapDataDir = await getApplicationDocumentsDirectory();
-      String customMapDataPath = customMapDataDir.path +
+      Directory applicationDataDir = await getApplicationDocumentsDirectory();
+      String customMapDataPath = applicationDataDir.path +
           '/CustomMapData/' +
           pickedFile.files.single.name;
       File customMapDataFile = File(customMapDataPath);
@@ -160,7 +160,103 @@ class _MySettingPageState extends State<MySettingPage> {
   }
 
   ///管理地图文件函数
-  void _manageMapData() async {}
+  void _manageMapData() async {
+    Directory applicationDataDir = await getApplicationDocumentsDirectory();
+    String customMapDataPath = applicationDataDir.path + '/CustomMapData';
+    Directory customMapDataDir = Directory(customMapDataPath);
+    if (!await customMapDataDir.exists())
+      await customMapDataDir.create(recursive: true);
+    int prefixLength = customMapDataPath.length + 1;
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, _setState) {
+          String? dataFileDir = prefs.getString('dataFileDir');
+          List<FileSystemEntity> listMapDataFiles = customMapDataDir.listSync();
+          List<Widget> listMapDataFileChoose = [];
+          listMapDataFileChoose.add(Card(
+            child: ListTile(
+              title: Text('默认地图数据: 北京邮电大学沙河校区和海淀校区'),
+              selected: dataFileDir == null,
+              onTap: () => showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text('提示'),
+                        content: Text('将地图数据设为默认吗？重启软件生效。'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('取消'),
+                            onPressed: () =>
+                                Navigator.of(context).pop(), //关闭对话框
+                          ),
+                          TextButton(
+                            child: Text('确定'),
+                            onPressed: () async {
+                              await prefs.remove('dataFileDir');
+                              _setState(() {});
+                              Navigator.of(context).pop();
+                            }, //关闭对话框
+                          ),
+                        ],
+                      )),
+            ),
+          ));
+          listMapDataFiles.forEach((element) => listMapDataFileChoose.add(Card(
+                child: ListTile(
+                  title: Text(element.path.substring(prefixLength)),
+                  selected: (dataFileDir ?? '') == element.path,
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text('提示'),
+                            content: Text('如何处理该地图数据？重启软件生效。'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('取消'),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(), //关闭对话框
+                              ),
+                              TextButton(
+                                child: Text('删除'),
+                                onPressed: () async {
+                                  if ((dataFileDir ?? '') == element.path)
+                                    await prefs.remove('dataFileDir');
+                                  await element.delete();
+                                  _setState(() {});
+                                  Navigator.of(context).pop();
+                                }, //关闭对话框
+                              ),
+                              TextButton(
+                                child: Text('使用'),
+                                onPressed: () async {
+                                  prefs.setString('dataFileDir', element.path);
+                                  _setState(() {});
+                                  Navigator.of(context).pop();
+                                }, //关闭对话框
+                              ),
+                            ],
+                          )),
+                ),
+              )));
+          return AlertDialog(
+            title: Text('地图数据'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: listMapDataFileChoose,
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text("返回"),
+                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
   ///导入逻辑位置文件函数
   void _pickLogicData() async {
@@ -190,18 +286,16 @@ class _MySettingPageState extends State<MySettingPage> {
                 ));
         return;
       }
-      Directory customLogicLocDataDir =
-          await getApplicationDocumentsDirectory();
-      String customLogicLocDataPath = customLogicLocDataDir.path +
-          '/CustomLogicLocData/' +
+      Directory applicationDataDir = await getApplicationDocumentsDirectory();
+      String customLogicLocPath = applicationDataDir.path +
+          '/CustomLogicLoc/' +
           pickedFile.files.single.name;
-      File customLogicLocDataFile = File(customLogicLocDataPath);
-      if (!await customLogicLocDataFile.exists()) {
-        customLogicLocDataFile =
-            await customLogicLocDataFile.create(recursive: true);
+      File customLogicLocFile = File(customLogicLocPath);
+      if (!await customLogicLocFile.exists()) {
+        customLogicLocFile = await customLogicLocFile.create(recursive: true);
       }
-      await customLogicLocDataFile.writeAsString(jsonEncode(newLogicLoc));
-      prefs.setString('logicLocFileDir', customLogicLocDataPath);
+      await customLogicLocFile.writeAsString(jsonEncode(newLogicLoc));
+      prefs.setString('logicLocFileDir', customLogicLocPath);
       mapLogicLoc = newLogicLoc;
       showDialog(
           context: context,
@@ -219,7 +313,112 @@ class _MySettingPageState extends State<MySettingPage> {
   }
 
   ///管理逻辑位置文件函数
-  void _manageLogicData() async {}
+  void _manageLogicData() async {
+    Directory applicationDataDir = await getApplicationDocumentsDirectory();
+    String customLogicLocPath = applicationDataDir.path + '/CustomLogicLoc';
+    Directory customLogicLocDir = Directory(customLogicLocPath);
+    if (!await customLogicLocDir.exists())
+      await customLogicLocDir.create(recursive: true);
+    int prefixLength = customLogicLocPath.length + 1;
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, _setState) {
+          String? logicLocFileDir = prefs.getString('logicLocFileDir');
+          List<FileSystemEntity> listLogicLocFiles =
+              customLogicLocDir.listSync();
+          List<Widget> listLogicLocFileChoose = [];
+          listLogicLocFileChoose.add(Card(
+            child: ListTile(
+              title: Text('不使用逻辑位置功能'),
+              selected: logicLocFileDir == null,
+              onTap: () => showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text('提示'),
+                        content: Text('不使用逻辑位置功能吗？立即生效。'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('取消'),
+                            onPressed: () =>
+                                Navigator.of(context).pop(), //关闭对话框
+                          ),
+                          TextButton(
+                            child: Text('确定'),
+                            onPressed: () async {
+                              await prefs.remove('logicLocFileDir');
+                              mapLogicLoc = LogicLoc();
+                              _setState(() {});
+                              Navigator.of(context).pop();
+                            }, //关闭对话框
+                          ),
+                        ],
+                      )),
+            ),
+          ));
+          listLogicLocFiles.forEach((element) =>
+              listLogicLocFileChoose.add(Card(
+                child: ListTile(
+                  title: Text(element.path.substring(prefixLength)),
+                  selected: (logicLocFileDir ?? '') == element.path,
+                  onTap: () => showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            title: Text('提示'),
+                            content: Text('如何处理该逻辑位置数据？立即生效。'),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('取消'),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(), //关闭对话框
+                              ),
+                              TextButton(
+                                child: Text('删除'),
+                                onPressed: () async {
+                                  if ((logicLocFileDir ?? '') == element.path) {
+                                    await prefs.remove('logicLocFileDir');
+                                    mapLogicLoc = LogicLoc();
+                                  }
+                                  await element.delete();
+                                  _setState(() {});
+                                  Navigator.of(context).pop();
+                                }, //关闭对话框
+                              ),
+                              TextButton(
+                                child: Text('使用'),
+                                onPressed: () async {
+                                  prefs.setString(
+                                      'logicLocFileDir', element.path);
+                                  File logicLocFile = File(element.path);
+                                  mapLogicLoc = LogicLoc.fromJson(jsonDecode(
+                                      await logicLocFile.readAsString()));
+                                  _setState(() {});
+                                  Navigator.of(context).pop();
+                                }, //关闭对话框
+                              ),
+                            ],
+                          )),
+                ),
+              )));
+          return AlertDialog(
+            title: Text('逻辑位置数据'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: listLogicLocFileChoose,
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text("返回"),
+                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 
   ///申请定位权限函数
   void _requestLocationPermission() async {
