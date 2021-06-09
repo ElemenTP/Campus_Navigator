@@ -1,8 +1,7 @@
 import 'dart:io';
-
-//import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
 
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +17,37 @@ import 'settingpage.dart'; //设置界面
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   prefs = await SharedPreferences.getInstance();
-  String? filedir = prefs.getString('filedir');
-  if (filedir == null) {
+  logEnabled = prefs.getBool('logEnabled') ?? false;
+  Directory logFileDir = await getApplicationDocumentsDirectory();
+  logFile = File(logFileDir.path + '/NaviLog.txt');
+  logSink = logFile.openWrite(mode: FileMode.append);
+  String? dataFileDir = prefs.getString('dataFileDir');
+  if (dataFileDir == null) {
     mapData = MapData.fromJson(
         jsonDecode(await rootBundle.loadString('mapdata/default.json')));
+    if (logEnabled) logSink.write(DateTime.now().toString() + ': 读取默认地图数据。\n');
   } else {
-    File datafile = File(filedir);
-    mapData = MapData.fromJson(jsonDecode(await datafile.readAsString()));
+    File dataFile = File(dataFileDir);
+    mapData = MapData.fromJson(jsonDecode(await dataFile.readAsString()));
+    if (logEnabled)
+      logSink.write(DateTime.now().toString() +
+          ': 读取地图数据' +
+          dataFileDir.split('/').last +
+          '\n');
+  }
+  String? logicLocFileDir = prefs.getString('logicLocFileDir');
+  if (logicLocFileDir == null) {
+    mapLogicLoc = LogicLoc();
+    if (logEnabled) logSink.write(DateTime.now().toString() + ': 没有逻辑位置数据。\n');
+  } else {
+    File logicLocFile = File(logicLocFileDir);
+    mapLogicLoc =
+        LogicLoc.fromJson(jsonDecode(await logicLocFile.readAsString()));
+    if (logEnabled)
+      logSink.write(DateTime.now().toString() +
+          ': 读取逻辑位置数据' +
+          logicLocFileDir.split('/').last +
+          '\n');
   }
   runApp(MyApp());
 }
@@ -52,35 +75,37 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+///主界面，用于显示地图
 class _MyHomePageState extends State<MyHomePage> {
-  //底栏项目List
+  ///底部导航栏内容
   static const List<BottomNavigationBarItem> _navbaritems = [
-    //搜索标志
+    ///搜索标志
     BottomNavigationBarItem(
       icon: Icon(Icons.search),
       label: '搜索' /*'Search'*/,
     ),
-    //设置标志
+
+    ///设置标志
     BottomNavigationBarItem(
       icon: Icon(Icons.settings),
       label: '设置' /*'Setting'*/,
     )
   ];
 
-  //地图widget创建时的回调函数，获得controller并将调节视角。
+  ///地图widget创建时的回调函数，获得controller。
   void _onMapCreated(AMapController controller) {
     mapController = controller;
   }
 
-  //地图点击回调函数，在被点击处创建标志。
+  ///地图点击回调函数，在被点击处创建标志。
   void _onMapTapped(LatLng taplocation) async {
-    if (mapData.locationisallowed(taplocation)) {
+    if (mapData.locationInCampus(taplocation) >= 0) {
       setState(() {
-        mapMarkers['onTapMarker'] =
+        mapMarkers['onTap'] =
             Marker(position: taplocation, onTap: _onTapMarkerTapped);
       });
     } else {
-      await showDialog(
+      showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
@@ -95,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //标志点击回调函数
+  ///点击创建的标志的点击回调函数
   void _onTapMarkerTapped(String markerid) async {
     await showDialog(
         context: context,
@@ -109,20 +134,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 TextButton(
                   child: Text('起点'),
-                  onPressed: navistate.startOnUserLoc
+                  onPressed: naviState.startOnUserLoc
                       ? null
                       : () {
-                          _addStartLocation(
-                              mapMarkers['onTapMarker']!.position);
-                          mapMarkers.remove('onTapMarker');
+                          _addStartLocation(mapMarkers['onTap']!.position);
+                          mapMarkers.remove('onTap');
                           Navigator.of(context).pop(true);
                         }, //关闭对话框
                 ),
                 TextButton(
                   child: Text('终点'),
                   onPressed: () {
-                    _addEndLocation(mapMarkers['onTapMarker']!.position);
-                    mapMarkers.remove('onTapMarker');
+                    _addEndLocation(mapMarkers['onTap']!.position);
+                    mapMarkers.remove('onTap');
                     Navigator.of(context).pop(true);
                   }, //关闭对话框
                 ),
@@ -131,31 +155,28 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //从地图上添加坐标形式的出发地
+  ///从地图上添加坐标形式的出发地
   void _addStartLocation(LatLng location) {
-    navistate.startBuilding = null;
-    navistate.startLocation = location;
-    mapMarkers['startLocationMarker'] = Marker(
+    naviState.start = location;
+    mapMarkers['start'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-      onTap: (markerid) => _onStartMarkerTapped(),
+      onTap: (_) => _onStartMarkerTapped(),
     );
   }
 
-  //从地图上添加坐标形式的目的地
+  ///从地图上添加坐标形式的目的地
   void _addEndLocation(LatLng location) {
-    if (!navistate.endLocation.contains(location)) {
-      navistate.endLocation.add(location);
-      String tmpid = 'endLocationMarker' + location.toJson().toString();
-      mapMarkers[tmpid] = Marker(
-        position: location,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-        onTap: (markerid) => _onEndMarkerTapped(tmpid),
-      );
-    }
+    naviState.end.add(location);
+    String tmpid = 'end' + location.hashCode.toString();
+    mapMarkers[tmpid] = Marker(
+      position: location,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
+      onTap: (_) => _onEndMarkerTapped(tmpid),
+    );
   }
 
-  //出发地Marker点击回调
+  ///出发地Marker点击回调
   void _onStartMarkerTapped() async {
     await showDialog(
         context: context,
@@ -170,8 +191,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    navistate.startLocation = null;
-                    mapMarkers.remove('startLocationMarker');
+                    naviState.start = null;
+                    mapMarkers.remove('start');
                     Navigator.of(context).pop();
                   }, //关闭对话框
                 ),
@@ -180,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //目的地Marker点击回调
+  ///目的地Marker点击回调
   void _onEndMarkerTapped(String markerid) async {
     await showDialog(
         context: context,
@@ -195,8 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 TextButton(
                   child: Text('确定'),
                   onPressed: () {
-                    navistate.endLocation
-                        .remove(mapMarkers[markerid]!.position);
+                    naviState.end.remove(mapMarkers[markerid]!.position);
                     mapMarkers.remove(markerid);
                     Navigator.of(context).pop();
                   }, //关闭对话框
@@ -206,14 +226,14 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //地图视角改变回调函数，移除所有点击添加的标志。
+  ///地图视角改变回调函数，移除点击添加的标志。
   void _onMapCamMoved(CameraPosition newPosition) {
     setState(() {
-      mapMarkers.remove('onTapMarker');
+      mapMarkers.remove('onTap');
     });
   }
 
-  //地图视角改变结束回调函数，将视角信息记录在NVM中。
+  ///地图视角改变结束回调函数，将视角信息记录在NVM中。
   void _onCameraMoveEnd(CameraPosition endPosition) {
     prefs.setDouble('lastCamPositionbearing', endPosition.bearing);
     prefs.setDouble('lastCamPositionLat', endPosition.target.latitude);
@@ -221,34 +241,125 @@ class _MyHomePageState extends State<MyHomePage> {
     prefs.setDouble('lastCamPositionzoom', endPosition.zoom);
   }
 
-  //用户位置改变回调函数，记录用户位置。
-  void _onLocationChanged(AMapLocation aMapLocation) {
-    userPosition = aMapLocation;
+  ///用户位置改变回调函数，记录用户位置，当选择了实时导航时进行导航
+  void _onLocationChanged(AMapLocation aMapLocation) async {
+    userLocation = aMapLocation;
+    if (naviState.naviStatus && naviState.realTime && userLocation.time != 0) {
+      if (mapPolylines.isEmpty) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('已到达全部终点，实时导航结束。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('确定'),
+                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    ),
+                  ],
+                ));
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。\n');
+        naviState.naviStatus = false;
+        naviState.routeLength = 0;
+        setState(() {});
+      } else {
+        Polyline expectedRoutePolyline = mapPolylines.first;
+        LatLng destLatLng = expectedRoutePolyline.points.last;
+        double distanceDest =
+            AMapTools.distanceBetween(userLocation.latLng, destLatLng);
+        if (distanceDest > 50) {
+          if (mapData.locationInCampus(userLocation.latLng) ==
+              mapData.locationInCampus(destLatLng)) {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text('重新规划路线。'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('确定'),
+                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        ),
+                      ],
+                    ));
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
+            await NaviTools.showRoute(context);
+            setState(() {});
+          }
+        } else if (distanceDest < 10) {
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
+          setState(() => mapPolylines.removeAt(0));
+        }
+      }
+    }
   }
 
-  //导航按钮功能函数
+  ///导航按钮按下功能函数
   void _setNavigation() async {
-    if (await navistate.manageNaviState(context)) {
-      if (navistate.naviStatus) {
-        if (stateLocationReqiurement(context)) {
-        } else {
-          navistate.naviStatus = false;
-        }
-      } else {}
+    if (await naviState.manageNaviState(context)) {
+      await NaviTools.showRoute(context);
     }
     setState(() {});
   }
 
-  //定位按钮按下回调函数，将地图widget视角调整至用户位置。
-  void _setCamUserLoaction() async {
-    if (stateLocationReqiurement(context)) {
+  ///定位按钮按下回调函数，将地图widget视角调整至用户位置。
+  void _setCameraPosition() async {
+    late LatLng newLocation;
+    if (await showDialog(
+            context: context,
+            builder: (context) {
+              List<Widget> listWidget = <Widget>[
+                Card(
+                  child: ListTile(
+                    title: Text('当前位置'),
+                    onTap: () {
+                      if (NaviTools.stateLocationReqiurement(context)) {
+                        newLocation = userLocation.latLng;
+                        Navigator.of(context).pop(true);
+                      }
+                    },
+                  ),
+                )
+              ];
+              for (int i = 0; i < mapData.mapCampus.length; ++i) {
+                listWidget.add(Card(
+                  child: ListTile(
+                    title: Text(mapData.mapCampus[i].name),
+                    onTap: () {
+                      newLocation =
+                          mapData.getVertexLatLng(i, mapData.mapCampus[i].gate);
+                      Navigator.of(context).pop(true);
+                    },
+                  ),
+                ));
+              }
+              return AlertDialog(
+                title: Text('选择目标视角'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: listWidget,
+                  ),
+                ),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                  ),
+                ],
+              );
+            }) ??
+        false) {
       await mapController?.moveCamera(
-          CameraUpdate.newLatLngZoom(userPosition.latLng, 17.5),
+          CameraUpdate.newLatLngZoom(newLocation, DEFAULT_ZOOM),
           duration: 500);
     }
   }
 
-  //底栏按钮点击回调函数
+  ///底栏按钮点击回调函数
   void _onBarItemTapped(int index) async {
     //按点击的底栏项目调出对应activity
     switch (index) {
@@ -268,12 +379,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  //定位权限申请函数
+  ///定位权限申请函数
   void _requestLocationPermission() async {
     // 申请位置权限
     locatePermissionStatus = await Permission.location.status;
     if (!locatePermissionStatus.isGranted) {
-      await showDialog(
+      showDialog(
           context: context,
           builder: (context) => AlertDialog(
                 title: Text('提示'),
@@ -296,15 +407,12 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //State创建时执行一次
   @override
   void initState() {
-    super.initState();
-    //检测并申请定位权限
     _requestLocationPermission();
+    super.initState();
   }
 
-  //State的build函数
   @override
   Widget build(BuildContext context) {
     AMapWidget map = AMapWidget(
@@ -317,7 +425,7 @@ class _MyHomePageState extends State<MyHomePage> {
         bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
         target: LatLng(prefs.getDouble('lastCamPositionLat') ?? 39.909187,
             prefs.getDouble('lastCamPositionLng') ?? 116.397451),
-        zoom: prefs.getDouble('lastCamPositionzoom') ?? 17.5,
+        zoom: prefs.getDouble('lastCamPositionzoom') ?? DEFAULT_ZOOM,
       ),
       //地图点击回调函数
       onTap: _onMapTapped,
@@ -336,9 +444,18 @@ class _MyHomePageState extends State<MyHomePage> {
       //地图上的标志
       markers: Set<Marker>.of(mapMarkers.values),
       //地图上的线
-      polylines: Set<Polyline>.of(mapPolylines.values),
+      polylines: Set<Polyline>.of(mapPolylines),
     );
 
+    List<Widget> listWidget = <Widget>[
+      map,
+    ];
+    if (naviState.naviStatus) {
+      listWidget.add(Positioned(
+        left: 18.0,
+        child: Chip(label: Text(naviState.getlengthString())),
+      ));
+    }
     return Scaffold(
       //顶栏
       appBar: AppBar(
@@ -346,10 +463,16 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       //中央内容区
       body: Scaffold(
-        body: map,
+        body: ConstrainedBox(
+          constraints: BoxConstraints.expand(),
+          child: Stack(
+            alignment: Alignment.center,
+            children: listWidget,
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
           heroTag: 'locatebtn',
-          onPressed: _setCamUserLoaction,
+          onPressed: _setCameraPosition,
           tooltip: '回到当前位置' /*'Locate'*/,
           child: Icon(Icons.location_searching),
           mini: true,
@@ -365,10 +488,10 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         heroTag: 'navibtn',
         onPressed: _setNavigation,
-        tooltip: navistate.naviStatus
+        tooltip: naviState.naviStatus
             ? '停止导航'
             : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
-        child: navistate.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+        child: naviState.naviStatus ? Icon(Icons.stop) : Icon(Icons.play_arrow),
       ),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

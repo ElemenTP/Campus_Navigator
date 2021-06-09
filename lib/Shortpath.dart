@@ -2,8 +2,6 @@ import 'header.dart';
 
 class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
-  final double maxnum = double.infinity;
-  final double onBike = 0.5; //骑车使得道路打折的倍数（小于一）
   final int startvertexID; //起始点ID
   final int endvertexID; //终点ID
   final int transmethod; //运动方式
@@ -11,8 +9,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
   late double relativelen; //路径的相对长度
 
   double pathlength(Edge edge, int transmethod) {
-    return (edge.length - edge.length * (transmethod * this.onBike)) /
-        edge.crowding;
+    return (edge.length * (transmethod == 1 ? BIKESPEED : 1)) / edge.crowding;
   } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
 
   //距离等于实际距离乘上骑车加速系数的积除以拥挤度
@@ -20,13 +17,12 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       this.transmethod) {
     List<int> points =
         List.filled(mapmatrix.length, -1); //节点集，存放已经决定的最短路径的节点号,初始全为-1
-    List<double> dist = List.generate(mapmatrix.length, (_) => maxnum,
-        growable: false); //记录各点到起点的距离
-    List<int> path = List.generate(mapmatrix.length, (_) => -1,
-        growable: false); //存放各个节点到起点的路径的前驱。
+    List<double> dist =
+        List.filled(mapmatrix.length, double.infinity); //记录各点到起点的距离
+    List<int> path = List.filled(mapmatrix.length, -1); //存放各个节点到起点的路径的前驱。
     double min; //最小值，之后计算使用
     int pointTemp = -1; //不确定赋值
-    for (int i = 0; i < mapmatrix.length; i++) {
+    for (int i = 0; i < mapmatrix.length; ++i) {
       if (mapmatrix[startvertexID][i].availmthod >= transmethod) {
         dist[i] = pathlength(mapmatrix[startvertexID][i], transmethod);
         path[i] = startvertexID;
@@ -34,17 +30,17 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
     } //初始化各节点到起点的距离
     points[startvertexID] = 0;
     dist[startvertexID] = 0; //加入起点，开始将点加入节点集
-    for (int i = 0; i < mapmatrix.length; i++) {
+    for (int i = 0; i < mapmatrix.length; ++i) {
       //对节点集进行扩充
-      min = maxnum;
-      for (int j = 0; j < mapmatrix.length; j++) {
+      min = double.infinity;
+      for (int j = 0; j < mapmatrix.length; ++j) {
         if ((points[j] == -1) && (dist[j] < min)) {
           min = dist[j];
           pointTemp = j;
         }
       }
       points[pointTemp] = 1;
-      for (int j = 0; j < mapmatrix.length; j++) {
+      for (int j = 0; j < mapmatrix.length; ++j) {
         //重新调成起点到各个节点间的最短距离
         if ((points[j] == -1) &&
             (dist[j] >
@@ -77,11 +73,11 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
       //将route设为正序
     }
   }
-  getroute() {
+  List<int> getroute() {
     return this.route.reversed.toList();
   }
 
-  getrelativelen() {
+  double getrelativelen() {
     return this.relativelen;
   }
 }

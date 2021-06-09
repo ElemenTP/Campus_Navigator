@@ -1,6 +1,5 @@
-//import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
-//import 'dart:io';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
@@ -8,7 +7,31 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-//点集类
+import 'shortpath.dart';
+
+///自行车速度
+const double BIKESPEED = 0.5;
+
+///默认地图缩放比例
+const double DEFAULT_ZOOM = 18;
+
+///食堂名称
+const String CANTEEN_NAME = '食堂';
+
+///自定义LatLng类的fromJson构建函数
+LatLng latLngfromJson(Map<String, dynamic> json) {
+  return LatLng(json['latitude'] as double, json['longitude'] as double);
+}
+
+///自定义LatLng类的toJson构建函数
+Map<String, dynamic> latLngtoJson(LatLng latLng) {
+  return <String, dynamic>{
+    'latitude': latLng.latitude,
+    'longitude': latLng.longitude,
+  };
+}
+
+///点集类
 class MapVertex {
   List<LatLng> listVertex = [];
 
@@ -19,18 +42,14 @@ class MapVertex {
   MapVertex.fromJson(Map<String, dynamic> json) {
     List listVertexJson = json['listVertex'] as List;
     listVertexJson.forEach((element) {
-      listVertex.add(LatLng(
-          element['latitude'] as double, element['longitude'] as double));
+      listVertex.add(latLngfromJson(element));
     });
   }
 
   Map<String, dynamic> toJson() {
     List listVertexJson = [];
     listVertex.forEach((element) {
-      listVertexJson.add(<String, dynamic>{
-        'latitude': element.latitude,
-        'longitude': element.longitude,
-      });
+      listVertexJson.add(latLngtoJson(element));
     });
     return <String, dynamic>{
       'listVertex': listVertexJson,
@@ -38,21 +57,36 @@ class MapVertex {
   }
 }
 
-//建筑类
+///建筑类
 class Building {
-  //入口集，坐标编号
-  List<int> doors = [];
+  //建筑入口
+  List<LatLng> doors = [];
+  //建筑入口连接点
+  List<int> juncpoint = [];
   //描述集
   List<String> description = [];
 
   Building();
 
+  LatLng getApproxLocation() {
+    double latall = 0;
+    double lngall = 0;
+    doors.forEach((element) {
+      latall += element.latitude;
+      lngall += element.longitude;
+    });
+    return LatLng(latall / doors.length, lngall / doors.length);
+  }
+
   Building.fromJson(Map<String, dynamic> json) {
     List doorsJson = json['doors'] as List;
     doorsJson.forEach((element) {
-      doors.add(element as int);
+      doors.add(latLngfromJson(element));
     });
-
+    List juncpointJson = json['juncpoint'] as List;
+    juncpointJson.forEach((element) {
+      juncpoint.add(element as int);
+    });
     List descriptionJson = json['description'] as List;
     descriptionJson.forEach((element) {
       description.add(element as String);
@@ -60,14 +94,19 @@ class Building {
   }
 
   Map<String, dynamic> toJson() {
+    List doorsJson = [];
+    doors.forEach((element) {
+      doorsJson.add(latLngtoJson(element));
+    });
     return <String, dynamic>{
-      'doors': doors,
+      'doors': doorsJson,
+      'juncpoint': juncpoint,
       'description': description,
     };
   }
 }
 
-//建筑集类
+///建筑集类
 class MapBuilding {
   List<Building> listBuilding = [];
 
@@ -81,43 +120,35 @@ class MapBuilding {
   }
 
   Map<String, dynamic> toJson() {
-    /*List listBuildingJson = [];
-    listBuilding.forEach((element) {
-      listBuildingJson.add(element.toJson());
-    });*/
     return <String, dynamic>{
       'listBuilding': listBuilding,
     };
   }
 }
 
-//校区类
+///校区类
 class MapCampus {
   List<LatLng> campusShape = [];
   int gate = 0;
   int busstop = 0;
-  String name = 'My Campus';
+  String name = '校区';
 
   MapCampus();
 
   MapCampus.fromJson(Map<String, dynamic> json) {
     List campusShapeJson = json['campusShape'] as List;
     campusShapeJson.forEach((element) {
-      campusShape.add(LatLng(
-          element['latitude'] as double, element['longitude'] as double));
+      campusShape.add(latLngfromJson(element));
     });
-    gate = json['gate'] as int;
-    busstop = json['busstop'] as int;
-    name = json['name'] as String;
+    gate = json['gate'] as int? ?? 0;
+    busstop = json['busstop'] as int? ?? 0;
+    name = json['name'] as String? ?? '校区';
   }
 
   Map<String, dynamic> toJson() {
     List campusShapeJson = [];
     campusShape.forEach((element) {
-      campusShapeJson.add(<String, dynamic>{
-        'latitude': element.latitude,
-        'longitude': element.longitude,
-      });
+      campusShapeJson.add(latLngtoJson(element));
     });
     return <String, dynamic>{
       'campusShape': campusShapeJson,
@@ -128,7 +159,7 @@ class MapCampus {
   }
 }
 
-//边类
+///边类
 class Edge {
   int pointa = -1;
   int pointb = -1;
@@ -138,24 +169,7 @@ class Edge {
   int availmthod = -1;
   //边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
-  //构造可用的边函数，默认可通行自行车
-  Edge.avail(int iptpointa, int iptpointb, List<LatLng> listVertex,
-      {int iptavailmthod = 1})
-      : pointa = (iptpointa < 0
-            ? 0
-            : (iptpointa > listVertex.length ? listVertex.length : iptpointa)),
-        pointb = (iptpointb < 0
-            ? 0
-            : (iptpointb > listVertex.length ? listVertex.length : iptpointb)),
-        availmthod =
-            (iptavailmthod < 0 ? 0 : (iptavailmthod > 1 ? 1 : iptavailmthod)) {
-    if (pointa == pointb)
-      availmthod = pointa = pointb = -1;
-    else {
-      this.length =
-          AMapTools.distanceBetween(listVertex[pointa], listVertex[pointb]);
-    }
-  }
+
   //默认构造函数，将生成不通的边
   Edge();
 
@@ -169,39 +183,26 @@ class Edge {
   }
 
   Edge.fromJson(Map<String, dynamic> json) {
-    pointa = json['pointa'] ?? -1;
-    pointb = json['pointb'] ?? -1;
-    length = json['length'] ?? double.infinity;
-    if (pointa == -1 || pointb == -1 || length == double.infinity)
-      availmthod = -1;
-    else
-      availmthod = json['availmthod'] ?? -1;
+    pointa = json['pointa'] as int? ?? -1;
+    pointb = json['pointb'] as int? ?? -1;
+    length = json['length'] as double? ?? double.infinity;
+    availmthod = json['availmthod'] as int? ?? -1;
   }
 }
 
-//边集类
+///边集类
 class MapEdge {
   List<Edge> listEdge = [];
-  int squareSize = 0;
+
+  bool crowded = false;
 
   MapEdge();
-
-  List<List<Edge>> twoDimensionalize() {
-    List<List<Edge>> tmp = List.generate(
-        squareSize, (_) => List.generate(squareSize, (_) => Edge()));
-    listEdge.forEach((element) {
-      tmp[element.pointa][element.pointb] = element;
-      tmp[element.pointb][element.pointa] = element;
-    });
-    return tmp;
-  }
 
   MapEdge.fromJson(Map<String, dynamic> json) {
     List listEdgeJson = json['listEdge'] as List;
     listEdgeJson.forEach((element) {
       listEdge.add(Edge.fromJson(element));
     });
-    squareSize = json['squareSize'] as int;
   }
 
   Map<String, dynamic> toJson() {
@@ -211,60 +212,83 @@ class MapEdge {
     });*/
     return <String, dynamic>{
       'listEdge': listEdge,
-      'squareSize': squareSize,
     };
   }
 
   //随机拥挤度函数
-  randomCrowding() {
-    int randomSeed = DateTime.now().millisecondsSinceEpoch;
-    listEdge.forEach((element) {
-      element.crowding = Random(randomSeed).nextDouble();
-    });
+  void randomCrowding() {
+    if (!crowded) {
+      listEdge.forEach((element) {
+        element.crowding = 1.0 - Random().nextDouble();
+      });
+      crowded = true;
+    }
   }
 
-  disableCrowding() {
-    listEdge.forEach((element) {
-      element.crowding = 1;
-    });
+  void disableCrowding() {
+    if (crowded) {
+      listEdge.forEach((element) {
+        element.crowding = 1;
+      });
+      crowded = false;
+    }
   }
 }
 
-//校车时间表类
+///校车时间表类
 class BusTimeTable {
-  //始发校区编号
+  ///是否是校车
+  bool isSchoolBus = false;
+
+  ///始发校区编号
   int campusFrom = 0;
-  //目的校区编号
+
+  ///目的校区编号
   int campusTo = 0;
-  //出发时间的时
-  int setOutHour = 0;
-  //出发时间的分
-  int setOutMinute = 0;
-  //星期几？1-7，7是周日
-  int dayOfWeek = 1;
+
+  ///出发时间的时，0-23，违例视为任何时间
+  int setOutHour = -1;
+
+  ///出发时间的分，0-59，违例视为任何时间
+  int setOutMinute = -1;
+
+  ///星期几？1-7，7是周日，违例视为任何时间
+  int dayOfWeek = 0;
+
+  ///时间表描述
+  String description = '公共交通';
+
+  ///预计乘坐时间，单位分钟
+  int takeTime = 3600;
 
   BusTimeTable();
 
   BusTimeTable.fromJson(Map<String, dynamic> json) {
-    campusFrom = json['campusFrom'] as int;
-    campusTo = json['campusTo'] as int;
-    setOutHour = json['setOutHour'] as int;
-    setOutMinute = json['setOutMinute'] as int;
-    dayOfWeek = json['dayOfWeek'] as int;
+    isSchoolBus = json['isSchoolBus'] as bool? ?? false;
+    campusFrom = json['campusFrom'] as int? ?? 0;
+    campusTo = json['campusTo'] as int? ?? 0;
+    setOutHour = json['setOutHour'] as int? ?? -1;
+    setOutMinute = json['setOutMinute'] as int? ?? -1;
+    dayOfWeek = json['dayOfWeek'] as int? ?? 0;
+    description = json['description'] as String? ?? '公共交通';
+    takeTime = json['takeTime'] as int? ?? 3600;
   }
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
+      'isSchoolBus': isSchoolBus,
       'campusFrom': campusFrom,
       'campusTo': campusTo,
       'setOutHour': setOutHour,
       'setOutMinute': setOutMinute,
       'dayOfWeek': dayOfWeek,
+      'description': description,
+      'takeTime': takeTime,
     };
   }
 }
 
-//地图数据类
+///地图数据类
 class MapData {
   //校区与编号的对应表
   List<MapCampus> mapCampus = [];
@@ -300,6 +324,17 @@ class MapData {
     busTimeTableJson.forEach((element) {
       busTimeTable.add(BusTimeTable.fromJson(element));
     });
+    for (int i = 0; i < mapEdge.length; ++i) {
+      List<Edge> curListEdge = mapEdge[i].listEdge;
+      for (int j = 0; j < curListEdge.length; ++j) {
+        Edge curEdge = curListEdge[j];
+        if (curEdge.availmthod >= 0 && curEdge.length == double.infinity) {
+          curEdge.length = AMapTools.distanceBetween(
+              mapVertex[i].listVertex[curEdge.pointa],
+              mapVertex[i].listVertex[curEdge.pointb]);
+        }
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -312,139 +347,268 @@ class MapData {
     };
   }
 
-  bool locationisallowed(LatLng location) {
-    for (MapCampus it in mapCampus) {
-      if (AMapTools.latLngIsInPolygon(location, it.campusShape)) return true;
+  int locationInCampus(LatLng location) {
+    for (int i = 0; i < mapCampus.length; ++i) {
+      if (AMapTools.latLngIsInPolygon(location, mapCampus[i].campusShape))
+        return i;
     }
-    return false;
+    return -1;
+  }
+
+  int buildingInCampus(Building building) {
+    for (int i = 0; i < mapCampus.length; ++i) {
+      if (mapBuilding[i].listBuilding.contains(building)) return i;
+    }
+    return -1;
+  }
+
+  List<List<Edge>> getAdjacentMatrix(int campusNum) {
+    List<Edge> listEdge = mapEdge[campusNum].listEdge;
+    int squareSize = mapVertex[campusNum].listVertex.length;
+    List<List<Edge>> tmp = List.generate(
+        squareSize, (_) => List.generate(squareSize, (_) => Edge()));
+    listEdge.forEach((element) {
+      tmp[element.pointa][element.pointb] = element;
+      tmp[element.pointb][element.pointa] = element;
+    });
+    return tmp;
+  }
+
+  int nearestVertex(int campusNum, LatLng location) {
+    List<LatLng> listVertex = mapVertex[campusNum].listVertex;
+    late int shortestVtx;
+    double shortestLength = double.infinity;
+    for (int i = 0; i < listVertex.length; ++i) {
+      double tmp = AMapTools.distanceBetween(location, listVertex[i]);
+      if (tmp < shortestLength) {
+        shortestVtx = i;
+        shortestLength = tmp;
+      }
+    }
+    return shortestVtx;
+  }
+
+  LatLng getVertexLatLng(int campusNum, int vertexNum) {
+    return mapVertex[campusNum].listVertex[vertexNum];
+  }
+
+  //随机拥挤度函数
+  void randomCrowding() {
+    mapEdge.forEach((element) {
+      if (!element.crowded) {
+        element.listEdge.forEach((element1) {
+          element1.crowding = 1.0 - Random().nextDouble();
+        });
+        element.crowded = true;
+      }
+    });
+  }
+
+  void disableCrowding() {
+    mapEdge.forEach((element) {
+      if (element.crowded) {
+        element.listEdge.forEach((element2) {
+          element2.crowding = 1;
+        });
+        element.crowded = false;
+      }
+    });
+  }
+
+  List getBestTimeTable(int campusFrom, int campusTo, DateTime timeAtGetOn,
+      {bool? onlySchoolBus}) {
+    BusTimeTable? target;
+    int takenTime = 114514;
+    busTimeTable.forEach((element) {
+      if (onlySchoolBus != null) if (onlySchoolBus ^ element.isSchoolBus)
+        return;
+      if (element.campusFrom != campusFrom || element.campusTo != campusTo)
+        return;
+      if (element.dayOfWeek > 0 &&
+          element.dayOfWeek < 8 &&
+          element.dayOfWeek != timeAtGetOn.weekday) return;
+      int thisTakenTime = 0;
+      if (element.setOutHour >= 0 &&
+          element.setOutHour < 24 &&
+          element.setOutHour < timeAtGetOn.hour)
+        return;
+      else if (element.setOutHour >= 0 && element.setOutHour < 24)
+        thisTakenTime += (element.setOutHour - timeAtGetOn.hour) * 60;
+      if (element.setOutMinute >= 0 &&
+          element.setOutMinute < 60 &&
+          element.setOutMinute < timeAtGetOn.minute)
+        return;
+      else if (element.setOutMinute >= 0 && element.setOutMinute < 60)
+        thisTakenTime += element.setOutMinute - timeAtGetOn.minute;
+      thisTakenTime += element.takeTime;
+      if (thisTakenTime < takenTime) {
+        target = element;
+        takenTime = thisTakenTime;
+      }
+    });
+    if (target == null)
+      return [];
+    else
+      return [target, takenTime];
   }
 }
 
-//导航状态类
+///导航状态类
 class NaviState {
   bool naviStatus = false;
   bool crowding = false;
   bool onbike = false;
-  bool startOnUserLoc = true;
-  LatLng? startLocation;
-  Building? startBuilding;
-  List<LatLng> endLocation = [];
-  List<Building> endBuilding = [];
+  bool startOnUserLoc = false;
+  bool realTime = false;
+  bool minTime = false;
+  dynamic start;
+  List end = [];
+  double routeLength = 0;
 
   NaviState();
 
+  ///管理导航状态
   Future<bool> manageNaviState(BuildContext context) async {
     return await showDialog(
-        context: context,
-        builder: (context) => StatefulBuilder(
-              builder: (context, _setState) => AlertDialog(
-                title: startOnUserLoc ? Text('导航') : Text('路线'),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _getStartWidget(_setState),
-                      Row(
+            context: context,
+            builder: (context) => StatefulBuilder(
+                  builder: (context, _setState) => AlertDialog(
+                    title: Text('导航'),
+                    content: SingleChildScrollView(
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('以当前位置为起点：'),
-                          Switch(
-                              value: startOnUserLoc,
-                              onChanged: (state) {
-                                _setState(() {
-                                  startOnUserLoc = state;
-                                });
-                                startBuilding = null;
-                                startLocation = null;
-                                mapMarkers.remove('startLocationMarker');
-                              })
+                        children: <Widget>[
+                          _getStartWidget(_setState),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('以当前位置为起点：'),
+                              Switch(
+                                  value: startOnUserLoc,
+                                  onChanged: (state) {
+                                    _setState(() {
+                                      startOnUserLoc = state;
+                                      if (!state) realTime = state;
+                                    });
+                                    start = null;
+                                    mapMarkers.remove('start');
+                                  })
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('实时导航：'),
+                              Switch(
+                                value: realTime,
+                                onChanged: startOnUserLoc
+                                    ? (state) =>
+                                        _setState(() => realTime = state)
+                                    : null,
+                              )
+                            ],
+                          ),
+                          LimitedBox(
+                            maxHeight: 270,
+                            child: SingleChildScrollView(
+                              child: _getEndWidget(_setState),
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              _setState(() {
+                                start = null;
+                                end.clear();
+                              });
+                              mapMarkers.removeWhere(
+                                  (key, value) => !key.contains('onTap'));
+                            },
+                            icon: Icon(Icons.delete),
+                            label: Text('清除全部点'),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('骑车：'),
+                              Switch(
+                                value: onbike,
+                                onChanged: (state) =>
+                                    _setState(() => onbike = state),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('最短时间：'),
+                              Switch(
+                                value: minTime,
+                                onChanged: (state) => _setState(() {
+                                  minTime = state;
+                                  if (!state) crowding = state;
+                                }),
+                              )
+                            ],
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('拥挤：'),
+                              Switch(
+                                value: crowding,
+                                onChanged: minTime
+                                    ? (state) =>
+                                        _setState(() => crowding = state)
+                                    : null,
+                              )
+                            ],
+                          ),
+                          Text(
+                            '提示：点击可删除起点/终点',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.normal),
+                          ),
                         ],
                       ),
-                      LimitedBox(
-                        maxHeight: 270,
-                        child: SingleChildScrollView(
-                          child: _getEndWidget(_setState),
-                        ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () =>
+                            Navigator.of(context).pop(false), //关闭对话框
                       ),
-                      TextButton.icon(
-                        onPressed: () {
-                          _setState(() {
-                            endLocation.clear();
-                            endBuilding.clear();
-                          });
-                          mapMarkers.removeWhere((key, value) =>
-                              key.contains('endLocationMarker'));
-                        },
-                        icon: Icon(Icons.delete),
-                        label: Text('清除全部终点'),
+                      TextButton(
+                        child: Text('停止'),
+                        onPressed: naviStatus
+                            ? () {
+                                naviStatus = false;
+                                if (logEnabled)
+                                  logSink.write(
+                                      DateTime.now().toString() + ': 停止导航。\n');
+                                Navigator.of(context).pop(true);
+                              }
+                            : null, //关闭对话框
                       ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('骑车：'),
-                          Switch(
-                              value: onbike,
-                              onChanged: (state) {
-                                _setState(() {
-                                  onbike = state;
-                                });
-                              })
-                        ],
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('拥挤：'),
-                          Switch(
-                              value: crowding,
-                              onChanged: (state) {
-                                _setState(() {
-                                  crowding = state;
-                                });
-                              })
-                        ],
-                      ),
-                      Text(
-                        '提示：点击可删除起点/终点',
-                        style: TextStyle(
-                            fontSize: 12, fontWeight: FontWeight.normal),
+                      TextButton(
+                        child: Text('开始'),
+                        onPressed: (startOnUserLoc || start != null) &&
+                                end.isNotEmpty
+                            ? () {
+                                naviStatus = true;
+                                if (logEnabled)
+                                  logSink.write(
+                                      DateTime.now().toString() + ': 开始导航。\n');
+                                Navigator.of(context).pop(true);
+                              }
+                            : null, //关闭对话框
                       ),
                     ],
                   ),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
-                  ),
-                  TextButton(
-                    child: Text('停止'),
-                    onPressed: naviStatus
-                        ? () {
-                            naviStatus = false;
-                            Navigator.of(context).pop(true);
-                          }
-                        : null, //关闭对话框
-                  ),
-                  TextButton(
-                    child: startOnUserLoc ? Text('展示') : Text('开始'),
-                    onPressed: _canStartNavi()
-                        ? () {
-                            naviStatus = true;
-                            Navigator.of(context).pop(true);
-                          }
-                        : null, //关闭对话框
-                  ),
-                ],
-              ),
-            ));
+                )) ??
+        false;
   }
 
-  bool _canStartNavi() {
-    return (startOnUserLoc || startLocation != null || startBuilding != null) &&
-        (endLocation.isNotEmpty || endBuilding.isNotEmpty);
-  }
-
+  ///获取起点对应的widget
   Widget _getStartWidget(void Function(void Function()) setState) {
     if (startOnUserLoc) {
       return Card(
@@ -452,27 +616,23 @@ class NaviState {
           title: Text('当前位置。'),
         ),
       );
-    } else if (startLocation != null) {
+    } else if (start.runtimeType == LatLng) {
       return Card(
         child: ListTile(
-          title: Text(
-              '坐标：${startLocation!.longitude}，${startLocation!.latitude}。'),
+          title: Text('坐标：${start!.longitude}，${start!.latitude}。'),
           onTap: () {
-            setState(() {
-              startLocation = null;
-            });
-            mapMarkers.remove('startLocationMarker');
+            setState(() => start = null);
+            mapMarkers.remove('start');
           },
         ),
       );
-    } else if (startBuilding != null) {
+    } else if (start.runtimeType == Building) {
       return Card(
         child: ListTile(
-          title: Text('建筑：${startBuilding!.description[0]}。'),
+          title: Text('建筑：${start!.description.first}。'),
           onTap: () {
-            setState(() {
-              startBuilding = null;
-            });
+            setState(() => start = null);
+            mapMarkers.remove('start');
           },
         ),
       );
@@ -485,33 +645,29 @@ class NaviState {
     }
   }
 
+  ///获取终点对应的widget
   Widget _getEndWidget(void Function(void Function()) setState) {
     List<Widget> inColumn = [];
-    endLocation.forEach((element) {
-      inColumn.add(Card(
-        child: ListTile(
-          title: Text('坐标：${element.longitude}，${element.latitude}。'),
-          onTap: () {
-            setState(() {
-              endLocation.remove(element);
-            });
-            mapMarkers
-                .remove('endLocationMarker' + element.toJson().toString());
-          },
-        ),
-      ));
-    });
-    endBuilding.forEach((element) {
-      inColumn.add(Card(
-        child: ListTile(
-          title: Text('建筑：${element.description[0]}。'),
-          onTap: () {
-            setState(() {
-              endBuilding.remove(element);
-            });
-          },
-        ),
-      ));
+    end.forEach((element) {
+      inColumn.add(element.runtimeType == LatLng
+          ? Card(
+              child: ListTile(
+                title: Text('坐标：${element.longitude}，${element.latitude}。'),
+                onTap: () {
+                  setState(() => end.remove(element));
+                  mapMarkers.remove('end' + element.hashCode.toString());
+                },
+              ),
+            )
+          : Card(
+              child: ListTile(
+                title: Text('建筑：${element.description.first}。'),
+                onTap: () {
+                  setState(() => end.remove(element));
+                  mapMarkers.remove('end' + element.hashCode.toString());
+                },
+              ),
+            ));
     });
     if (inColumn.isEmpty)
       inColumn.add(Card(
@@ -523,73 +679,550 @@ class NaviState {
       children: inColumn,
     );
   }
+
+  ///按不同导航策略获取路程长度对应的字符串
+  String getlengthString() {
+    if (minTime) {
+      return '约' + (routeLength / 60).toStringAsFixed(0) + '分钟';
+    } else {
+      return '约' +
+          (routeLength / (onbike ? BIKESPEED : 1)).toStringAsFixed(0) +
+          '米';
+    }
+  }
 }
 
-//用户设置
+///导航工具类
+class NaviTools {
+  static const Map<int, dynamic> _colortype = {
+    3: Colors.white,
+    2: Colors.green,
+    1: Colors.amber,
+    0: Colors.red,
+  };
+
+  ///导航道路，传入dijstra得到的route和某校区点集，返回直线
+  static void displayRoute(List<int> path, int campusNum) {
+    List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
+    List<LatLng> listvertex = mapData.mapVertex[campusNum].listVertex;
+    for (int i = 0; i < path.length - 1; ++i) {
+      int a = edgevertex[path[i]][path[i + 1]].crowding * 3 ~/ 1;
+      Polyline polyline = Polyline(
+        points: <LatLng>[listvertex[path[i]], listvertex[path[i + 1]]],
+        color: _colortype[a],
+        capType: CapType.arrow,
+        joinType: JoinType.round,
+      );
+      mapPolylines.add(polyline);
+    }
+  }
+
+  ///传入两点（建筑点和路径点），返回虚线
+  static void entryRoute(LatLng from, LatLng to) {
+    Polyline polyline = Polyline(
+      points: <LatLng>[from, to],
+      dashLineType: DashLineType.square,
+      capType: CapType.arrow,
+      joinType: JoinType.round,
+    );
+    mapPolylines.add(polyline);
+  }
+
+  ///生成一个以某点为中心的近似圆
+  static List<LatLng> circleAround(LatLng center) {
+    const int times = 8; //多边形的点数
+    Offset res = Offset(center.latitude, center.longitude);
+    List<LatLng> circlelist = [];
+    for (int i = 0; i < times; ++i) {
+      Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
+      Offset c1 = Offset(
+          res.dx + c.dx, res.dy + c.dy / cos((res.dx + c.dx) / 180 * pi));
+
+      circlelist.add(LatLng(c1.dx, c1.dy));
+    }
+    return circlelist;
+  }
+
+  ///检查定位是否正常
+  static bool stateLocationReqiurement(BuildContext context) {
+    //没有定位权限，提示用户授予权限
+    if (!locatePermissionStatus.isGranted) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('提示'),
+                content: Text('欲使用此功能，请授予定位权限。'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('取消'),
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  ),
+                  TextButton(
+                    child: Text('确定'),
+                    onPressed: () async {
+                      locatePermissionStatus =
+                          await Permission.location.request();
+                      Navigator.of(context).pop();
+                    }, //关闭对话框
+                  ),
+                ],
+              ));
+      return false;
+    }
+    //定位不正常（时间time为0），提示用户打开定位开关
+    else if (userLocation.time == 0) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text('提示'),
+                content: Text('未开启系统定位开关，或者系统定位出错。'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('确定'),
+                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  ),
+                ],
+              ));
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  ///展示导航路线函数
+  static Future<void> showRoute(BuildContext context) async {
+    if (naviState.naviStatus) {
+      mapPolylines.clear();
+      naviState.routeLength = 0;
+      bool showRouteResult = false;
+      try {
+        DateTime routeBeginTime = DateTime.now();
+        if (logEnabled)
+          logSink.write(routeBeginTime.toString() + ': 路线计算函数开始。\n');
+        if (naviState.startOnUserLoc) {
+          if (stateLocationReqiurement(context)) {
+            int startCampus = mapData.locationInCampus(userLocation.latLng);
+            if (startCampus >= 0) {
+              naviState.start = userLocation.latLng;
+              if (logEnabled)
+                logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
+            } else {
+              showRouteResult = false;
+              throw 'notInAnyCampus';
+            }
+          } else {
+            showRouteResult = false;
+            throw 'canNotLocate';
+          }
+        }
+        if (logEnabled) {
+          logSink.write(DateTime.now().toString() +
+              ': ' +
+              '骑车' +
+              (naviState.onbike ? '开启' : '关闭') +
+              '，拥挤度' +
+              (naviState.crowding ? '开启' : '关闭') +
+              '。\n');
+          logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
+        }
+        List naviOrder = [naviState.start];
+        naviOrder.addAll(naviState.end);
+        for (int i = 0; i < naviOrder.length - 2; ++i) {
+          int nextEnd = i + 1;
+          double minDistance = double.infinity;
+          for (int j = i + 1; j < naviOrder.length; ++j) {
+            double curDistance = AMapTools.distanceBetween(
+                getLocation(naviOrder[i]), getLocation(naviOrder[j]));
+            if (curDistance < minDistance) {
+              minDistance = curDistance;
+              nextEnd = j;
+            }
+          }
+          if (nextEnd != i + 1) {
+            var tmp = naviOrder[i + 1];
+            naviOrder[i + 1] = naviOrder[nextEnd];
+            naviOrder[nextEnd] = tmp;
+          }
+        }
+        int transmethod = naviState.onbike ? 1 : 0;
+        naviState.crowding
+            ? mapData.randomCrowding()
+            : mapData.disableCrowding();
+        if (logEnabled) {
+          logSink.write(DateTime.now().toString() + ': 完成目的地排序。\n');
+          naviOrder.forEach((element) {
+            logSink.write(DateTime.now().toString() +
+                ': ' +
+                (element.runtimeType == LatLng
+                    ? '坐标: ' + element.toJson().toString()
+                    : '建筑: ' + (element as Building).description.first) +
+                '\n');
+          });
+          logSink.write(DateTime.now().toString() + ': 开始类型转换。\n');
+        }
+        for (int i = 0; i < naviOrder.length; ++i) {
+          int campusNum = 0;
+          if (naviOrder[i].runtimeType == LatLng) {
+            campusNum = mapData.locationInCampus(naviOrder[i]);
+            int nearVertex = mapData.nearestVertex(campusNum, naviOrder[i]);
+            LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
+            double juncLength =
+                (AMapTools.distanceBetween(nearLatLng, naviOrder[i]) *
+                        (naviState.onbike ? BIKESPEED : 1)) /
+                    (naviState.crowding ? 1 - Random().nextDouble() : 1);
+            if (i != 0) {
+              entryRoute(nearLatLng, naviOrder[i]);
+              naviState.routeLength += juncLength;
+            }
+            if (i != naviOrder.length - 1) {
+              entryRoute(naviOrder[i], nearLatLng);
+              naviState.routeLength += juncLength;
+            }
+            naviOrder[i] = NaviLoc(campusNum, nearVertex, naviOrder[i]);
+          } else if (naviOrder[i].runtimeType == Building) {
+            Building curBuilding = naviOrder[i] as Building;
+            campusNum = mapData.buildingInCampus(curBuilding);
+            LatLng disReference = i == 0
+                ? getLocation(naviOrder[1])
+                : (naviOrder[i - 1] as NaviLoc).location;
+            int choosedDoor = 0;
+            if (curBuilding.doors.length > 1) {
+              double minDistance = double.infinity;
+              for (int j = 0; j < curBuilding.doors.length; ++j) {
+                double curDistance = AMapTools.distanceBetween(
+                    disReference, curBuilding.doors[j]);
+                if (curDistance < minDistance) {
+                  minDistance = curDistance;
+                  choosedDoor = j;
+                }
+              }
+            }
+            LatLng juncLatLng = mapData.getVertexLatLng(
+                campusNum, curBuilding.juncpoint[choosedDoor]);
+            double juncLength = (AMapTools.distanceBetween(
+                        juncLatLng, curBuilding.doors[choosedDoor]) *
+                    (naviState.onbike ? BIKESPEED : 1)) /
+                (naviState.crowding ? 1 - Random().nextDouble() : 1);
+            if (i != 0) {
+              entryRoute(juncLatLng, curBuilding.doors[choosedDoor]);
+              naviState.routeLength += juncLength;
+            }
+            if (i != naviOrder.length - 1) {
+              entryRoute(curBuilding.doors[choosedDoor], juncLatLng);
+              naviState.routeLength += juncLength;
+            }
+            naviOrder[i] = NaviLoc(
+                campusNum,
+                curBuilding.juncpoint[choosedDoor],
+                curBuilding.doors[choosedDoor]);
+          }
+        }
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 类型转换结束，开始执行狄杰斯特拉算法。\n');
+        for (int i = 0; i < naviOrder.length - 1; ++i) {
+          NaviLoc startVertex = naviOrder[i] as NaviLoc;
+          NaviLoc endVertex = naviOrder[i + 1] as NaviLoc;
+          if (startVertex.campusNum == endVertex.campusNum) {
+            if (startVertex.vertexNum != endVertex.vertexNum) {
+              Shortpath path = Shortpath(
+                  mapData.getAdjacentMatrix(startVertex.campusNum),
+                  startVertex.vertexNum,
+                  endVertex.vertexNum,
+                  transmethod);
+              naviState.routeLength += path.getrelativelen();
+              displayRoute(path.getroute(), startVertex.campusNum);
+            }
+          } else {
+            double lengthPublicTransStart = 0;
+            double lengthPublicTransEnd = 0;
+            double lengthSchoolBusStart = 0;
+            double lengthSchoolBusEnd = 0;
+            List<int> routePublicTransStart = [];
+            List<int> routePublicTransEnd = [];
+            List<int> routeSchoolBusStart = [];
+            List<int> routeSchoolBusEnd = [];
+            int startBusStop = mapData.mapCampus[startVertex.campusNum].busstop;
+            int endBusStop = mapData.mapCampus[endVertex.campusNum].busstop;
+            int startGate = mapData.mapCampus[startVertex.campusNum].gate;
+            int endGate = mapData.mapCampus[endVertex.campusNum].gate;
+            if (startVertex.vertexNum != startBusStop) {
+              Shortpath startBusStopPath = Shortpath(
+                  mapData.getAdjacentMatrix(startVertex.campusNum),
+                  startVertex.vertexNum,
+                  startBusStop,
+                  transmethod);
+              lengthSchoolBusStart = startBusStopPath.getrelativelen();
+              routeSchoolBusStart = startBusStopPath.getroute();
+            }
+            if (startVertex.vertexNum != startGate) {
+              Shortpath startGatePath = Shortpath(
+                  mapData.getAdjacentMatrix(startVertex.campusNum),
+                  startVertex.vertexNum,
+                  startGate,
+                  transmethod);
+              lengthPublicTransStart = startGatePath.getrelativelen();
+              routePublicTransStart = startGatePath.getroute();
+            }
+            if (endVertex.vertexNum != endBusStop) {
+              Shortpath endBusStopPath = Shortpath(
+                  mapData.getAdjacentMatrix(endVertex.campusNum),
+                  endBusStop,
+                  endVertex.vertexNum,
+                  transmethod);
+              lengthSchoolBusEnd = endBusStopPath.getrelativelen();
+              routeSchoolBusEnd = endBusStopPath.getroute();
+            }
+            if (endVertex.vertexNum != endGate) {
+              Shortpath endGatePath = Shortpath(
+                  mapData.getAdjacentMatrix(endVertex.campusNum),
+                  endGate,
+                  endVertex.vertexNum,
+                  transmethod);
+              lengthPublicTransEnd = endGatePath.getrelativelen();
+              routePublicTransEnd = endGatePath.getroute();
+            }
+            DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
+              seconds: (naviState.routeLength + lengthPublicTransStart).toInt(),
+            ));
+            DateTime timeAtGetOnSchoolBus = routeBeginTime.add(Duration(
+                seconds:
+                    (naviState.routeLength + lengthSchoolBusStart).toInt()));
+            List bestPubTrans = mapData.getBestTimeTable(
+                startVertex.campusNum, endVertex.campusNum, timeAtGetOnPubTrans,
+                onlySchoolBus: false);
+            List bestSchoolBus = mapData.getBestTimeTable(startVertex.campusNum,
+                endVertex.campusNum, timeAtGetOnSchoolBus,
+                onlySchoolBus: true);
+            if (bestPubTrans.isEmpty && bestSchoolBus.isEmpty) throw '!';
+            late String toPrint;
+            String startCampusName =
+                mapData.mapCampus[startVertex.campusNum].name;
+            String endCampusName = mapData.mapCampus[endVertex.campusNum].name;
+            if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
+              naviState.routeLength += (lengthSchoolBusStart +
+                  lengthSchoolBusEnd +
+                  (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
+              if (routeSchoolBusStart.isNotEmpty)
+                displayRoute(routeSchoolBusStart, startVertex.campusNum);
+              if (routeSchoolBusEnd.isNotEmpty)
+                displayRoute(routeSchoolBusEnd, endVertex.campusNum);
+              toPrint = (bestSchoolBus.first as BusTimeTable).description;
+            } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
+              naviState.routeLength += (lengthPublicTransStart +
+                  lengthPublicTransEnd +
+                  (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
+              if (routePublicTransStart.isNotEmpty)
+                displayRoute(routePublicTransStart, startVertex.campusNum);
+              if (routePublicTransEnd.isNotEmpty)
+                displayRoute(routePublicTransEnd, endVertex.campusNum);
+              toPrint = (bestPubTrans.first as BusTimeTable).description;
+            } else {
+              if ((lengthSchoolBusStart +
+                      lengthSchoolBusEnd +
+                      (naviState.minTime
+                          ? (bestSchoolBus.last as int) * 60
+                          : 0)) >
+                  (lengthPublicTransStart +
+                      lengthPublicTransEnd +
+                      (naviState.minTime
+                          ? (bestPubTrans.last as int) * 60
+                          : 0))) {
+                naviState.routeLength += (lengthPublicTransStart +
+                    lengthPublicTransEnd +
+                    (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
+                if (routePublicTransStart.isNotEmpty)
+                  displayRoute(routePublicTransStart, startVertex.campusNum);
+                if (routePublicTransEnd.isNotEmpty)
+                  displayRoute(routePublicTransEnd, endVertex.campusNum);
+                toPrint = (bestPubTrans.first as BusTimeTable).description;
+              } else {
+                naviState.routeLength += (lengthSchoolBusStart +
+                    lengthSchoolBusEnd +
+                    (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
+                if (routeSchoolBusStart.isNotEmpty)
+                  displayRoute(routeSchoolBusStart, startVertex.campusNum);
+                if (routeSchoolBusEnd.isNotEmpty)
+                  displayRoute(routeSchoolBusEnd, endVertex.campusNum);
+                toPrint = (bestSchoolBus.first as BusTimeTable).description;
+              }
+            }
+            await showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text('从$startCampusName移动到$endCampusName，请乘坐' +
+                          toPrint +
+                          '。'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('取消'),
+                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        ),
+                      ],
+                    ));
+          }
+        }
+        if (logEnabled)
+          logSink
+              .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
+        showRouteResult = true;
+      } catch (e) {
+        if (e == 'canNotLocate') {
+        } else if (e == 'notInAnyCampus') {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('您不在任何校区内。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 您不在任何校区内。\n');
+        } else {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                    title: Text('提示'),
+                    content: Text('未找到路线。请检查地图数据。'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      ),
+                    ],
+                  ));
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+        }
+      }
+      if (!showRouteResult) {
+        naviState.naviStatus = false;
+        if (logEnabled) logSink.write(DateTime.now().toString() + ': 停止导航。\n');
+        mapPolylines.clear();
+        naviState.routeLength = 0;
+      }
+    } else {
+      mapPolylines.clear();
+      naviState.routeLength = 0;
+    }
+  }
+
+  ///从LatLng类型或者Building类型中获取标志位置
+  static LatLng getLocation(dynamic element) {
+    if (element.runtimeType == LatLng)
+      return element;
+    else
+      return (element as Building).getApproxLocation();
+  }
+}
+
+///用于进行狄杰斯特拉算法的类
+class NaviLoc {
+  late int campusNum;
+  late int vertexNum;
+  late LatLng location;
+
+  NaviLoc(this.campusNum, this.vertexNum, this.location);
+}
+
+///逻辑位置类
+class LogicLoc {
+  ///建筑名:建筑别名
+  Map<String, List<String>> logicLoc = {};
+
+  LogicLoc();
+
+  LogicLoc.fromJson(Map<String, dynamic> json) {
+    Map logicLocJson = json['logicLoc'] as Map;
+    logicLocJson.forEach((key, value) {
+      logicLoc[key] = List<String>.from(value);
+    });
+  }
+
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'logicLoc': logicLoc,
+    };
+  }
+}
+
+///用户设置
 late SharedPreferences prefs;
 
-//地图数据
+///地图数据
 late MapData mapData;
 
-//导航状态
-NaviState navistate = NaviState();
+///逻辑位置
+late LogicLoc mapLogicLoc;
 
-//地图Marker
+///导航状态
+NaviState naviState = NaviState();
+
+///地图Marker
 Map<String, Marker> mapMarkers = {};
 
-//地图直线
-Map<String, Polyline> mapPolylines = {};
+///地图直线
+List<Polyline> mapPolylines = [];
 
-//地图控制器
+///地图控制器
 AMapController? mapController;
 
-//用户位置
-AMapLocation userPosition = AMapLocation(latLng: LatLng(39.909187, 116.397451));
+///用户位置
+AMapLocation userLocation = AMapLocation(latLng: LatLng(39.909187, 116.397451));
 
-//定位权限状态
+///定位权限状态
 PermissionStatus locatePermissionStatus = PermissionStatus.denied;
 
-bool stateLocationReqiurement(BuildContext context) {
-  //没有定位权限，提示用户授予权限
-  if (!locatePermissionStatus.isGranted) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('提示'),
-              content: Text('欲使用此功能，请授予定位权限。'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('取消'),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                ),
-                TextButton(
-                  child: Text('确定'),
-                  onPressed: () async {
-                    locatePermissionStatus =
-                        await Permission.location.request();
-                    Navigator.of(context).pop();
-                  }, //关闭对话框
-                ),
-              ],
-            ));
-    return false;
+///日志开关
+late bool logEnabled;
+
+///日志文件
+late File logFile;
+
+///日志写IOSink
+late IOSink logSink;
+
+class CanteenArrange {
+  late double pathtime;
+  late int flowin;
+  late int flowout;
+  late int result;
+  static const int capacity = 150;
+  static const Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
+  static const Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
+  CanteenArrange(this.pathtime) {
+    int number = Random().nextInt(150);
+    for (double i = 0; i <= pathtime; i += 30) {
+      int tmp = 0;
+
+      if (number / capacity <= 0.25) {
+        tmp = 1;
+      } else if (number / capacity <= 0.75) {
+        tmp = 2;
+      } else
+        tmp = 3;
+      var fin = ntovin[tmp] ?? 0;
+      flowin = fin;
+      var fout = ntovout[tmp] ?? 0;
+      flowout = fout;
+      number = number + flowin - flowout;
+    }
+    result = number;
   }
-  //定位不正常（时间time为0），提示用户打开定位开关
-  else if (userPosition.time == 0) {
-    showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: Text('提示'),
-              content: Text('未开启系统定位开关，或者系统定位出错。'),
-              actions: <Widget>[
-                TextButton(
-                  child: Text('确定'),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                ),
-              ],
-            ));
-    return false;
-  } else {
-    return true;
+
+  double getTime() {
+    if (result > capacity)
+      return double.infinity;
+    else
+      return 12 * result + pathtime;
+  }
+
+  double getPayload() {
+    return (result / capacity) * 100;
   }
 }
