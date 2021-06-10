@@ -213,7 +213,6 @@ class _MySearchPageState extends State<MySearchPage> {
                     ));
             if (logEnabled)
               logSink.write(DateTime.now().toString() + ': 未搜索到附近建筑。\n');
-            return;
           } else {
             searchResult.clear();
             nearBuilding.forEach((element) {
@@ -258,7 +257,8 @@ class _MySearchPageState extends State<MySearchPage> {
                     ],
                   ));
           if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+            logSink.write(DateTime.now().toString() + ': 未找到路线。停止搜索附近建筑。\n');
+          return;
         }
         if (logEnabled)
           logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
@@ -275,8 +275,12 @@ class _MySearchPageState extends State<MySearchPage> {
                     ),
                   ],
                 ));
-        return;
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止搜索附近建筑。\n');
       }
+    } else {
+      if (logEnabled)
+        logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止搜索附近建筑。\n');
     }
   }
 
@@ -319,7 +323,6 @@ class _MySearchPageState extends State<MySearchPage> {
                     ));
             if (logEnabled)
               logSink.write(DateTime.now().toString() + ': 未搜索到符合条件的食堂。\n');
-            return;
           } else {
             searchResult.clear();
             canteens.forEach((element) {
@@ -372,10 +375,11 @@ class _MySearchPageState extends State<MySearchPage> {
                     ],
                   ));
           if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
+            logSink.write(DateTime.now().toString() + ': 未找到路线。停止食堂负载均衡。\n');
+          return;
         }
         if (logEnabled)
-          logSink.write(DateTime.now().toString() + ': 结束食堂负载均衡。\n');
+          logSink.write(DateTime.now().toString() + ': 食堂负载均衡完毕。\n');
       } else {
         showDialog(
             context: context,
@@ -389,8 +393,12 @@ class _MySearchPageState extends State<MySearchPage> {
                     ),
                   ],
                 ));
-        return;
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止食堂负载均衡。\n');
       }
+    } else {
+      if (logEnabled)
+        logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止食堂负载均衡。\n');
     }
   }
 
