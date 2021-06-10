@@ -15,12 +15,16 @@ import 'searchpage.dart'; //搜索界面
 import 'settingpage.dart'; //设置界面
 
 void main() async {
+  //初始化Flutter环境
   WidgetsFlutterBinding.ensureInitialized();
+  //获取持久化设置内容
   prefs = await SharedPreferences.getInstance();
+  //初始化日志功能
   logEnabled = prefs.getBool('logEnabled') ?? false;
   Directory logFileDir = await getApplicationDocumentsDirectory();
   logFile = File(logFileDir.path + '/NaviLog.txt');
   logSink = logFile.openWrite(mode: FileMode.append);
+  //初始化地图数据
   String? dataFileDir = prefs.getString('dataFileDir');
   if (dataFileDir == null) {
     mapData = MapData.fromJson(
@@ -35,6 +39,7 @@ void main() async {
           dataFileDir.split('/').last +
           '\n');
   }
+  //初始化逻辑位置
   String? logicLocFileDir = prefs.getString('logicLocFileDir');
   if (logicLocFileDir == null) {
     mapLogicLoc = LogicLoc();
@@ -49,6 +54,7 @@ void main() async {
           logicLocFileDir.split('/').last +
           '\n');
   }
+  //运行应用界面
   runApp(MyApp());
 }
 
@@ -79,13 +85,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   ///底部导航栏内容
   static const List<BottomNavigationBarItem> _navbaritems = [
-    ///搜索标志
+    //搜索标志
     BottomNavigationBarItem(
       icon: Icon(Icons.search),
       label: '搜索' /*'Search'*/,
     ),
 
-    ///设置标志
+    //设置标志
     BottomNavigationBarItem(
       icon: Icon(Icons.settings),
       label: '设置' /*'Setting'*/,
@@ -99,6 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ///地图点击回调函数，在被点击处创建标志。
   void _onMapTapped(LatLng taplocation) async {
+    //判断点是否在任何校区内，在就创建点，不在则弹窗提示
     if (mapData.locationInCampus(taplocation) >= 0) {
       setState(() {
         mapMarkers['onTap'] =
@@ -241,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage> {
     prefs.setDouble('lastCamPositionzoom', endPosition.zoom);
   }
 
-  ///用户位置改变回调函数，记录用户位置，当选择了实时导航时进行导航
+  ///用户位置改变回调函数，记录用户位置，当选择了实时导航时进行实时导航
   void _onLocationChanged(AMapLocation aMapLocation) async {
     userLocation = aMapLocation;
     if (naviState.naviStatus && naviState.realTime && userLocation.time != 0) {
@@ -264,11 +271,27 @@ class _MyHomePageState extends State<MyHomePage> {
         naviState.routeLength = 0;
         setState(() {});
       } else {
-        Polyline expectedRoutePolyline = mapPolylines.first;
-        LatLng destLatLng = expectedRoutePolyline.points.last;
+        LatLng depaLatLng = mapPolylines.first.points.first;
+        LatLng destLatLng = mapPolylines.first.points.last;
+        double polylineLength =
+            AMapTools.distanceBetween(depaLatLng, destLatLng);
+        double distanceDepa =
+            AMapTools.distanceBetween(userLocation.latLng, depaLatLng);
         double distanceDest =
             AMapTools.distanceBetween(userLocation.latLng, destLatLng);
-        if (distanceDest > 50) {
+        double distancetoLine = (2 *
+                AMapTools.calculateArea(
+                    <LatLng>[userLocation.latLng, depaLatLng, destLatLng])) /
+            polylineLength;
+        double nextLength = 1919810;
+        double distanceNextDest = 114514;
+        if (mapPolylines.length > 1) {
+          nextLength = AMapTools.distanceBetween(
+              mapPolylines[1].points.first, mapPolylines[1].points.last);
+          distanceNextDest = AMapTools.distanceBetween(
+              userLocation.latLng, mapPolylines[1].points.last);
+        }
+        if (distancetoLine > 40 || (distanceDest > polylineLength + 10)) {
           if (mapData.locationInCampus(userLocation.latLng) ==
               mapData.locationInCampus(destLatLng)) {
             showDialog(
@@ -288,7 +311,9 @@ class _MyHomePageState extends State<MyHomePage> {
             await NaviTools.showRoute(context);
             setState(() {});
           }
-        } else if (distanceDest < 10) {
+        } else if (distanceDest < 10 ||
+            (distanceDepa > polylineLength + 10) ||
+            distanceNextDest > nextLength) {
           if (logEnabled)
             logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
           setState(() => mapPolylines.removeAt(0));
