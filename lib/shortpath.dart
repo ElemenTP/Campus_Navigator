@@ -1,18 +1,28 @@
 import 'header.dart';
 
-class ShortPath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
-{
-  final int startvertexID; //起始点ID
-  final int endvertexID; //终点ID
-  final int transmethod; //运动方式
-  List<int> route = []; //路径集
-  late double relativelen; //路径的相对长度
+///最短路径类，输入路径矩阵和起点，终点，交通类型，得到一条路径
+class ShortPath {
+  ///起始点ID
+  final int startvertexID;
 
+  ///终点ID
+  final int endvertexID;
+
+  ///运动方式
+  final int transmethod;
+
+  ///路径集
+  List<int> route = [];
+
+  ///路径的相对长度
+  late double relativelen;
+
+  ///给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
   double pathlength(Edge edge, int transmethod) {
     return (edge.length * (transmethod == 1 ? BIKESPEED : 1)) / edge.crowding;
-  } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
+  }
 
-  //距离等于实际距离乘上骑车加速系数的积除以拥挤度
+  ///距离等于实际距离乘上骑车加速系数的积除以拥挤度
   ShortPath(List<List<Edge>> mapmatrix, this.startvertexID, this.endvertexID,
       this.transmethod) {
     List<int> points =
@@ -61,7 +71,6 @@ class ShortPath //最短路径类，输入路径矩阵和起点，终点，运�
     } //发现如何都到不了终点。
     else {
       relativelen = dist[pointTemp];
-      //List<int> route = [];
       route.add(endvertexID);
       int pre = path[endvertexID];
       while (pre != startvertexID) {
@@ -70,14 +79,13 @@ class ShortPath //最短路径类，输入路径矩阵和起点，终点，运�
       }
       route.add(startvertexID);
       //通过前缀把路径从终点到起点加入
-      //将route设为正序
     }
   }
   List<int> getroute() {
-    return this.route.reversed.toList();
+    return route.reversed.toList();
   }
 
   double getrelativelen() {
-    return this.relativelen;
+    return relativelen;
   }
 }
