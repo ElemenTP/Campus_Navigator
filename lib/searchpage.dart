@@ -1,9 +1,9 @@
 import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
 import 'package:amap_flutter_map/amap_flutter_map.dart';
-import 'package:campnavi/shortpath.dart';
 import 'package:flutter/material.dart';
 
 import 'header.dart';
+import 'shortpath.dart';
 
 ///输入框控制器
 TextEditingController textcontroller = TextEditingController();
@@ -235,7 +235,7 @@ class _MySearchPageState extends State<MySearchPage> {
               distance += AMapTools.distanceBetween(
                   juncLatLng, element.doors[choosedDoor]);
               if (nearLatLng != juncLatLng) {
-                Shortpath path = Shortpath(mapData.getAdjacentMatrix(campusNum),
+                ShortPath path = ShortPath(mapData.getAdjacentMatrix(campusNum),
                     nearVertex, element.juncpoint[choosedDoor], 0);
                 distance += path.getrelativelen();
               }
@@ -341,7 +341,7 @@ class _MySearchPageState extends State<MySearchPage> {
               distance += AMapTools.distanceBetween(
                   juncLatLng, element.doors[choosedDoor]);
               if (nearLatLng != juncLatLng) {
-                Shortpath path = Shortpath(mapData.getAdjacentMatrix(campusNum),
+                ShortPath path = ShortPath(mapData.getAdjacentMatrix(campusNum),
                     nearVertex, element.juncpoint[choosedDoor], 0);
                 distance += path.getrelativelen();
               }

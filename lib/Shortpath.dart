@@ -1,6 +1,6 @@
 import 'header.dart';
 
-class Shortpath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
+class ShortPath //最短路径类，输入路径矩阵和起点，终点，运动类型，得到一条路径
 {
   final int startvertexID; //起始点ID
   final int endvertexID; //终点ID
@@ -13,7 +13,7 @@ class Shortpath //最短路径类，输入路径矩阵和起点，终点，运�
   } //给出一个边，计算它的相对长度，受拥挤度和出行方式的影响
 
   //距离等于实际距离乘上骑车加速系数的积除以拥挤度
-  Shortpath(List<List<Edge>> mapmatrix, this.startvertexID, this.endvertexID,
+  ShortPath(List<List<Edge>> mapmatrix, this.startvertexID, this.endvertexID,
       this.transmethod) {
     List<int> points =
         List.filled(mapmatrix.length, -1); //节点集，存放已经决定的最短路径的节点号,初始全为-1
