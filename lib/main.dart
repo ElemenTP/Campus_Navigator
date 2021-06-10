@@ -79,10 +79,12 @@ void main() async {
       color: Colors.grey.shade600));
   List<LatLng> circlelist = [];
   const int times = 36;
+  int d = 100;
   Offset res = Offset(mapData.mapVertex[0].listVertex[3].latitude,
       mapData.mapVertex[0].listVertex[3].longitude);
   for (int i = 0; i < times; i++) {
-    Offset c = Offset.fromDirection(i * 2 * pi / times, 1 / 1000);
+    Offset c =
+        Offset.fromDirection(i * 2 * pi / times, 180 * d / pi / 6371 / 1000);
     Offset c1 =
         Offset(res.dx + c.dx, res.dy + c.dy / cos((res.dx + c.dx) / 180 * pi));
     circlelist.add(LatLng(c1.dx, c1.dy));
@@ -91,7 +93,7 @@ void main() async {
 
   Polygon circle = Polygon(
       points: circlelist,
-      fillColor: Color(0),
+      fillColor: Colors.amber,
       strokeColor: col,
       strokeWidth: 0.4);
   polygonlist.add(circle);
