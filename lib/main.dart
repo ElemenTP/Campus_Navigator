@@ -114,7 +114,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ));
@@ -131,7 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
               actions: <Widget>[
                 TextButton(
                   child: Text('取消'),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
                   child: Text('起点'),
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           _addStartLocation(mapMarkers['onTap']!.position);
                           mapMarkers.remove('onTap');
                           Navigator.of(context).pop(true);
-                        }, //关闭对话框
+                        },
                 ),
                 TextButton(
                   child: Text('终点'),
@@ -149,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     _addEndLocation(mapMarkers['onTap']!.position);
                     mapMarkers.remove('onTap');
                     Navigator.of(context).pop(true);
-                  }, //关闭对话框
+                  },
                 ),
               ],
             ));
@@ -187,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
               actions: <Widget>[
                 TextButton(
                   child: Text('取消'),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
                   child: Text('确定'),
@@ -195,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     naviState.start = null;
                     mapMarkers.remove('start');
                     Navigator.of(context).pop();
-                  }, //关闭对话框
+                  },
                 ),
               ],
             ));
@@ -212,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
               actions: <Widget>[
                 TextButton(
                   child: Text('取消'),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
                   child: Text('确定'),
@@ -220,7 +220,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     naviState.end.remove(mapMarkers[markerid]!.position);
                     mapMarkers.remove(markerid);
                     Navigator.of(context).pop();
-                  }, //关闭对话框
+                  },
                 ),
               ],
             ));
@@ -256,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   actions: <Widget>[
                     TextButton(
                       child: Text('确定'),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ));
@@ -300,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       actions: <Widget>[
                         TextButton(
                           child: Text('确定'),
-                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
                     ));
@@ -370,7 +370,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(false), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(false),
                   ),
                 ],
               );
@@ -415,15 +415,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                   TextButton(
                     child: Text('确定'),
                     onPressed: () async {
+                      Navigator.of(context).pop();
                       locatePermissionStatus =
                           await Permission.location.request();
-                      Navigator.of(context).pop();
-                    }, //关闭对话框
+                    },
                   ),
                 ],
               ));

@@ -469,19 +469,39 @@ class MapData {
 
 ///导航状态类
 class NaviState {
+  ///导航状态
   bool naviStatus = false;
+
+  ///是否启用拥挤度
   bool crowding = false;
+
+  ///是否骑车
   bool onbike = false;
+
+  ///是否以用户位置为起点
   bool startOnUserLoc = false;
+
+  ///是否实时导航
   bool realTime = false;
+
+  ///是够使用最短时间策略
   bool minTime = false;
+
+  ///起点
   dynamic start;
+
+  ///终点集合
   List end = [];
+
+  ///路径相对长度
   double routeLength = 0;
 
+  ///默认构造函数
   NaviState();
 
-  ///管理导航状态界面
+  ///管理导航状态界面，用户可1. 管理起点和各个终点。2. 选择是否以当前位置为起点。3. 当以当前
+  ///位置为起点时可以选择使用实时导航。4. 选择是否使用最短时间策略，使用则显示时间而非路程长度。
+  ///5. 是否骑车。6. 是否考略拥挤度。当存在起点和终点时可以开始导航。
   Future<bool> manageNaviState(BuildContext context) async {
     return await showDialog(
             context: context,
@@ -589,37 +609,25 @@ class NaviState {
                       TextButton(
                         child: Text('取消'),
                         onPressed: () => Navigator.of(context).pop(false),
-
-                        ///关闭对话框
                       ),
                       TextButton(
                         child: Text('停止'),
                         onPressed: naviStatus
                             ? () {
                                 naviStatus = false;
-                                if (logEnabled)
-                                  logSink.write(
-                                      DateTime.now().toString() + ': 停止导航。\n');
                                 Navigator.of(context).pop(true);
                               }
                             : null,
-
-                        ///关闭对话框
                       ),
                       TextButton(
                         child: Text('开始'),
-                        onPressed: (startOnUserLoc || start != null) &&
-                                end.isNotEmpty
-                            ? () {
-                                naviStatus = true;
-                                if (logEnabled)
-                                  logSink.write(
-                                      DateTime.now().toString() + ': 开始导航。\n');
-                                Navigator.of(context).pop(true);
-                              }
-                            : null,
-
-                        ///关闭对话框
+                        onPressed:
+                            (startOnUserLoc || start != null) && end.isNotEmpty
+                                ? () {
+                                    naviStatus = true;
+                                    Navigator.of(context).pop(true);
+                                  }
+                                : null,
                       ),
                     ],
                   ),
@@ -749,14 +757,16 @@ class NaviTools {
   }
 
   ///生成一个以某点为中心的近似圆
-  static List<LatLng> circleAround(LatLng center,int rad) {
-    const int times = 8;  
+  static List<LatLng> circleAround(LatLng center, int rad) {
+    ///近似圆的顶点数量
+    const int times = 8;
 
     ///多边形的点数
     Offset res = Offset(center.latitude, center.longitude);
     List<LatLng> circlelist = [];
     for (int i = 0; i < times; ++i) {
-      Offset c = Offset.fromDirection(i * 2 * pi / times, 180 * rad / pi / 6371 / 1000);
+      Offset c = Offset.fromDirection(
+          i * 2 * pi / times, 180 * rad / pi / 6371 / 1000);
       Offset c1 = Offset(
           res.dx + c.dx, res.dy + c.dy / cos((res.dx + c.dx) / 180 * pi));
 
@@ -765,7 +775,7 @@ class NaviTools {
     return circlelist;
   }
 
-  ///检查定位是否正常
+  ///检查定位是否正常，检查定位权限和用户坐标，如果没有定位权限或者用户位置时间戳为0则提示
   static bool stateLocationReqiurement(BuildContext context) {
     ///没有定位权限，提示用户授予权限
     if (!locatePermissionStatus.isGranted) {
@@ -778,8 +788,6 @@ class NaviTools {
                   TextButton(
                     child: Text('取消'),
                     onPressed: () => Navigator.of(context).pop(),
-
-                    ///关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
@@ -788,8 +796,6 @@ class NaviTools {
                           await Permission.location.request();
                       Navigator.of(context).pop();
                     },
-
-                    ///关闭对话框
                   ),
                 ],
               ));
@@ -807,8 +813,6 @@ class NaviTools {
                   TextButton(
                     child: Text('确定'),
                     onPressed: () => Navigator.of(context).pop(),
-
-                    ///关闭对话框
                   ),
                 ],
               ));
@@ -818,18 +822,37 @@ class NaviTools {
     }
   }
 
-  ///展示导航路线函数，对终点列表进行排序，逐个使用狄杰斯特拉算法，智能选择校区间导航方法
+  ///展示导航路线函数，先对终点列表进行排序：当前点从起点开始，在未排序的点中寻找与当前点直线
+  ///距离最短的点，设为当前点的下一个点。坐标类型的点以本身为特征坐标，建筑类型的点则以一种平
+  ///均算法得到的点作为排序特质点。排序结束后，逐个使用狄杰斯特拉算法生成路线并绘制在地图上。
+  ///对建筑类型的点此时将会遍历选择路程最近的门作为狄杰斯特拉点。当路程跨校区时，将在地图数据
+  ///提供的交通工具信息中智能选择校区间导航方法，导航采用最短路程策略则确保人行走时间最短，最
+  ///短时间策略则确保交通耗时最短。
   static Future<void> showRoute(BuildContext context) async {
-    ///清空线列表和路线长度
+    //清空线列表和路线长度
     mapPolylines.clear();
     naviState.routeLength = 0;
-
-    ///检查导航状态，为开始时绘制路线
+    //检查导航状态，为开始时绘制路线
     if (naviState.naviStatus) {
       //导航开始时的日期时间，用于智能选择校区间导航方法
       DateTime routeBeginTime = DateTime.now();
-      if (logEnabled)
-        logSink.write(routeBeginTime.toString() + ': 路线计算函数开始。\n');
+      if (logEnabled) {
+        logSink.write(routeBeginTime.toString() + ': 开始导航，开始计算路线。\n');
+        logSink.write(DateTime.now().toString() +
+            ': ' +
+            '实时导航' +
+            (naviState.realTime ? '开启' : '关闭') +
+            '，骑车' +
+            (naviState.onbike ? '开启' : '关闭') +
+            '。\n');
+        logSink.write(DateTime.now().toString() +
+            ': ' +
+            '最短时间' +
+            (naviState.minTime ? '开启' : '关闭') +
+            '，拥挤度' +
+            (naviState.crowding ? '开启' : '关闭') +
+            '。\n');
+      }
       //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
       if (naviState.startOnUserLoc) {
         if (stateLocationReqiurement(context)) {
@@ -847,33 +870,23 @@ class NaviTools {
                       actions: <Widget>[
                         TextButton(
                           child: Text('取消'),
-                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
                     ));
             if (logEnabled)
-              logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止实时导航。\n');
+              logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止导航。\n');
             naviState.naviStatus = false;
             return;
           }
         } else {
           if (logEnabled)
-            logSink
-                .write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止实时导航。\n');
+            logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。\n');
           naviState.naviStatus = false;
           return;
         }
       }
-      if (logEnabled) {
-        logSink.write(DateTime.now().toString() +
-            ': ' +
-            '骑车' +
-            (naviState.onbike ? '开启' : '关闭') +
-            '，拥挤度' +
-            (naviState.crowding ? '开启' : '关闭') +
-            '。\n');
-        logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
-      }
+      if (logEnabled) logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
       try {
         //排序所用新列表
         List naviOrder = [naviState.start];
@@ -911,7 +924,7 @@ class NaviTools {
                     : '建筑: ' + (element as Building).description.first) +
                 '\n');
           });
-          logSink.write(DateTime.now().toString() + ': 开始类型转换与狄杰斯特拉算法。\n');
+          logSink.write(DateTime.now().toString() + ': 开始狄杰斯特拉算法。\n');
         }
 
         ///将排好序的列表中的元素
@@ -1106,8 +1119,6 @@ class NaviTools {
                           TextButton(
                             child: Text('取消'),
                             onPressed: () => Navigator.of(context).pop(),
-
-                            ///关闭对话框
                           ),
                         ],
                       ));
@@ -1123,8 +1134,8 @@ class NaviTools {
           }
         }
         if (logEnabled)
-          logSink.write(
-              DateTime.now().toString() + ': 类型转换与狄杰斯特拉算法结束，路线计算函数正常结束。\n');
+          logSink
+              .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
       } catch (_) {
         showDialog(
             context: context,
@@ -1134,7 +1145,7 @@ class NaviTools {
                   actions: <Widget>[
                     TextButton(
                       child: Text('取消'),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ));

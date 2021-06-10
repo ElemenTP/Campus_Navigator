@@ -43,7 +43,7 @@ class _MySettingPageState extends State<MySettingPage> {
               actions: <Widget>[
                 TextButton(
                   child: Text("确定"),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ));
@@ -60,7 +60,7 @@ class _MySettingPageState extends State<MySettingPage> {
               actions: <Widget>[
                 TextButton(
                   child: Text("确定"),
-                  onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ));
@@ -82,7 +82,7 @@ class _MySettingPageState extends State<MySettingPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text("确定"),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ));
@@ -95,7 +95,7 @@ class _MySettingPageState extends State<MySettingPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text("确定"),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ));
@@ -129,7 +129,7 @@ class _MySettingPageState extends State<MySettingPage> {
                   actions: <Widget>[
                     TextButton(
                       child: Text("确定"),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ));
@@ -153,7 +153,7 @@ class _MySettingPageState extends State<MySettingPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text("确定"),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ));
@@ -193,8 +193,7 @@ class _MySettingPageState extends State<MySettingPage> {
                         actions: <Widget>[
                           TextButton(
                             child: Text('取消'),
-                            onPressed: () =>
-                                Navigator.of(context).pop(), //关闭对话框
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
                           TextButton(
                             child: Text('确定'),
@@ -205,7 +204,7 @@ class _MySettingPageState extends State<MySettingPage> {
                               if (logEnabled)
                                 logSink.write(DateTime.now().toString() +
                                     ': 应用默认地图数据。\n');
-                            }, //关闭对话框
+                            },
                           ),
                         ],
                       )),
@@ -223,8 +222,7 @@ class _MySettingPageState extends State<MySettingPage> {
                             actions: <Widget>[
                               TextButton(
                                 child: Text('取消'),
-                                onPressed: () =>
-                                    Navigator.of(context).pop(), //关闭对话框
+                                onPressed: () => Navigator.of(context).pop(),
                               ),
                               TextButton(
                                 child: Text('删除'),
@@ -239,7 +237,7 @@ class _MySettingPageState extends State<MySettingPage> {
                                         ': 删除地图数据，' +
                                         element.path.substring(prefixLength) +
                                         '。\n');
-                                }, //关闭对话框
+                                },
                               ),
                               TextButton(
                                 child: Text('使用'),
@@ -252,7 +250,7 @@ class _MySettingPageState extends State<MySettingPage> {
                                         ': 应用地图数据，' +
                                         element.path.substring(prefixLength) +
                                         '。\n');
-                                }, //关闭对话框
+                                },
                               ),
                             ],
                           )),
@@ -269,7 +267,7 @@ class _MySettingPageState extends State<MySettingPage> {
             actions: <Widget>[
               TextButton(
                 child: Text("返回"),
-                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           );
@@ -301,7 +299,7 @@ class _MySettingPageState extends State<MySettingPage> {
                   actions: <Widget>[
                     TextButton(
                       child: Text("确定"),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ));
@@ -326,7 +324,7 @@ class _MySettingPageState extends State<MySettingPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text("确定"),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ));
@@ -367,8 +365,7 @@ class _MySettingPageState extends State<MySettingPage> {
                         actions: <Widget>[
                           TextButton(
                             child: Text('取消'),
-                            onPressed: () =>
-                                Navigator.of(context).pop(), //关闭对话框
+                            onPressed: () => Navigator.of(context).pop(),
                           ),
                           TextButton(
                             child: Text('确定'),
@@ -380,7 +377,7 @@ class _MySettingPageState extends State<MySettingPage> {
                               if (logEnabled)
                                 logSink.write(
                                     DateTime.now().toString() + ': 不使用逻辑位置。\n');
-                            }, //关闭对话框
+                            },
                           ),
                         ],
                       )),
@@ -399,8 +396,7 @@ class _MySettingPageState extends State<MySettingPage> {
                             actions: <Widget>[
                               TextButton(
                                 child: Text('取消'),
-                                onPressed: () =>
-                                    Navigator.of(context).pop(), //关闭对话框
+                                onPressed: () => Navigator.of(context).pop(),
                               ),
                               TextButton(
                                 child: Text('删除'),
@@ -417,7 +413,7 @@ class _MySettingPageState extends State<MySettingPage> {
                                         ': 删除逻辑位置，' +
                                         element.path.substring(prefixLength) +
                                         '。\n');
-                                }, //关闭对话框
+                                },
                               ),
                               TextButton(
                                 child: Text('使用'),
@@ -434,7 +430,7 @@ class _MySettingPageState extends State<MySettingPage> {
                                         ': 应用逻辑位置，' +
                                         element.path.substring(prefixLength) +
                                         '。\n');
-                                }, //关闭对话框
+                                },
                               ),
                             ],
                           )),
@@ -451,7 +447,7 @@ class _MySettingPageState extends State<MySettingPage> {
             actions: <Widget>[
               TextButton(
                 child: Text("返回"),
-                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           );
