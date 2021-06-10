@@ -283,15 +283,17 @@ class _MyHomePageState extends State<MyHomePage> {
                 AMapTools.calculateArea(
                     <LatLng>[userLocation.latLng, depaLatLng, destLatLng])) /
             polylineLength;
-        double nextLength = 1919810;
-        double distanceNextDest = 114514;
+        double nextLength = 114514;
+        double distanceNextDest = 1919810;
         if (mapPolylines.length > 1) {
-          nextLength = AMapTools.distanceBetween(
-              mapPolylines[1].points.first, mapPolylines[1].points.last);
-          distanceNextDest = AMapTools.distanceBetween(
-              userLocation.latLng, mapPolylines[1].points.last);
+          LatLng destNextLatLng = mapPolylines[1].points.last;
+          if (depaLatLng != destNextLatLng) {
+            nextLength = AMapTools.distanceBetween(destLatLng, destNextLatLng);
+            distanceNextDest =
+                AMapTools.distanceBetween(userLocation.latLng, destNextLatLng);
+          }
         }
-        if (distancetoLine > 40 || (distanceDest > polylineLength + 10)) {
+        if (distancetoLine > 40 || (distanceDest > polylineLength + 25)) {
           if (mapData.locationInCampus(userLocation.latLng) ==
               mapData.locationInCampus(destLatLng)) {
             showDialog(
@@ -311,9 +313,9 @@ class _MyHomePageState extends State<MyHomePage> {
             await NaviTools.showRoute(context);
             setState(() {});
           }
-        } else if (distanceDest < 10 ||
-            (distanceDepa > polylineLength + 10) ||
-            distanceNextDest > nextLength) {
+        } else if (distanceDest < 5 ||
+            (distanceDepa > polylineLength + 5) ||
+            distanceNextDest < nextLength) {
           if (logEnabled)
             logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
           setState(() => mapPolylines.removeAt(0));
@@ -498,7 +500,7 @@ class _MyHomePageState extends State<MyHomePage> {
         floatingActionButton: FloatingActionButton(
           heroTag: 'locatebtn',
           onPressed: _setCameraPosition,
-          tooltip: '回到当前位置' /*'Locate'*/,
+          tooltip: '切换地图视角' /*'Locate'*/,
           child: Icon(Icons.location_searching),
           mini: true,
         ),
