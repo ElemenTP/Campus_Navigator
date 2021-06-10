@@ -1,12 +1,13 @@
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'header.dart';
 import 'shortpath.dart';
 
 ///输入框控制器
-TextEditingController textcontroller = TextEditingController();
+TextEditingController textController = TextEditingController();
 
 ///搜索结果列表
 List<SearchResult> searchResult = [];
@@ -24,9 +25,11 @@ class MySearchPage extends StatefulWidget {
 ///搜索界面，用于搜索功能，逻辑位置功能，提供附近建筑和食堂负载均衡的按钮
 class _MySearchPageState extends State<MySearchPage> {
   ///输入框风格
-  static const InputDecoration _decoration = InputDecoration(
-    icon: Icon(Icons.school),
+  static const InputDecoration _textDecoration = InputDecoration(
     labelText: '搜索校园建筑',
+    hintText: '名称或功能',
+    border: const OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20.0))),
   );
 
   ///输入框焦点控制器
@@ -37,7 +40,7 @@ class _MySearchPageState extends State<MySearchPage> {
   void _onStartSearch() {
     textFocusNode.unfocus();
     searchResult.clear();
-    String toSearch = textcontroller.text;
+    String toSearch = textController.text;
     if (logEnabled)
       logSink.write(DateTime.now().toString() + ': 搜索开始，关键字"$toSearch"。\n');
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
@@ -87,7 +90,7 @@ class _MySearchPageState extends State<MySearchPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                   TextButton(
                     child: Text('删除该起点'),
@@ -95,7 +98,7 @@ class _MySearchPageState extends State<MySearchPage> {
                       naviState.start = null;
                       mapMarkers.remove('start');
                       Navigator.of(context).pop();
-                    }, //关闭对话框
+                    },
                   ),
                 ],
               ));
@@ -108,7 +111,7 @@ class _MySearchPageState extends State<MySearchPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                   TextButton(
                     child: Text('删除该终点'),
@@ -117,7 +120,7 @@ class _MySearchPageState extends State<MySearchPage> {
                       mapMarkers.remove('end' +
                           searchResult[index].result.hashCode.toString());
                       Navigator.of(context).pop();
-                    }, //关闭对话框
+                    },
                   ),
                 ],
               ));
@@ -130,7 +133,7 @@ class _MySearchPageState extends State<MySearchPage> {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                   TextButton(
                     child: Text('起点'),
@@ -151,7 +154,7 @@ class _MySearchPageState extends State<MySearchPage> {
                                       .first),
                             );
                             Navigator.of(context).pop();
-                          }, //关闭对话框
+                          },
                   ),
                   TextButton(
                     child: Text('终点'),
@@ -169,7 +172,7 @@ class _MySearchPageState extends State<MySearchPage> {
                                 searchResult[index].result.description.first),
                       );
                       Navigator.of(context).pop();
-                    }, //关闭对话框
+                    },
                   ),
                 ],
               ));
@@ -177,20 +180,74 @@ class _MySearchPageState extends State<MySearchPage> {
     setState(() {});
   }
 
-  ///搜索附近建筑函数，使用NaviTools中的绘制圆形功能绘制一个圆，在当前校区的所有建筑的所有门
-  ///中寻找在圆内的，并将有门在圆内的建筑添加到结果列表中，并附加上使用狄杰斯特拉算法得到的当
-  ///前位置到该建筑的最短路线长度。
+  ///搜索附近建筑函数，让用户输入搜索半径，使用NaviTools中的绘制圆形功能绘制一个该半径的圆，
+  ///在当前校区的所有建筑的所有门中寻找在圆内的，并将有门在圆内的建筑添加到结果列表中，并附加
+  ///上使用狄杰斯特拉算法得到的当前位置到该建筑的最短路线长度。
   void _searchNearBuilding() async {
     textFocusNode.unfocus();
     if (NaviTools.stateLocationReqiurement(context)) {
       int campusNum = mapData.locationInCampus(userLocation.latLng);
       if (campusNum >= 0) {
+        int circleRad = 100;
+        if (await showDialog(
+                context: context,
+                builder: (context) {
+                  const InputDecoration _numDecoration = InputDecoration(
+                    labelText: '输入搜索半径，单位为米',
+                    hintText: '仅限正整数，默认100米',
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  );
+                  int inputRadix = -1;
+                  void onInputEnd() {
+                    circleRad = inputRadix;
+                    Navigator.of(context).pop(false);
+                  }
+
+                  return StatefulBuilder(
+                      builder: (context, _setState) => AlertDialog(
+                            title: Text('搜索半径'),
+                            content: TextFormField(
+                              decoration: _numDecoration,
+                              autofocus: true,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              keyboardType: TextInputType.number,
+                              validator: (value) =>
+                                  inputRadix > 0 ? null : '请输入正整数',
+                              onChanged: (value) => _setState(
+                                  () => inputRadix = int.tryParse(value) ?? -1),
+                              onEditingComplete:
+                                  inputRadix > 0 ? onInputEnd : null,
+                            ),
+                            actions: <Widget>[
+                              TextButton(
+                                child: Text('取消'),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                              ),
+                              TextButton(
+                                child: Text('默认'),
+                                onPressed: () {
+                                  Navigator.of(context).pop(false);
+                                },
+                              ),
+                              TextButton(
+                                child: Text('确定'),
+                                onPressed: inputRadix > 0 ? onInputEnd : null,
+                              ),
+                            ],
+                          ));
+                }) ??
+            true) {
+          return;
+        }
         if (logEnabled)
           logSink.write(DateTime.now().toString() + ': 开始搜索附近建筑。\n');
         try {
           mapData.mapEdge[campusNum].disableCrowding();
           List<LatLng> circlePolygon =
-              NaviTools.circleAround(userLocation.latLng);
+              NaviTools.circleAround(userLocation.latLng, circleRad);
           List<Building> nearBuilding = [];
           int nearVertex =
               mapData.nearestVertex(campusNum, userLocation.latLng);
@@ -214,7 +271,7 @@ class _MySearchPageState extends State<MySearchPage> {
                       actions: <Widget>[
                         TextButton(
                           child: Text('取消'),
-                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
                     ));
@@ -259,7 +316,7 @@ class _MySearchPageState extends State<MySearchPage> {
                     actions: <Widget>[
                       TextButton(
                         child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ));
@@ -278,7 +335,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   actions: <Widget>[
                     TextButton(
                       child: Text('取消'),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ));
@@ -326,7 +383,7 @@ class _MySearchPageState extends State<MySearchPage> {
                       actions: <Widget>[
                         TextButton(
                           child: Text('取消'),
-                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                          onPressed: () => Navigator.of(context).pop(),
                         ),
                       ],
                     ));
@@ -379,7 +436,7 @@ class _MySearchPageState extends State<MySearchPage> {
                     actions: <Widget>[
                       TextButton(
                         child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ));
@@ -398,7 +455,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   actions: <Widget>[
                     TextButton(
                       child: Text('取消'),
-                      onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                      onPressed: () => Navigator.of(context).pop(),
                     ),
                   ],
                 ));
@@ -440,7 +497,7 @@ class _MySearchPageState extends State<MySearchPage> {
             actions: <Widget>[
               TextButton(
                 child: Text("返回"),
-                onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                onPressed: () => Navigator.of(context).pop(),
               ),
             ],
           );
@@ -473,10 +530,14 @@ class _MySearchPageState extends State<MySearchPage> {
       //中央内容区
       body: Column(
         children: <Widget>[
+          SizedBox(
+            width: 8,
+            height: 8,
+          ),
           TextField(
-            controller: textcontroller,
+            controller: textController,
             focusNode: textFocusNode,
-            decoration: _decoration,
+            decoration: _textDecoration,
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.search,
             onEditingComplete: _onStartSearch,
@@ -499,7 +560,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   label: Text('重置'),
                   onPressed: () {
                     setState(() {
-                      textcontroller.clear();
+                      textController.clear();
                       textFocusNode.unfocus();
                       searchResult.clear();
                     });
