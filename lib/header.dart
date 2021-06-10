@@ -2,7 +2,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
-import 'package:amap_flutter_map/amap_flutter_map.dart'; //LatLng 类型在这里面，即为点类
+import 'package:amap_flutter_map/amap_flutter_map.dart';
+
+///LatLng 类型在这里面，即为点类
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,11 +61,13 @@ class MapVertex {
 
 ///建筑类
 class Building {
-  //建筑入口
+  ///建筑入口
   List<LatLng> doors = [];
-  //建筑入口连接点
+
+  ///建筑入口连接点
   List<int> juncpoint = [];
-  //描述集
+
+  ///描述集
   List<String> description = [];
 
   Building();
@@ -163,14 +167,17 @@ class MapCampus {
 class Edge {
   int pointa = -1;
   int pointb = -1;
-  //边长度，建造函数自动生成
+
+  ///边长度，建造函数自动生成
   double length = double.infinity;
-  //边适应性，默认不通（<0），仅可步行(0)，可使用自行车(1)
+
+  ///边适应性，默认不通（<0），仅可步行(0)，可使用自行车(1)
   int availmthod = -1;
-  //边拥挤度，需要时调用随机方法生成。
+
+  ///边拥挤度，需要时调用随机方法生成。
   double crowding = 1;
 
-  //默认构造函数，将生成不通的边
+  ///默认构造函数，将生成不通的边
   Edge();
 
   Map<String, dynamic> toJson() {
@@ -215,7 +222,7 @@ class MapEdge {
     };
   }
 
-  //随机拥挤度函数
+  ///随机拥挤度函数
   void randomCrowding() {
     if (!crowded) {
       listEdge.forEach((element) {
@@ -290,19 +297,24 @@ class BusTimeTable {
 
 ///地图数据类
 class MapData {
-  //校区与编号的对应表
+  ///校区与编号的对应表
   List<MapCampus> mapCampus = [];
-  //建筑列表
+
+  ///建筑列表
   List<MapBuilding> mapBuilding = [];
-  //点与编号对应表
+
+  ///点与编号对应表
   List<MapVertex> mapVertex = [];
-  //边与地图结构数据，按校区分成多个
+
+  ///边与地图结构数据，按校区分成多个
   List<MapEdge> mapEdge = [];
-  //校车时间表
+
+  ///校车时间表
   List<BusTimeTable> busTimeTable = [];
 
   MapData();
 
+  ///从json对象中读取
   MapData.fromJson(Map<String, dynamic> json) {
     List mapCampusJson = json['mapCampus'] as List;
     mapCampusJson.forEach((element) {
@@ -337,6 +349,7 @@ class MapData {
     }
   }
 
+  ///生成json对象
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'mapCampus': mapCampus,
@@ -347,6 +360,7 @@ class MapData {
     };
   }
 
+  ///判断某点location所属校区
   int locationInCampus(LatLng location) {
     for (int i = 0; i < mapCampus.length; ++i) {
       if (AMapTools.latLngIsInPolygon(location, mapCampus[i].campusShape))
@@ -355,6 +369,7 @@ class MapData {
     return -1;
   }
 
+  ///判断某建筑building
   int buildingInCampus(Building building) {
     for (int i = 0; i < mapCampus.length; ++i) {
       if (mapBuilding[i].listBuilding.contains(building)) return i;
@@ -392,7 +407,7 @@ class MapData {
     return mapVertex[campusNum].listVertex[vertexNum];
   }
 
-  //随机拥挤度函数
+  ///随机拥挤度函数
   void randomCrowding() {
     mapEdge.forEach((element) {
       if (!element.crowded) {
@@ -574,8 +589,9 @@ class NaviState {
                     actions: <Widget>[
                       TextButton(
                         child: Text('取消'),
-                        onPressed: () =>
-                            Navigator.of(context).pop(false), //关闭对话框
+                        onPressed: () => Navigator.of(context).pop(false),
+
+                        ///关闭对话框
                       ),
                       TextButton(
                         child: Text('停止'),
@@ -587,7 +603,9 @@ class NaviState {
                                       DateTime.now().toString() + ': 停止导航。\n');
                                 Navigator.of(context).pop(true);
                               }
-                            : null, //关闭对话框
+                            : null,
+
+                        ///关闭对话框
                       ),
                       TextButton(
                         child: Text('开始'),
@@ -600,7 +618,9 @@ class NaviState {
                                       DateTime.now().toString() + ': 开始导航。\n');
                                 Navigator.of(context).pop(true);
                               }
-                            : null, //关闭对话框
+                            : null,
+
+                        ///关闭对话框
                       ),
                     ],
                   ),
@@ -731,7 +751,9 @@ class NaviTools {
 
   ///生成一个以某点为中心的近似圆
   static List<LatLng> circleAround(LatLng center) {
-    const int times = 8; //多边形的点数
+    const int times = 8;
+
+    ///多边形的点数
     Offset res = Offset(center.latitude, center.longitude);
     List<LatLng> circlelist = [];
     for (int i = 0; i < times; ++i) {
@@ -746,7 +768,7 @@ class NaviTools {
 
   ///检查定位是否正常
   static bool stateLocationReqiurement(BuildContext context) {
-    //没有定位权限，提示用户授予权限
+    ///没有定位权限，提示用户授予权限
     if (!locatePermissionStatus.isGranted) {
       showDialog(
           context: context,
@@ -756,7 +778,9 @@ class NaviTools {
                 actions: <Widget>[
                   TextButton(
                     child: Text('取消'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
+
+                    ///关闭对话框
                   ),
                   TextButton(
                     child: Text('确定'),
@@ -764,13 +788,16 @@ class NaviTools {
                       locatePermissionStatus =
                           await Permission.location.request();
                       Navigator.of(context).pop();
-                    }, //关闭对话框
+                    },
+
+                    ///关闭对话框
                   ),
                 ],
               ));
       return false;
     }
-    //定位不正常（时间time为0），提示用户打开定位开关
+
+    ///定位不正常（时间time为0），提示用户打开定位开关
     else if (userLocation.time == 0) {
       showDialog(
           context: context,
@@ -780,7 +807,9 @@ class NaviTools {
                 actions: <Widget>[
                   TextButton(
                     child: Text('确定'),
-                    onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                    onPressed: () => Navigator.of(context).pop(),
+
+                    ///关闭对话框
                   ),
                 ],
               ));
@@ -792,19 +821,21 @@ class NaviTools {
 
   ///展示导航路线函数，对终点列表进行排序，逐个使用狄杰斯特拉算法，智能选择校区间导航方法
   static Future<void> showRoute(BuildContext context) async {
-    //清空线列表和路线长度
+    ///清空线列表和路线长度
     mapPolylines.clear();
     naviState.routeLength = 0;
-    //检查导航状态，为开始时绘制路线
+
+    ///检查导航状态，为开始时绘制路线
     if (naviState.naviStatus) {
-      //展示路线是否正常的标志
+      ///展示路线是否正常的标志
       bool showRouteResult = false;
       try {
-        //导航开始时的日期时间，用于智能选择校区间导航方法
+        ///导航开始时的日期时间，用于智能选择校区间导航方法
         DateTime routeBeginTime = DateTime.now();
         if (logEnabled)
           logSink.write(routeBeginTime.toString() + ': 路线计算函数开始。\n');
-        //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
+
+        ///如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
         if (naviState.startOnUserLoc) {
           if (stateLocationReqiurement(context)) {
             int startCampus = mapData.locationInCampus(userLocation.latLng);
@@ -831,10 +862,12 @@ class NaviTools {
               '。\n');
           logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
         }
-        //排序所用新列表
+
+        ///排序所用新列表
         List naviOrder = [naviState.start];
         naviOrder.addAll(naviState.end);
-        //终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
+
+        ///终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
         for (int i = 0; i < naviOrder.length - 2; ++i) {
           int nextEnd = i + 1;
           double minDistance = double.infinity;
@@ -868,7 +901,8 @@ class NaviTools {
           });
           logSink.write(DateTime.now().toString() + ': 开始类型转换与狄杰斯特拉算法。\n');
         }
-        //将排好序的列表中的元素
+
+        ///将排好序的列表中的元素
         for (int i = 0; i < naviOrder.length; ++i) {
           int campusNum = 0;
           LatLng realLatLng = LatLng(0, 0);
@@ -1059,8 +1093,9 @@ class NaviTools {
                         actions: <Widget>[
                           TextButton(
                             child: Text('取消'),
-                            onPressed: () =>
-                                Navigator.of(context).pop(), //关闭对话框
+                            onPressed: () => Navigator.of(context).pop(),
+
+                            ///关闭对话框
                           ),
                         ],
                       ));
@@ -1090,7 +1125,9 @@ class NaviTools {
                     actions: <Widget>[
                       TextButton(
                         child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        onPressed: () => Navigator.of(context).pop(),
+
+                        ///关闭对话框
                       ),
                     ],
                   ));
@@ -1105,7 +1142,9 @@ class NaviTools {
                     actions: <Widget>[
                       TextButton(
                         child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(), //关闭对话框
+                        onPressed: () => Navigator.of(context).pop(),
+
+                        ///关闭对话框
                       ),
                     ],
                   ));
@@ -1114,7 +1153,7 @@ class NaviTools {
         }
       }
       if (!showRouteResult) {
-        //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
+        ///路线绘制出现错误，将导航状态设为停止同时清空路线和长度
         naviState.naviStatus = false;
         if (logEnabled) logSink.write(DateTime.now().toString() + ': 停止导航。\n');
         mapPolylines.clear();
