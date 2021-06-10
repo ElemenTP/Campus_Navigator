@@ -467,7 +467,7 @@ class NaviState {
 
   NaviState();
 
-  ///管理导航状态
+  ///管理导航状态界面
   Future<bool> manageNaviState(BuildContext context) async {
     return await showDialog(
             context: context,
@@ -694,6 +694,7 @@ class NaviState {
 
 ///导航工具类
 class NaviTools {
+  ///用于展示拥挤度的颜色字典
   static const Map<int, dynamic> _colortype = {
     3: Colors.white,
     2: Colors.green,
@@ -789,16 +790,21 @@ class NaviTools {
     }
   }
 
-  ///展示导航路线函数
+  ///展示导航路线函数，对终点列表进行排序，逐个使用狄杰斯特拉算法，智能选择校区间导航方法
   static Future<void> showRoute(BuildContext context) async {
+    //清空线列表和路线长度
+    mapPolylines.clear();
+    naviState.routeLength = 0;
+    //检查导航状态，为开始时绘制路线
     if (naviState.naviStatus) {
-      mapPolylines.clear();
-      naviState.routeLength = 0;
+      //展示路线是否正常的标志
       bool showRouteResult = false;
       try {
+        //导航开始时的日期时间，用于智能选择校区间导航方法
         DateTime routeBeginTime = DateTime.now();
         if (logEnabled)
           logSink.write(routeBeginTime.toString() + ': 路线计算函数开始。\n');
+        //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
         if (naviState.startOnUserLoc) {
           if (stateLocationReqiurement(context)) {
             int startCampus = mapData.locationInCampus(userLocation.latLng);
@@ -825,8 +831,10 @@ class NaviTools {
               '。\n');
           logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
         }
+        //排序所用新列表
         List naviOrder = [naviState.start];
         naviOrder.addAll(naviState.end);
+        //终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
         for (int i = 0; i < naviOrder.length - 2; ++i) {
           int nextEnd = i + 1;
           double minDistance = double.infinity;
@@ -858,27 +866,24 @@ class NaviTools {
                     : '建筑: ' + (element as Building).description.first) +
                 '\n');
           });
-          logSink.write(DateTime.now().toString() + ': 开始类型转换。\n');
+          logSink.write(DateTime.now().toString() + ': 开始类型转换与狄杰斯特拉算法。\n');
         }
+        //将排好序的列表中的元素
         for (int i = 0; i < naviOrder.length; ++i) {
           int campusNum = 0;
+          LatLng realLatLng = LatLng(0, 0);
+          LatLng juncLatLng = LatLng(0, 0);
+          double juncLength = 114514;
+          NaviLoc curNaviLoc = NaviLoc(campusNum, 0, realLatLng);
           if (naviOrder[i].runtimeType == LatLng) {
-            campusNum = mapData.locationInCampus(naviOrder[i]);
-            int nearVertex = mapData.nearestVertex(campusNum, naviOrder[i]);
-            LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
-            double juncLength =
-                (AMapTools.distanceBetween(nearLatLng, naviOrder[i]) *
-                        (naviState.onbike ? BIKESPEED : 1)) /
-                    (naviState.crowding ? 1 - Random().nextDouble() : 1);
-            if (i != 0) {
-              entryRoute(nearLatLng, naviOrder[i]);
-              naviState.routeLength += juncLength;
-            }
-            if (i != naviOrder.length - 1) {
-              entryRoute(naviOrder[i], nearLatLng);
-              naviState.routeLength += juncLength;
-            }
-            naviOrder[i] = NaviLoc(campusNum, nearVertex, naviOrder[i]);
+            realLatLng = naviOrder[i];
+            campusNum = mapData.locationInCampus(realLatLng);
+            int nearVertex = mapData.nearestVertex(campusNum, realLatLng);
+            juncLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
+            juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
+                    (naviState.onbike ? BIKESPEED : 1)) /
+                (naviState.crowding ? 1 - Random().nextDouble() : 1);
+            curNaviLoc = NaviLoc(campusNum, nearVertex, naviOrder[i]);
           } else if (naviOrder[i].runtimeType == Building) {
             Building curBuilding = naviOrder[i] as Building;
             campusNum = mapData.buildingInCampus(curBuilding);
@@ -897,136 +902,111 @@ class NaviTools {
                 }
               }
             }
-            LatLng juncLatLng = mapData.getVertexLatLng(
-                campusNum, curBuilding.juncpoint[choosedDoor]);
-            double juncLength = (AMapTools.distanceBetween(
-                        juncLatLng, curBuilding.doors[choosedDoor]) *
+            realLatLng = curBuilding.doors[choosedDoor];
+            int juncVertex = curBuilding.juncpoint[choosedDoor];
+            juncLatLng = mapData.getVertexLatLng(campusNum, juncVertex);
+            juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
                     (naviState.onbike ? BIKESPEED : 1)) /
                 (naviState.crowding ? 1 - Random().nextDouble() : 1);
-            if (i != 0) {
-              entryRoute(juncLatLng, curBuilding.doors[choosedDoor]);
-              naviState.routeLength += juncLength;
-            }
-            if (i != naviOrder.length - 1) {
-              entryRoute(curBuilding.doors[choosedDoor], juncLatLng);
-              naviState.routeLength += juncLength;
-            }
-            naviOrder[i] = NaviLoc(
-                campusNum,
-                curBuilding.juncpoint[choosedDoor],
-                curBuilding.doors[choosedDoor]);
+            curNaviLoc = NaviLoc(campusNum, juncVertex, realLatLng);
           }
-        }
-        if (logEnabled)
-          logSink.write(DateTime.now().toString() + ': 类型转换结束，开始执行狄杰斯特拉算法。\n');
-        for (int i = 0; i < naviOrder.length - 1; ++i) {
-          NaviLoc startVertex = naviOrder[i] as NaviLoc;
-          NaviLoc endVertex = naviOrder[i + 1] as NaviLoc;
-          if (startVertex.campusNum == endVertex.campusNum) {
-            if (startVertex.vertexNum != endVertex.vertexNum) {
-              Shortpath path = Shortpath(
-                  mapData.getAdjacentMatrix(startVertex.campusNum),
-                  startVertex.vertexNum,
-                  endVertex.vertexNum,
-                  transmethod);
-              naviState.routeLength += path.getrelativelen();
-              displayRoute(path.getroute(), startVertex.campusNum);
-            }
-          } else {
-            double lengthPublicTransStart = 0;
-            double lengthPublicTransEnd = 0;
-            double lengthSchoolBusStart = 0;
-            double lengthSchoolBusEnd = 0;
-            List<int> routePublicTransStart = [];
-            List<int> routePublicTransEnd = [];
-            List<int> routeSchoolBusStart = [];
-            List<int> routeSchoolBusEnd = [];
-            int startBusStop = mapData.mapCampus[startVertex.campusNum].busstop;
-            int endBusStop = mapData.mapCampus[endVertex.campusNum].busstop;
-            int startGate = mapData.mapCampus[startVertex.campusNum].gate;
-            int endGate = mapData.mapCampus[endVertex.campusNum].gate;
-            if (startVertex.vertexNum != startBusStop) {
-              Shortpath startBusStopPath = Shortpath(
-                  mapData.getAdjacentMatrix(startVertex.campusNum),
-                  startVertex.vertexNum,
-                  startBusStop,
-                  transmethod);
-              lengthSchoolBusStart = startBusStopPath.getrelativelen();
-              routeSchoolBusStart = startBusStopPath.getroute();
-            }
-            if (startVertex.vertexNum != startGate) {
-              Shortpath startGatePath = Shortpath(
-                  mapData.getAdjacentMatrix(startVertex.campusNum),
-                  startVertex.vertexNum,
-                  startGate,
-                  transmethod);
-              lengthPublicTransStart = startGatePath.getrelativelen();
-              routePublicTransStart = startGatePath.getroute();
-            }
-            if (endVertex.vertexNum != endBusStop) {
-              Shortpath endBusStopPath = Shortpath(
-                  mapData.getAdjacentMatrix(endVertex.campusNum),
-                  endBusStop,
-                  endVertex.vertexNum,
-                  transmethod);
-              lengthSchoolBusEnd = endBusStopPath.getrelativelen();
-              routeSchoolBusEnd = endBusStopPath.getroute();
-            }
-            if (endVertex.vertexNum != endGate) {
-              Shortpath endGatePath = Shortpath(
-                  mapData.getAdjacentMatrix(endVertex.campusNum),
-                  endGate,
-                  endVertex.vertexNum,
-                  transmethod);
-              lengthPublicTransEnd = endGatePath.getrelativelen();
-              routePublicTransEnd = endGatePath.getroute();
-            }
-            DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
-              seconds: (naviState.routeLength + lengthPublicTransStart).toInt(),
-            ));
-            DateTime timeAtGetOnSchoolBus = routeBeginTime.add(Duration(
-                seconds:
-                    (naviState.routeLength + lengthSchoolBusStart).toInt()));
-            List bestPubTrans = mapData.getBestTimeTable(
-                startVertex.campusNum, endVertex.campusNum, timeAtGetOnPubTrans,
-                onlySchoolBus: false);
-            List bestSchoolBus = mapData.getBestTimeTable(startVertex.campusNum,
-                endVertex.campusNum, timeAtGetOnSchoolBus,
-                onlySchoolBus: true);
-            if (bestPubTrans.isEmpty && bestSchoolBus.isEmpty) throw '!';
-            late String toPrint;
-            String startCampusName =
-                mapData.mapCampus[startVertex.campusNum].name;
-            String endCampusName = mapData.mapCampus[endVertex.campusNum].name;
-            if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
-              naviState.routeLength += (lengthSchoolBusStart +
-                  lengthSchoolBusEnd +
-                  (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
-              if (routeSchoolBusStart.isNotEmpty)
-                displayRoute(routeSchoolBusStart, startVertex.campusNum);
-              if (routeSchoolBusEnd.isNotEmpty)
-                displayRoute(routeSchoolBusEnd, endVertex.campusNum);
-              toPrint = (bestSchoolBus.first as BusTimeTable).description;
-            } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
-              naviState.routeLength += (lengthPublicTransStart +
-                  lengthPublicTransEnd +
-                  (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
-              if (routePublicTransStart.isNotEmpty)
-                displayRoute(routePublicTransStart, startVertex.campusNum);
-              if (routePublicTransEnd.isNotEmpty)
-                displayRoute(routePublicTransEnd, endVertex.campusNum);
-              toPrint = (bestPubTrans.first as BusTimeTable).description;
+          naviOrder[i] = curNaviLoc;
+          if (i != 0) {
+            NaviLoc startVertex = naviOrder[i - 1] as NaviLoc;
+            NaviLoc endVertex = curNaviLoc;
+            if (startVertex.campusNum == endVertex.campusNum) {
+              if (startVertex.vertexNum != endVertex.vertexNum) {
+                ShortPath path = ShortPath(
+                    mapData.getAdjacentMatrix(startVertex.campusNum),
+                    startVertex.vertexNum,
+                    endVertex.vertexNum,
+                    transmethod);
+                naviState.routeLength += path.getrelativelen();
+                displayRoute(path.getroute(), startVertex.campusNum);
+              }
             } else {
-              if ((lengthSchoolBusStart +
-                      lengthSchoolBusEnd +
-                      (naviState.minTime
-                          ? (bestSchoolBus.last as int) * 60
-                          : 0)) >
-                  (lengthPublicTransStart +
-                      lengthPublicTransEnd +
-                      (naviState.minTime
-                          ? (bestPubTrans.last as int) * 60
-                          : 0))) {
+              double lengthPublicTransStart = 0;
+              double lengthPublicTransEnd = 0;
+              double lengthSchoolBusStart = 0;
+              double lengthSchoolBusEnd = 0;
+              List<int> routePublicTransStart = [];
+              List<int> routePublicTransEnd = [];
+              List<int> routeSchoolBusStart = [];
+              List<int> routeSchoolBusEnd = [];
+              int startBusStop =
+                  mapData.mapCampus[startVertex.campusNum].busstop;
+              int endBusStop = mapData.mapCampus[endVertex.campusNum].busstop;
+              int startGate = mapData.mapCampus[startVertex.campusNum].gate;
+              int endGate = mapData.mapCampus[endVertex.campusNum].gate;
+              if (startVertex.vertexNum != startBusStop) {
+                ShortPath startBusStopPath = ShortPath(
+                    mapData.getAdjacentMatrix(startVertex.campusNum),
+                    startVertex.vertexNum,
+                    startBusStop,
+                    transmethod);
+                lengthSchoolBusStart = startBusStopPath.getrelativelen();
+                routeSchoolBusStart = startBusStopPath.getroute();
+              }
+              if (startVertex.vertexNum != startGate) {
+                ShortPath startGatePath = ShortPath(
+                    mapData.getAdjacentMatrix(startVertex.campusNum),
+                    startVertex.vertexNum,
+                    startGate,
+                    transmethod);
+                lengthPublicTransStart = startGatePath.getrelativelen();
+                routePublicTransStart = startGatePath.getroute();
+              }
+              if (endVertex.vertexNum != endBusStop) {
+                ShortPath endBusStopPath = ShortPath(
+                    mapData.getAdjacentMatrix(endVertex.campusNum),
+                    endBusStop,
+                    endVertex.vertexNum,
+                    transmethod);
+                lengthSchoolBusEnd = endBusStopPath.getrelativelen();
+                routeSchoolBusEnd = endBusStopPath.getroute();
+              }
+              if (endVertex.vertexNum != endGate) {
+                ShortPath endGatePath = ShortPath(
+                    mapData.getAdjacentMatrix(endVertex.campusNum),
+                    endGate,
+                    endVertex.vertexNum,
+                    transmethod);
+                lengthPublicTransEnd = endGatePath.getrelativelen();
+                routePublicTransEnd = endGatePath.getroute();
+              }
+              DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
+                seconds:
+                    (naviState.routeLength + lengthPublicTransStart).toInt(),
+              ));
+              DateTime timeAtGetOnSchoolBus = routeBeginTime.add(Duration(
+                  seconds:
+                      (naviState.routeLength + lengthSchoolBusStart).toInt()));
+              List bestPubTrans = mapData.getBestTimeTable(
+                  startVertex.campusNum,
+                  endVertex.campusNum,
+                  timeAtGetOnPubTrans,
+                  onlySchoolBus: false);
+              List bestSchoolBus = mapData.getBestTimeTable(
+                  startVertex.campusNum,
+                  endVertex.campusNum,
+                  timeAtGetOnSchoolBus,
+                  onlySchoolBus: true);
+              if (bestPubTrans.isEmpty && bestSchoolBus.isEmpty) throw '!';
+              late String toPrint;
+              String startCampusName =
+                  mapData.mapCampus[startVertex.campusNum].name;
+              String endCampusName =
+                  mapData.mapCampus[endVertex.campusNum].name;
+              if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
+                naviState.routeLength += (lengthSchoolBusStart +
+                    lengthSchoolBusEnd +
+                    (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
+                if (routeSchoolBusStart.isNotEmpty)
+                  displayRoute(routeSchoolBusStart, startVertex.campusNum);
+                if (routeSchoolBusEnd.isNotEmpty)
+                  displayRoute(routeSchoolBusEnd, endVertex.campusNum);
+                toPrint = (bestSchoolBus.first as BusTimeTable).description;
+              } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
                 naviState.routeLength += (lengthPublicTransStart +
                     lengthPublicTransEnd +
                     (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
@@ -1036,35 +1016,68 @@ class NaviTools {
                   displayRoute(routePublicTransEnd, endVertex.campusNum);
                 toPrint = (bestPubTrans.first as BusTimeTable).description;
               } else {
-                naviState.routeLength += (lengthSchoolBusStart +
-                    lengthSchoolBusEnd +
-                    (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
-                if (routeSchoolBusStart.isNotEmpty)
-                  displayRoute(routeSchoolBusStart, startVertex.campusNum);
-                if (routeSchoolBusEnd.isNotEmpty)
-                  displayRoute(routeSchoolBusEnd, endVertex.campusNum);
-                toPrint = (bestSchoolBus.first as BusTimeTable).description;
+                if ((lengthSchoolBusStart +
+                        lengthSchoolBusEnd +
+                        (naviState.minTime
+                            ? (bestSchoolBus.last as int) * 60
+                            : 0)) >
+                    (lengthPublicTransStart +
+                        lengthPublicTransEnd +
+                        (naviState.minTime
+                            ? (bestPubTrans.last as int) * 60
+                            : 0))) {
+                  naviState.routeLength += (lengthPublicTransStart +
+                      lengthPublicTransEnd +
+                      (naviState.minTime
+                          ? (bestPubTrans.last as int) * 60
+                          : 0));
+                  if (routePublicTransStart.isNotEmpty)
+                    displayRoute(routePublicTransStart, startVertex.campusNum);
+                  if (routePublicTransEnd.isNotEmpty)
+                    displayRoute(routePublicTransEnd, endVertex.campusNum);
+                  toPrint = (bestPubTrans.first as BusTimeTable).description;
+                } else {
+                  naviState.routeLength += (lengthSchoolBusStart +
+                      lengthSchoolBusEnd +
+                      (naviState.minTime
+                          ? (bestSchoolBus.last as int) * 60
+                          : 0));
+                  if (routeSchoolBusStart.isNotEmpty)
+                    displayRoute(routeSchoolBusStart, startVertex.campusNum);
+                  if (routeSchoolBusEnd.isNotEmpty)
+                    displayRoute(routeSchoolBusEnd, endVertex.campusNum);
+                  toPrint = (bestSchoolBus.first as BusTimeTable).description;
+                }
               }
+              await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text('提示'),
+                        content: Text('从$startCampusName移动到$endCampusName，请乘坐' +
+                            toPrint +
+                            '。'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('取消'),
+                            onPressed: () =>
+                                Navigator.of(context).pop(), //关闭对话框
+                          ),
+                        ],
+                      ));
             }
-            await showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: Text('提示'),
-                      content: Text('从$startCampusName移动到$endCampusName，请乘坐' +
-                          toPrint +
-                          '。'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: Text('取消'),
-                          onPressed: () => Navigator.of(context).pop(), //关闭对话框
-                        ),
-                      ],
-                    ));
+          }
+          if (i != naviOrder.length - 1) {
+            entryRoute(realLatLng, juncLatLng);
+            naviState.routeLength += juncLength;
+          }
+          if (i != 0) {
+            entryRoute(juncLatLng, realLatLng);
+            naviState.routeLength += juncLength;
           }
         }
         if (logEnabled)
-          logSink
-              .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
+          logSink.write(
+              DateTime.now().toString() + ': 类型转换与狄杰斯特拉算法结束，路线计算函数正常结束。\n');
         showRouteResult = true;
       } catch (e) {
         if (e == 'canNotLocate') {
@@ -1101,14 +1114,14 @@ class NaviTools {
         }
       }
       if (!showRouteResult) {
+        //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
         naviState.naviStatus = false;
         if (logEnabled) logSink.write(DateTime.now().toString() + ': 停止导航。\n');
         mapPolylines.clear();
         naviState.routeLength = 0;
       }
     } else {
-      mapPolylines.clear();
-      naviState.routeLength = 0;
+      if (logEnabled) logSink.write(DateTime.now().toString() + ': 停止导航。\n');
     }
   }
 
@@ -1121,20 +1134,27 @@ class NaviTools {
   }
 }
 
-///用于进行狄杰斯特拉算法的类
+///用于进行多次狄杰斯特拉算法的单元
 class NaviLoc {
+  ///点所在校区编号
   late int campusNum;
+
+  ///点在校区中点集的编号
   late int vertexNum;
+
+  ///点的特征坐标
   late LatLng location;
 
+  ///构造函数
   NaviLoc(this.campusNum, this.vertexNum, this.location);
 }
 
 ///逻辑位置类
 class LogicLoc {
-  ///建筑名:建筑别名
+  ///逻辑位置：建筑名与建筑别名列表的字典
   Map<String, List<String>> logicLoc = {};
 
+  ///默认构建函数，构造空逻辑位置表
   LogicLoc();
 
   LogicLoc.fromJson(Map<String, dynamic> json) {
@@ -1148,6 +1168,59 @@ class LogicLoc {
     return <String, dynamic>{
       'logicLoc': logicLoc,
     };
+  }
+}
+
+///食堂负载均衡类
+class CanteenArrange {
+  ///到食堂的时间
+  late double pathtime;
+
+  ///到食堂时的人数
+  late int result;
+
+  ///食堂最大人数
+  static const int capacity = 150;
+
+  ///食堂负载与每30秒进入人数的字典
+  static const Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
+
+  ///食堂负载与每30秒离开人数的字典
+  static const Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
+
+  ///负载均衡构建函数，将随机一个当前食堂人数，计算预计到达时的食堂人数
+  CanteenArrange(this.pathtime) {
+    int flowin, flowout;
+    int number = Random().nextInt(150);
+    for (double i = 0; i <= pathtime; i += 30) {
+      int tmp = 0;
+
+      if (number / capacity <= 0.25) {
+        tmp = 1;
+      } else if (number / capacity <= 0.75) {
+        tmp = 2;
+      } else
+        tmp = 3;
+      var fin = ntovin[tmp] ?? 0;
+      flowin = fin;
+      var fout = ntovout[tmp] ?? 0;
+      flowout = fout;
+      number = number + flowin - flowout;
+    }
+    result = number;
+  }
+
+  ///获取预计用餐时间
+  double getTime() {
+    if (result > capacity)
+      return double.infinity;
+    else
+      return 12 * result + pathtime;
+  }
+
+  ///获取到达时食堂负载百分比
+  double getPayload() {
+    return (result / capacity) * 100;
   }
 }
 
@@ -1186,43 +1259,3 @@ late File logFile;
 
 ///日志写IOSink
 late IOSink logSink;
-
-class CanteenArrange {
-  late double pathtime;
-  late int flowin;
-  late int flowout;
-  late int result;
-  static const int capacity = 150;
-  static const Map<int, int> ntovin = {1: 1, 2: 3, 3: 2};
-  static const Map<int, int> ntovout = {1: 0, 2: 1, 3: 2};
-  CanteenArrange(this.pathtime) {
-    int number = Random().nextInt(150);
-    for (double i = 0; i <= pathtime; i += 30) {
-      int tmp = 0;
-
-      if (number / capacity <= 0.25) {
-        tmp = 1;
-      } else if (number / capacity <= 0.75) {
-        tmp = 2;
-      } else
-        tmp = 3;
-      var fin = ntovin[tmp] ?? 0;
-      flowin = fin;
-      var fout = ntovout[tmp] ?? 0;
-      flowout = fout;
-      number = number + flowin - flowout;
-    }
-    result = number;
-  }
-
-  double getTime() {
-    if (result > capacity)
-      return double.infinity;
-    else
-      return 12 * result + pathtime;
-  }
-
-  double getPayload() {
-    return (result / capacity) * 100;
-  }
-}
