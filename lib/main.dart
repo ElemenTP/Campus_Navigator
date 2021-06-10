@@ -286,10 +286,12 @@ class _MyHomePageState extends State<MyHomePage> {
         double nextLength = 114514;
         double distanceNextDest = 1919810;
         if (mapPolylines.length > 1) {
-          nextLength = AMapTools.distanceBetween(
-              mapPolylines[1].points.first, mapPolylines[1].points.last);
-          distanceNextDest = AMapTools.distanceBetween(
-              userLocation.latLng, mapPolylines[1].points.last);
+          LatLng destNextLatLng = mapPolylines[1].points.last;
+          if (depaLatLng != destNextLatLng) {
+            nextLength = AMapTools.distanceBetween(destLatLng, destNextLatLng);
+            distanceNextDest =
+                AMapTools.distanceBetween(userLocation.latLng, destNextLatLng);
+          }
         }
         if (distancetoLine > 40 || (distanceDest > polylineLength + 25)) {
           if (mapData.locationInCampus(userLocation.latLng) ==
