@@ -32,14 +32,16 @@ Map<String, dynamic> latLngtoJson(LatLng latLng) {
   };
 }
 
-///点集类
+///点集类,点集用于描绘实际道路的形状，存在于路口和拐点处。存储LatLng类型（封装经纬度坐标）
 class MapVertex {
+  ///点集数组
   List<LatLng> listVertex = [];
 
   MapVertex();
 
   MapVertex.fromList(this.listVertex);
 
+  ///通过json创建对象
   MapVertex.fromJson(Map<String, dynamic> json) {
     List listVertexJson = json['listVertex'] as List;
     listVertexJson.forEach((element) {
@@ -47,6 +49,7 @@ class MapVertex {
     });
   }
 
+  ///通过对象创建json
   Map<String, dynamic> toJson() {
     List listVertexJson = [];
     listVertex.forEach((element) {
@@ -60,13 +63,13 @@ class MapVertex {
 
 ///建筑类
 class Building {
-  ///建筑入口
+  ///建筑入口集
   List<LatLng> doors = [];
 
-  ///建筑入口连接点
+  ///入口邻近点集
   List<int> juncpoint = [];
 
-  ///描述集
+  ///建筑描述字段集
   List<String> description = [];
 
   Building();
@@ -81,6 +84,7 @@ class Building {
     return LatLng(latall / doors.length, lngall / doors.length);
   }
 
+  ///通过json创建对象
   Building.fromJson(Map<String, dynamic> json) {
     List doorsJson = json['doors'] as List;
     doorsJson.forEach((element) {
@@ -96,6 +100,7 @@ class Building {
     });
   }
 
+  ///通过对象创建json
   Map<String, dynamic> toJson() {
     List doorsJson = [];
     doors.forEach((element) {
@@ -109,12 +114,13 @@ class Building {
   }
 }
 
-///建筑集类
+///建筑集类,封装一个Building数组
 class MapBuilding {
   List<Building> listBuilding = [];
 
   MapBuilding();
 
+  ///通过json创建对象
   MapBuilding.fromJson(Map<String, dynamic> json) {
     List listBuildingJson = json['listBuilding'] as List;
     listBuildingJson.forEach((element) {
@@ -122,6 +128,7 @@ class MapBuilding {
     });
   }
 
+  ///通过对象创建json
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'listBuilding': listBuilding,
@@ -129,15 +136,23 @@ class MapBuilding {
   }
 }
 
-///校区类
+///校区类,描述校区的范围，入口，校车点等信息
 class MapCampus {
+  ///校区范围，校区多边形的点集构成
   List<LatLng> campusShape = [];
+
+  ///校区大门
   int gate = 0;
+
+  ///校车点
   int busstop = 0;
+
+  ///校区名
   String name = '校区';
 
   MapCampus();
 
+  ///通过json构建对象
   MapCampus.fromJson(Map<String, dynamic> json) {
     List campusShapeJson = json['campusShape'] as List;
     campusShapeJson.forEach((element) {
@@ -148,6 +163,7 @@ class MapCampus {
     name = json['name'] as String? ?? '校区';
   }
 
+  ///通过对象创建json
   Map<String, dynamic> toJson() {
     List campusShapeJson = [];
     campusShape.forEach((element) {
@@ -162,8 +178,9 @@ class MapCampus {
   }
 }
 
-///边类
+///边类,道路上两点构成的边，存储两点在点集中的角标
 class Edge {
+  ///道路两点
   int pointa = -1;
   int pointb = -1;
 
@@ -179,6 +196,7 @@ class Edge {
   ///默认构造函数，将生成不通的边
   Edge();
 
+  ///从json中创建对象
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'pointa': pointa,
@@ -188,6 +206,7 @@ class Edge {
     };
   }
 
+  ///由对象生成json
   Edge.fromJson(Map<String, dynamic> json) {
     pointa = json['pointa'] as int? ?? -1;
     pointb = json['pointb'] as int? ?? -1;
@@ -200,10 +219,12 @@ class Edge {
 class MapEdge {
   List<Edge> listEdge = [];
 
+  ///拥挤度开关
   bool crowded = false;
 
   MapEdge();
 
+  ///通过对象创建json
   MapEdge.fromJson(Map<String, dynamic> json) {
     List listEdgeJson = json['listEdge'] as List;
     listEdgeJson.forEach((element) {
@@ -211,6 +232,7 @@ class MapEdge {
     });
   }
 
+  ///通过json创建对象
   Map<String, dynamic> toJson() {
     /*List listEdgeJson = [];
     listEdge.forEach((element) {
@@ -231,6 +253,7 @@ class MapEdge {
     }
   }
 
+  ///关闭拥挤度
   void disableCrowding() {
     if (crowded) {
       listEdge.forEach((element) {
@@ -269,6 +292,7 @@ class BusTimeTable {
 
   BusTimeTable();
 
+  ///通过json创建对象
   BusTimeTable.fromJson(Map<String, dynamic> json) {
     isSchoolBus = json['isSchoolBus'] as bool? ?? false;
     campusFrom = json['campusFrom'] as int? ?? 0;
@@ -280,6 +304,7 @@ class BusTimeTable {
     takeTime = json['takeTime'] as int? ?? 3600;
   }
 
+  ///通过对象创建json
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'isSchoolBus': isSchoolBus,
@@ -376,6 +401,7 @@ class MapData {
     return -1;
   }
 
+  ///由校区campusNum的边集构造边邻接矩阵
   List<List<Edge>> getAdjacentMatrix(int campusNum) {
     List<Edge> listEdge = mapEdge[campusNum].listEdge;
     int squareSize = mapVertex[campusNum].listVertex.length;
@@ -388,6 +414,7 @@ class MapData {
     return tmp;
   }
 
+  ///获取距离点location最近的导航点编号
   int nearestVertex(int campusNum, LatLng location) {
     List<LatLng> listVertex = mapVertex[campusNum].listVertex;
     late int shortestVtx;
@@ -402,6 +429,7 @@ class MapData {
     return shortestVtx;
   }
 
+  ///获取校区campusNum中编号为vertexNum的点
   LatLng getVertexLatLng(int campusNum, int vertexNum) {
     return mapVertex[campusNum].listVertex[vertexNum];
   }
@@ -418,6 +446,7 @@ class MapData {
     });
   }
 
+  ///关闭拥挤度
   void disableCrowding() {
     mapEdge.forEach((element) {
       if (element.crowded) {
@@ -429,6 +458,7 @@ class MapData {
     });
   }
 
+  ///当跨校区导航时，获取距离当前时间最近的交通工具时间表
   List getBestTimeTable(int campusFrom, int campusTo, DateTime timeAtGetOn,
       {bool? onlySchoolBus}) {
     BusTimeTable? target;
