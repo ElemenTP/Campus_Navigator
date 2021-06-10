@@ -5,14 +5,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'header.dart';
-import 'amapapikey.dart'; //高德apikey所在文件
-import 'searchpage.dart'; //搜索界面
-import 'settingpage.dart'; //设置界面
+import 'amapapikey.dart';
+import 'searchpage.dart';
+import 'settingpage.dart';
 
 void main() async {
   //初始化Flutter环境
@@ -83,7 +83,7 @@ class MyHomePage extends StatefulWidget {
 
 ///主界面，用于显示地图
 class _MyHomePageState extends State<MyHomePage> {
-  ///底部导航栏内容
+  ///底部导航栏内容，左侧是搜索界面按钮，右侧是设直界面按钮。
   static const List<BottomNavigationBarItem> _navbaritems = [
     //搜索标志
     BottomNavigationBarItem(
@@ -98,14 +98,8 @@ class _MyHomePageState extends State<MyHomePage> {
     )
   ];
 
-  ///地图widget创建时的回调函数，获得controller。
-  void _onMapCreated(AMapController controller) {
-    mapController = controller;
-  }
-
-  ///地图点击回调函数，在被点击处创建标志。
+  ///地图点击回调函数，检测被点击处是否在任何校区内，在则显示一个标志，不在则弹窗提示
   void _onMapTapped(LatLng taplocation) async {
-    //判断点是否在任何校区内，在就创建点，不在则弹窗提示
     if (mapData.locationInCampus(taplocation) >= 0) {
       setState(() {
         mapMarkers['onTap'] =
@@ -127,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  ///点击创建的标志的点击回调函数
+  ///点击创建的标志的点击回调函数，展示将坐标设为起点或终点的对话框。
   void _onTapMarkerTapped(String markerid) async {
     await showDialog(
         context: context,
@@ -162,7 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  ///从地图上添加坐标形式的出发地
+  ///从地图上添加坐标形式的起点
   void _addStartLocation(LatLng location) {
     naviState.start = location;
     mapMarkers['start'] = Marker(
@@ -172,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  ///从地图上添加坐标形式的目的地
+  ///从地图上添加坐标形式的终点
   void _addEndLocation(LatLng location) {
     naviState.end.add(location);
     String tmpid = 'end' + location.hashCode.toString();
@@ -183,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  ///出发地Marker点击回调
+  ///出发地Marker点击回调，询问用户收否删除该起点。
   void _onStartMarkerTapped() async {
     await showDialog(
         context: context,
@@ -208,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  ///目的地Marker点击回调
+  ///目的地Marker点击回调，询问用户收否删除该终点。
   void _onEndMarkerTapped(String markerid) async {
     await showDialog(
         context: context,
@@ -233,13 +227,6 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  ///地图视角改变回调函数，移除点击添加的标志。
-  void _onMapCamMoved(CameraPosition newPosition) {
-    setState(() {
-      mapMarkers.remove('onTap');
-    });
-  }
-
   ///地图视角改变结束回调函数，将视角信息记录在NVM中。
   void _onCameraMoveEnd(CameraPosition endPosition) {
     prefs.setDouble('lastCamPositionbearing', endPosition.bearing);
@@ -248,10 +235,18 @@ class _MyHomePageState extends State<MyHomePage> {
     prefs.setDouble('lastCamPositionzoom', endPosition.zoom);
   }
 
-  ///用户位置改变回调函数，记录用户位置，当选择了实时导航时进行实时导航
+  ///用户位置改变回调函数，记录用户位置，当选择正在导航且选择了实时导航时进行实时导航，如果用户
+  ///位置信息有问题则不执行。导航路线列表为空时提示已到目的地，不是空时则1. 判断用户是否偏离当
+  ///前路线，当用户距离路线的垂直距离大于40米或距离路线终点的距离大于路线长度加20米则认为用户
+  ///偏离路线。 2. 判断用户是否已走过当前路线，当用户距离路线终点距离小于5米或距离起点的距离大
+  ///于路线长度加5米或距离下一条路线的终点的距离小于下一条路线的长度时认为用户已走过当前路线。
+  ///如果没有下一条路线，或者下一条路线是当前路线的折返时最后一个判断条件不生效。
   void _onLocationChanged(AMapLocation aMapLocation) async {
+    //记录用户位置。
     userLocation = aMapLocation;
+    //判断是否在进行实时导航，位置信息是否正确
     if (naviState.naviStatus && naviState.realTime && userLocation.time != 0) {
+      //导航路线列表空了，说明已到达目的地。
       if (mapPolylines.isEmpty) {
         showDialog(
             context: context,
@@ -271,6 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
         naviState.routeLength = 0;
         setState(() {});
       } else {
+        //判断是否偏移路线，是否已经走过一条路线
         LatLng depaLatLng = mapPolylines.first.points.first;
         LatLng destLatLng = mapPolylines.first.points.last;
         double polylineLength =
@@ -324,7 +320,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  ///导航按钮按下功能函数
+  ///导航按钮按下功能函数，调用导航设置管理界面
   void _setNavigation() async {
     if (await naviState.manageNaviState(context)) {
       await NaviTools.showRoute(context);
@@ -332,7 +328,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  ///定位按钮按下回调函数，将地图widget视角调整至用户位置。
+  ///定位按钮按下回调函数，弹窗让用户选择目标视角。
   void _setCameraPosition() async {
     late LatLng newLocation;
     if (await showDialog(
@@ -386,9 +382,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  ///底栏按钮点击回调函数
+  ///底栏按钮点击回调函数，按点击的底栏项目调出对应activity。
   void _onBarItemTapped(int index) async {
-    //按点击的底栏项目调出对应activity
     switch (index) {
       case 0:
         await Navigator.push(
@@ -408,8 +403,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ///定位权限申请函数
   void _requestLocationPermission() async {
-    // 申请位置权限
+    //申请位置权限
     locatePermissionStatus = await Permission.location.status;
+    //用户拒绝则弹窗提示
     if (!locatePermissionStatus.isGranted) {
       showDialog(
           context: context,
@@ -445,8 +441,8 @@ class _MyHomePageState extends State<MyHomePage> {
     AMapWidget map = AMapWidget(
       //高德api Key
       apiKey: amapApiKeys,
-      //创建地图回调函数
-      onMapCreated: _onMapCreated,
+      //创建地图回调函数，获得controller。
+      onMapCreated: (controller) => mapController = controller,
       //地图初始视角
       initialCameraPosition: CameraPosition(
         bearing: prefs.getDouble('lastCamPositionbearing') ?? 0,
@@ -456,8 +452,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       //地图点击回调函数
       onTap: _onMapTapped,
-      //地图视角移动回调函数
-      onCameraMove: _onMapCamMoved,
+      //地图视角移动回调函数，移除点击添加的标志。
+      onCameraMove: (_) => setState(() => mapMarkers.remove('onTap')),
       //地图视角移动结束回调函数
       onCameraMoveEnd: _onCameraMoveEnd,
       //用户位置移动回调函数
@@ -477,6 +473,7 @@ class _MyHomePageState extends State<MyHomePage> {
     List<Widget> listWidget = <Widget>[
       map,
     ];
+    //如果正在导航则显示路程/时间
     if (naviState.naviStatus) {
       listWidget.add(Positioned(
         left: 18.0,

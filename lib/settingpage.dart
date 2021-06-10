@@ -17,13 +17,13 @@ class MySettingPage extends StatefulWidget {
 }
 
 class _MySettingPageState extends State<MySettingPage> {
-  ///卫星地图审图号
+  ///预设卫星地图审图号
   String _satelliteImageApprovalNumber = '地图未正常加载';
 
-  ///检查是否为发行版
+  ///检查软件是否为发行版
   static bool get isRelease => bool.fromEnvironment("dart.vm.product");
 
-  ///获取审图号函数
+  ///获取审图号函数，遵守高德地图Open Api的要求
   void _getApprovalNumber() async {
     //按要求获取卫星地图审图号
     await mapController?.getSatelliteImageApprovalNumber().then((value) {
@@ -102,7 +102,8 @@ class _MySettingPageState extends State<MySettingPage> {
     }
   }
 
-  ///导入地图文件函数
+  ///导入地图文件函数，调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行测试，
+  ///不可用则提示用户，可用则存储在软件私有存储空间中并设为默认地图数据。
   void _pickMapData() async {
     FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -164,7 +165,8 @@ class _MySettingPageState extends State<MySettingPage> {
     }
   }
 
-  ///管理地图文件函数
+  ///管理地图文件函数，列出软件私有存储空间中所有导入的地图文件，用户可选择将任意一个设为默认，
+  ///或删除。
   void _manageMapData() async {
     Directory applicationDataDir = await getApplicationDocumentsDirectory();
     String customMapDataPath = applicationDataDir.path + '/CustomMapData';
@@ -276,7 +278,8 @@ class _MySettingPageState extends State<MySettingPage> {
     );
   }
 
-  ///导入逻辑位置文件函数
+  ///导入逻辑位置文件函数。调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行
+  ///测试，不可用则提示用户，可用则存储在软件私有存储空间中并设为默认逻辑位置数据，立即应用。
   void _pickLogicData() async {
     FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -335,7 +338,8 @@ class _MySettingPageState extends State<MySettingPage> {
     }
   }
 
-  ///管理逻辑位置文件函数
+  ///管理逻辑位置文件函数，列出软件私有存储空间中所有导入的逻辑位置文件，用户可选择将任意一个
+  ///设为默认，或删除，将立刻生效。
   void _manageLogicData() async {
     Directory applicationDataDir = await getApplicationDocumentsDirectory();
     String customLogicLocPath = applicationDataDir.path + '/CustomLogicLoc';
@@ -615,7 +619,7 @@ class _MySettingPageState extends State<MySettingPage> {
   }
 }
 
-///日志内容展示界面
+///日志内容展示界面，从文件中按行读出日志并放在列表中
 class MyLogPage extends StatelessWidget {
   late final List<String> listLogString;
 

@@ -1,4 +1,4 @@
-import 'package:amap_flutter_base/amap_flutter_base.dart'; //LatLng 类型在这里面
+import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +21,7 @@ class MySearchPage extends StatefulWidget {
   State<StatefulWidget> createState() => _MySearchPageState();
 }
 
+///搜索界面，用于搜索功能，逻辑位置功能，提供附近建筑和食堂负载均衡的按钮
 class _MySearchPageState extends State<MySearchPage> {
   ///输入框风格
   static const InputDecoration _decoration = InputDecoration(
@@ -31,7 +32,8 @@ class _MySearchPageState extends State<MySearchPage> {
   ///输入框焦点控制器
   late FocusNode textFocusNode;
 
-  ///建筑搜索函数
+  ///建筑搜索函数，基本逻辑是字符串匹配，将用户输入的字符串在用户筛选出来的所有校区的所有建筑
+  ///的描述信息和逻辑位置信息中进行匹配，匹配到的建筑加入搜索结果
   void _onStartSearch() {
     textFocusNode.unfocus();
     searchResult.clear();
@@ -41,10 +43,12 @@ class _MySearchPageState extends State<MySearchPage> {
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
       String curCampusName = mapData.mapCampus[i].name;
       if (campusFilter[i]) {
+        //在已选的校区中搜索
         mapData.mapBuilding[i].listBuilding.forEach((element) {
           if (toSearch.isEmpty) {
             searchResult.add(SearchResult(element, curCampusName));
           } else {
+            //匹配逻辑位置关键字
             List<String> listLogicLoc = [];
             mapLogicLoc.logicLoc[element.description.first]
                 ?.forEach((element1) {
@@ -55,6 +59,7 @@ class _MySearchPageState extends State<MySearchPage> {
                   curCampusName + ' 逻辑位置: ' + listLogicLoc.join(', ')));
               return;
             }
+            //匹配建筑描述关键字
             List<String> listMatched = [];
             element.description.forEach((element1) {
               if (element1.contains(toSearch)) listMatched.add(element1);
@@ -70,7 +75,7 @@ class _MySearchPageState extends State<MySearchPage> {
     if (logEnabled) logSink.write(DateTime.now().toString() + ': 搜索结束。\n');
   }
 
-  ///列表元素点击回调函数
+  ///列表元素点击回调函数，弹窗询问用户将该建筑设为起点或终点
   void _onListTileTapped(int index) async {
     textFocusNode.unfocus();
     if (naviState.start == searchResult[index].result) {
@@ -172,7 +177,9 @@ class _MySearchPageState extends State<MySearchPage> {
     setState(() {});
   }
 
-  ///搜索附近建筑函数
+  ///搜索附近建筑函数，使用NaviTools中的绘制圆形功能绘制一个圆，在当前校区的所有建筑的所有门
+  ///中寻找在圆内的，并将有门在圆内的建筑添加到结果列表中，并附加上使用狄杰斯特拉算法得到的当
+  ///前位置到该建筑的最短路线长度。
   void _searchNearBuilding() async {
     textFocusNode.unfocus();
     if (NaviTools.stateLocationReqiurement(context)) {
@@ -284,7 +291,9 @@ class _MySearchPageState extends State<MySearchPage> {
     }
   }
 
-  ///食堂负载均衡函数
+  ///食堂负载均衡函数，在当前校区的所有建筑的描述中匹配“食堂”关键字，将匹配到描述的建筑加入结果
+  ///中，并附上使用CanteenArrange类随机生成的负载均衡指标信息和使用狄杰斯特拉算法得到的当前
+  ///位置与其的最短路线的距离。
   void _onCanteenArrange() async {
     textFocusNode.unfocus();
     if (NaviTools.stateLocationReqiurement(context)) {
@@ -402,7 +411,7 @@ class _MySearchPageState extends State<MySearchPage> {
     }
   }
 
-  ///校区筛选函数
+  ///校区筛选函数，弹窗让用户选择/不选择搜索某些校区，使用一个布尔列表实现
   void _campusFilter() async {
     textFocusNode.unfocus();
     await showDialog(
@@ -538,9 +547,14 @@ class _MySearchPageState extends State<MySearchPage> {
   }
 }
 
+///搜索结果类
 class SearchResult {
+  ///搜索到的建筑
   late Building result;
+
+  ///对结果的附加描述
   late String matched;
 
+  ///构造函数
   SearchResult(this.result, this.matched);
 }
