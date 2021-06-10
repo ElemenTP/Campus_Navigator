@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 
-///LatLng 类型在这里面，即为点类
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -827,28 +826,6 @@ class NaviTools {
 
     ///检查导航状态，为开始时绘制路线
     if (naviState.naviStatus) {
-<<<<<<< HEAD
-      ///展示路线是否正常的标志
-      bool showRouteResult = false;
-      try {
-        ///导航开始时的日期时间，用于智能选择校区间导航方法
-        DateTime routeBeginTime = DateTime.now();
-        if (logEnabled)
-          logSink.write(routeBeginTime.toString() + ': 路线计算函数开始。\n');
-
-        ///如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
-        if (naviState.startOnUserLoc) {
-          if (stateLocationReqiurement(context)) {
-            int startCampus = mapData.locationInCampus(userLocation.latLng);
-            if (startCampus >= 0) {
-              naviState.start = userLocation.latLng;
-              if (logEnabled)
-                logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
-            } else {
-              showRouteResult = false;
-              throw 'notInAnyCampus';
-            }
-=======
       //导航开始时的日期时间，用于智能选择校区间导航方法
       DateTime routeBeginTime = DateTime.now();
       if (logEnabled)
@@ -861,7 +838,6 @@ class NaviTools {
             naviState.start = userLocation.latLng;
             if (logEnabled)
               logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
->>>>>>> c165035edb9c5c7181c8812a10bfa31f20f90d92
           } else {
             showDialog(
                 context: context,
@@ -887,20 +863,6 @@ class NaviTools {
           naviState.naviStatus = false;
           return;
         }
-<<<<<<< HEAD
-        if (logEnabled) {
-          logSink.write(DateTime.now().toString() +
-              ': ' +
-              '骑车' +
-              (naviState.onbike ? '开启' : '关闭') +
-              '，拥挤度' +
-              (naviState.crowding ? '开启' : '关闭') +
-              '。\n');
-          logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
-        }
-
-        ///排序所用新列表
-=======
       }
       if (logEnabled) {
         logSink.write(DateTime.now().toString() +
@@ -914,7 +876,6 @@ class NaviTools {
       }
       try {
         //排序所用新列表
->>>>>>> c165035edb9c5c7181c8812a10bfa31f20f90d92
         List naviOrder = [naviState.start];
         naviOrder.addAll(naviState.end);
 
@@ -1164,49 +1125,6 @@ class NaviTools {
         if (logEnabled)
           logSink.write(
               DateTime.now().toString() + ': 类型转换与狄杰斯特拉算法结束，路线计算函数正常结束。\n');
-<<<<<<< HEAD
-        showRouteResult = true;
-      } catch (e) {
-        if (e == 'canNotLocate') {
-        } else if (e == 'notInAnyCampus') {
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                    title: Text('提示'),
-                    content: Text('您不在任何校区内。'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(),
-
-                        ///关闭对话框
-                      ),
-                    ],
-                  ));
-          if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 您不在任何校区内。\n');
-        } else {
-          showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                    title: Text('提示'),
-                    content: Text('未找到路线。请检查地图数据。'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('取消'),
-                        onPressed: () => Navigator.of(context).pop(),
-
-                        ///关闭对话框
-                      ),
-                    ],
-                  ));
-          if (logEnabled)
-            logSink.write(DateTime.now().toString() + ': 未找到路线。请检查地图数据。\n');
-        }
-      }
-      if (!showRouteResult) {
-        ///路线绘制出现错误，将导航状态设为停止同时清空路线和长度
-=======
       } catch (_) {
         showDialog(
             context: context,
@@ -1223,7 +1141,6 @@ class NaviTools {
         if (logEnabled)
           logSink.write(DateTime.now().toString() + ': 未找到路线。停止导航。\n');
         //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
->>>>>>> c165035edb9c5c7181c8812a10bfa31f20f90d92
         naviState.naviStatus = false;
         mapPolylines.clear();
         naviState.routeLength = 0;
