@@ -156,6 +156,11 @@ class _MySettingPageState extends State<MySettingPage> {
                   ),
                 ],
               ));
+      if (logEnabled)
+        logSink.write(DateTime.now().toString() +
+            ': 导入新地图数据，' +
+            pickedFile.files.single.name +
+            '。\n');
     }
   }
 
@@ -195,6 +200,9 @@ class _MySettingPageState extends State<MySettingPage> {
                               await prefs.remove('dataFileDir');
                               _setState(() {});
                               Navigator.of(context).pop();
+                              if (logEnabled)
+                                logSink.write(DateTime.now().toString() +
+                                    ': 应用默认地图数据。\n');
                             }, //关闭对话框
                           ),
                         ],
@@ -224,6 +232,11 @@ class _MySettingPageState extends State<MySettingPage> {
                                   await element.delete();
                                   _setState(() {});
                                   Navigator.of(context).pop();
+                                  if (logEnabled)
+                                    logSink.write(DateTime.now().toString() +
+                                        ': 删除地图数据，' +
+                                        element.path.substring(prefixLength) +
+                                        '。\n');
                                 }, //关闭对话框
                               ),
                               TextButton(
@@ -232,6 +245,11 @@ class _MySettingPageState extends State<MySettingPage> {
                                   prefs.setString('dataFileDir', element.path);
                                   _setState(() {});
                                   Navigator.of(context).pop();
+                                  if (logEnabled)
+                                    logSink.write(DateTime.now().toString() +
+                                        ': 应用地图数据，' +
+                                        element.path.substring(prefixLength) +
+                                        '。\n');
                                 }, //关闭对话框
                               ),
                             ],
@@ -309,6 +327,11 @@ class _MySettingPageState extends State<MySettingPage> {
                   ),
                 ],
               ));
+      if (logEnabled)
+        logSink.write(DateTime.now().toString() +
+            ': 导入并应用新逻辑位置，' +
+            pickedFile.files.single.name +
+            '。\n');
     }
   }
 
@@ -350,6 +373,9 @@ class _MySettingPageState extends State<MySettingPage> {
                               mapLogicLoc = LogicLoc();
                               _setState(() {});
                               Navigator.of(context).pop();
+                              if (logEnabled)
+                                logSink.write(
+                                    DateTime.now().toString() + ': 不使用逻辑位置。\n');
                             }, //关闭对话框
                           ),
                         ],
@@ -382,6 +408,11 @@ class _MySettingPageState extends State<MySettingPage> {
                                   await element.delete();
                                   _setState(() {});
                                   Navigator.of(context).pop();
+                                  if (logEnabled)
+                                    logSink.write(DateTime.now().toString() +
+                                        ': 删除逻辑位置，' +
+                                        element.path.substring(prefixLength) +
+                                        '。\n');
                                 }, //关闭对话框
                               ),
                               TextButton(
@@ -394,6 +425,11 @@ class _MySettingPageState extends State<MySettingPage> {
                                       await logicLocFile.readAsString()));
                                   _setState(() {});
                                   Navigator.of(context).pop();
+                                  if (logEnabled)
+                                    logSink.write(DateTime.now().toString() +
+                                        ': 应用逻辑位置，' +
+                                        element.path.substring(prefixLength) +
+                                        '。\n');
                                 }, //关闭对话框
                               ),
                             ],
