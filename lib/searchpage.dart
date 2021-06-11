@@ -213,7 +213,7 @@ class _MySearchPageState extends State<MySearchPage> {
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
                               keyboardType: TextInputType.number,
-                              validator: (value) =>
+                              validator: (_) =>
                                   inputRadix > 0 ? null : '请输入正整数',
                               onChanged: (value) => _setState(
                                   () => inputRadix = int.tryParse(value) ?? -1),

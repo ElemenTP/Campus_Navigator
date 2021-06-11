@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:amap_flutter_base/amap_flutter_base.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
-
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -74,6 +73,7 @@ class Building {
 
   Building();
 
+  ///获取建筑的特征坐标
   LatLng getApproxLocation() {
     double latall = 0;
     double lngall = 0;
@@ -393,7 +393,7 @@ class MapData {
     return -1;
   }
 
-  ///判断某建筑building
+  ///判断某建筑building所属校区
   int buildingInCampus(Building building) {
     for (int i = 0; i < mapCampus.length; ++i) {
       if (mapBuilding[i].listBuilding.contains(building)) return i;
@@ -401,7 +401,7 @@ class MapData {
     return -1;
   }
 
-  ///由校区campusNum的边集构造边邻接矩阵
+  ///由校区campusNum的边集构造边二维邻接矩阵
   List<List<Edge>> getAdjacentMatrix(int campusNum) {
     List<Edge> listEdge = mapEdge[campusNum].listEdge;
     int squareSize = mapVertex[campusNum].listVertex.length;
@@ -429,7 +429,7 @@ class MapData {
     return shortestVtx;
   }
 
-  ///获取校区campusNum中编号为vertexNum的点
+  ///获取校区campusNum中编号为vertexNum的点的坐标
   LatLng getVertexLatLng(int campusNum, int vertexNum) {
     return mapVertex[campusNum].listVertex[vertexNum];
   }
@@ -472,18 +472,18 @@ class MapData {
           element.dayOfWeek < 8 &&
           element.dayOfWeek != timeAtGetOn.weekday) return;
       int thisTakenTime = 0;
-      if (element.setOutHour >= 0 &&
-          element.setOutHour < 24 &&
-          element.setOutHour < timeAtGetOn.hour)
-        return;
-      else if (element.setOutHour >= 0 && element.setOutHour < 24)
-        thisTakenTime += (element.setOutHour - timeAtGetOn.hour) * 60;
-      if (element.setOutMinute >= 0 &&
-          element.setOutMinute < 60 &&
-          element.setOutMinute < timeAtGetOn.minute)
-        return;
-      else if (element.setOutMinute >= 0 && element.setOutMinute < 60)
-        thisTakenTime += element.setOutMinute - timeAtGetOn.minute;
+      if (element.setOutHour >= 0 && element.setOutHour < 24) {
+        if (element.setOutHour < timeAtGetOn.hour)
+          return;
+        else
+          thisTakenTime += (element.setOutHour - timeAtGetOn.hour) * 60;
+      }
+      if (element.setOutMinute >= 0 && element.setOutMinute < 60) {
+        if (element.setOutMinute < timeAtGetOn.minute)
+          return;
+        else
+          thisTakenTime += element.setOutMinute - timeAtGetOn.minute;
+      }
       thisTakenTime += element.takeTime;
       if (thisTakenTime < takenTime) {
         target = element;
@@ -789,7 +789,7 @@ class NaviTools {
   ///生成一个以某点为中心的近似圆
   static List<LatLng> circleAround(LatLng center, int rad) {
     ///近似圆的顶点数量
-    const int times = 8;
+    const int times = 36;
 
     ///多边形的点数
     Offset res = Offset(center.latitude, center.longitude);
@@ -921,8 +921,7 @@ class NaviTools {
         //排序所用新列表
         List naviOrder = [naviState.start];
         naviOrder.addAll(naviState.end);
-
-        ///终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
+        //终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
         for (int i = 0; i < naviOrder.length - 2; ++i) {
           int nextEnd = i + 1;
           double minDistance = double.infinity;
@@ -956,8 +955,7 @@ class NaviTools {
           });
           logSink.write(DateTime.now().toString() + ': 开始狄杰斯特拉算法。\n');
         }
-
-        ///将排好序的列表中的元素
+        //将排好序的列表中的元素一一绘制虚线，使用狄杰斯特拉算法得到路径，绘制实线
         for (int i = 0; i < naviOrder.length; ++i) {
           int campusNum = 0;
           LatLng realLatLng = LatLng(0, 0);
@@ -1000,9 +998,11 @@ class NaviTools {
             curNaviLoc = NaviLoc(campusNum, juncVertex, realLatLng);
           }
           naviOrder[i] = curNaviLoc;
+          //该点不是起点，与前一个点狄杰斯特拉并绘制路线
           if (i != 0) {
             NaviLoc startVertex = naviOrder[i - 1] as NaviLoc;
             NaviLoc endVertex = curNaviLoc;
+            //未跨校区
             if (startVertex.campusNum == endVertex.campusNum) {
               if (startVertex.vertexNum != endVertex.vertexNum) {
                 ShortPath path = ShortPath(
@@ -1013,7 +1013,8 @@ class NaviTools {
                 naviState.routeLength += path.getrelativelen();
                 displayRoute(path.getroute(), startVertex.campusNum);
               }
-            } else {
+            } //跨校区
+            else {
               double lengthPublicTransStart = 0;
               double lengthPublicTransEnd = 0;
               double lengthSchoolBusStart = 0;
@@ -1154,10 +1155,12 @@ class NaviTools {
                       ));
             }
           }
+          //该点不是终点，绘制其与连接点间的虚线
           if (i != naviOrder.length - 1) {
             entryRoute(realLatLng, juncLatLng);
             naviState.routeLength += juncLength;
           }
+          //该点不是起点，绘制连接点与其之间的虚线
           if (i != 0) {
             entryRoute(juncLatLng, realLatLng);
             naviState.routeLength += juncLength;
@@ -1223,6 +1226,7 @@ class LogicLoc {
   ///默认构建函数，构造空逻辑位置表
   LogicLoc();
 
+  ///从json对象中读取
   LogicLoc.fromJson(Map<String, dynamic> json) {
     Map logicLocJson = json['logicLoc'] as Map;
     logicLocJson.forEach((key, value) {
@@ -1230,6 +1234,7 @@ class LogicLoc {
     });
   }
 
+  ///生成json对象
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'logicLoc': logicLoc,
