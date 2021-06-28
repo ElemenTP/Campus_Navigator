@@ -51,7 +51,11 @@ class _MySettingPageState extends State<MySettingPage> {
 
   ///清除日志文件函数
   void _cleanLogFile() async {
-    await logFile.writeAsString('');
+    if (logEnabled)
+      await logFile.writeAsString('');
+    else
+      await logFile.delete();
+    setState(() {});
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -105,10 +109,26 @@ class _MySettingPageState extends State<MySettingPage> {
   ///导入地图文件函数，调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行测试，
   ///不可用则提示用户，可用则存储在软件私有存储空间中并设为默认地图数据。
   void _pickMapData() async {
-    FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
-        allowedExtensions: ['json']);
+    FilePickerResult? pickedFile;
+    try {
+      pickedFile = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          allowedExtensions: ['json']);
+    } catch (_) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("提示"),
+                content: Text("导入地图数据文件功能需要存储权限。"),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text("确定"),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ));
+    }
     if (pickedFile != null) {
       File iptFile = File(pickedFile.files.single.path!);
       late MapData newData;
@@ -279,10 +299,26 @@ class _MySettingPageState extends State<MySettingPage> {
   ///导入逻辑位置文件函数。调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行
   ///测试，不可用则提示用户，可用则存储在软件私有存储空间中并设为默认逻辑位置数据，立即应用。
   void _pickLogicData() async {
-    FilePickerResult? pickedFile = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
-        allowedExtensions: ['json']);
+    FilePickerResult? pickedFile;
+    try {
+      pickedFile = await FilePicker.platform.pickFiles(
+          type: FileType.custom,
+          allowMultiple: false,
+          allowedExtensions: ['json']);
+    } catch (_) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                title: Text("提示"),
+                content: Text("导入地图数据文件功能需要存储权限。"),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text("确定"),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              ));
+    }
     if (pickedFile != null) {
       File iptFile = File(pickedFile.files.single.path!);
       late LogicLoc newLogicLoc;
@@ -490,6 +526,8 @@ class _MySettingPageState extends State<MySettingPage> {
                   children: [
                     Text(
                       '地图数据',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -516,6 +554,8 @@ class _MySettingPageState extends State<MySettingPage> {
                   children: [
                     Text(
                       '逻辑位置',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -541,13 +581,25 @@ class _MySettingPageState extends State<MySettingPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      '日志开关',
+                      '日志',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '开关',
                     ),
                     Switch(
                         value: logEnabled,
                         onChanged: (value) {
                           setState(() => logEnabled = value);
                           prefs.setBool('logEnabled', logEnabled);
+                          if (logEnabled && (!logFile.existsSync()))
+                            logSink = logFile.openWrite(mode: FileMode.append);
                         }),
                   ],
                 ),
@@ -555,20 +607,22 @@ class _MySettingPageState extends State<MySettingPage> {
                   child: Text(
                     '查看日志',
                   ),
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyLogPage())),
+                  onPressed: logFile.existsSync()
+                      ? () => Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => MyLogPage()))
+                      : null,
                 ),
                 TextButton(
                   child: Text(
                     '导出日志',
                   ),
-                  onPressed: _outputLogFile,
+                  onPressed: logFile.existsSync() ? _outputLogFile : null,
                 ),
                 TextButton(
                   child: Text(
                     '清除日志',
                   ),
-                  onPressed: _cleanLogFile,
+                  onPressed: logFile.existsSync() ? _cleanLogFile : null,
                 ),
               ],
             )),

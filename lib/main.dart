@@ -23,7 +23,7 @@ void main() async {
   logEnabled = prefs.getBool('logEnabled') ?? false;
   Directory logFileDir = await getApplicationDocumentsDirectory();
   logFile = File(logFileDir.path + '/NaviLog.txt');
-  logSink = logFile.openWrite(mode: FileMode.append);
+  if (logEnabled) logSink = logFile.openWrite(mode: FileMode.append);
   //初始化地图数据
   String? dataFileDir = prefs.getString('dataFileDir');
   if (dataFileDir == null) {
