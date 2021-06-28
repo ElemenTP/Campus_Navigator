@@ -350,10 +350,9 @@ class _MyHomePageState extends State<MyHomePage> {
               for (int i = 0; i < mapData.mapCampus.length; ++i) {
                 listWidget.add(Card(
                   child: ListTile(
-                    title: Text(mapData.mapCampus[i].name),
+                    title: Text(mapData[i].name),
                     onTap: () {
-                      newLocation =
-                          mapData.getVertexLatLng(i, mapData.mapCampus[i].gate);
+                      newLocation = mapData.getVertexLatLng(i, mapData[i].gate);
                       Navigator.of(context).pop(true);
                     },
                   ),

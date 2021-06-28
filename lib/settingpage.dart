@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart';
 
 import 'header.dart';
 
-///搜索界面
+///设置界面
 class MySettingPage extends StatefulWidget {
   MySettingPage({Key key = const Key('setting')}) : super(key: key);
 
@@ -134,12 +134,7 @@ class _MySettingPageState extends State<MySettingPage> {
       late MapData newData;
       try {
         newData = MapData.fromJson(jsonDecode(await iptFile.readAsString()));
-        if (newData.mapCampus.length == 0 ||
-            newData.mapCampus.length > newData.mapBuilding.length ||
-            newData.mapCampus.length > newData.mapVertex.length ||
-            newData.mapCampus.length > newData.mapEdge.length) {
-          throw '!';
-        }
+        if (newData.mapCampus.length == 0) throw '!';
       } catch (_) {
         showDialog(
             context: context,

@@ -44,10 +44,10 @@ class _MySearchPageState extends State<MySearchPage> {
     if (logEnabled)
       logSink.write(DateTime.now().toString() + ': 搜索开始，关键字"$toSearch"。\n');
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
-      String curCampusName = mapData.mapCampus[i].name;
+      String curCampusName = mapData[i].name;
       if (campusFilter[i]) {
         //在已选的校区中搜索
-        mapData.mapBuilding[i].listBuilding.forEach((element) {
+        mapData[i].listBuilding.forEach((element) {
           if (toSearch.isEmpty) {
             searchResult.add(SearchResult(element, curCampusName));
           } else {
@@ -245,7 +245,7 @@ class _MySearchPageState extends State<MySearchPage> {
         if (logEnabled)
           logSink.write(DateTime.now().toString() + ': 开始搜索附近建筑。\n');
         try {
-          mapData.mapEdge[campusNum].disableCrowding();
+          mapData[campusNum].disableCrowding();
           List<LatLng> circlePolygon =
               NaviTools.circleAround(userLocation.latLng, circleRad);
           List<Building> nearBuilding = [];
@@ -254,7 +254,7 @@ class _MySearchPageState extends State<MySearchPage> {
           LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
           double juncLength =
               AMapTools.distanceBetween(nearLatLng, userLocation.latLng);
-          mapData.mapBuilding[campusNum].listBuilding.forEach((element) {
+          mapData[campusNum].listBuilding.forEach((element) {
             for (LatLng doors in element.doors) {
               if (AMapTools.latLngIsInPolygon(doors, circlePolygon)) {
                 nearBuilding.add(element);
@@ -300,7 +300,7 @@ class _MySearchPageState extends State<MySearchPage> {
               if (nearLatLng != juncLatLng) {
                 ShortPath path = ShortPath(mapData.getAdjacentMatrix(campusNum),
                     nearVertex, element.juncpoint[choosedDoor], 0);
-                distance += path.getrelativelen();
+                distance += path.getRelativeLen();
               }
               searchResult.add(SearchResult(
                   element, '约' + distance.toStringAsFixed(0) + '米'));
@@ -359,14 +359,14 @@ class _MySearchPageState extends State<MySearchPage> {
         if (logEnabled)
           logSink.write(DateTime.now().toString() + ': 开始食堂负载均衡。\n');
         try {
-          mapData.mapEdge[campusNum].disableCrowding();
+          mapData[campusNum].disableCrowding();
           List<Building> canteens = [];
           int nearVertex =
               mapData.nearestVertex(campusNum, userLocation.latLng);
           LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
           double juncLength =
               AMapTools.distanceBetween(nearLatLng, userLocation.latLng);
-          mapData.mapBuilding[campusNum].listBuilding.forEach((element) {
+          mapData[campusNum].listBuilding.forEach((element) {
             for (String des in element.description) {
               if (des.contains(CANTEEN_NAME)) {
                 canteens.add(element);
@@ -412,7 +412,7 @@ class _MySearchPageState extends State<MySearchPage> {
               if (nearLatLng != juncLatLng) {
                 ShortPath path = ShortPath(mapData.getAdjacentMatrix(campusNum),
                     nearVertex, element.juncpoint[choosedDoor], 0);
-                distance += path.getrelativelen();
+                distance += path.getRelativeLen();
               }
               CanteenArrange arrangeObject = CanteenArrange(distance);
               searchResult.add(SearchResult(
@@ -479,7 +479,7 @@ class _MySearchPageState extends State<MySearchPage> {
           for (int index = 0; index < mapData.mapCampus.length; ++index) {
             listCampusCheckBox.add(Card(
               child: ListTile(
-                title: Text(mapData.mapCampus[index].name),
+                title: Text(mapData[index].name),
                 selected: campusFilter[index],
                 onTap: () =>
                     _setState(() => campusFilter[index] = !campusFilter[index]),

@@ -31,35 +31,6 @@ Map<String, dynamic> latLngtoJson(LatLng latLng) {
   };
 }
 
-///点集类,点集用于描绘实际道路的形状，存在于路口和拐点处。存储LatLng类型（封装经纬度坐标）
-class MapVertex {
-  ///点集数组
-  List<LatLng> listVertex = [];
-
-  MapVertex();
-
-  MapVertex.fromList(this.listVertex);
-
-  ///通过json创建对象
-  MapVertex.fromJson(Map<String, dynamic> json) {
-    List listVertexJson = json['listVertex'] as List;
-    listVertexJson.forEach((element) {
-      listVertex.add(latLngfromJson(element));
-    });
-  }
-
-  ///通过对象创建json
-  Map<String, dynamic> toJson() {
-    List listVertexJson = [];
-    listVertex.forEach((element) {
-      listVertexJson.add(latLngtoJson(element));
-    });
-    return <String, dynamic>{
-      'listVertex': listVertexJson,
-    };
-  }
-}
-
 ///建筑类
 class Building {
   ///建筑入口集
@@ -114,70 +85,6 @@ class Building {
   }
 }
 
-///建筑集类,封装一个Building数组
-class MapBuilding {
-  List<Building> listBuilding = [];
-
-  MapBuilding();
-
-  ///通过json创建对象
-  MapBuilding.fromJson(Map<String, dynamic> json) {
-    List listBuildingJson = json['listBuilding'] as List;
-    listBuildingJson.forEach((element) {
-      listBuilding.add(Building.fromJson(element));
-    });
-  }
-
-  ///通过对象创建json
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'listBuilding': listBuilding,
-    };
-  }
-}
-
-///校区类,描述校区的范围，入口，校车点等信息
-class MapCampus {
-  ///校区范围，校区多边形的点集构成
-  List<LatLng> campusShape = [];
-
-  ///校区大门
-  int gate = 0;
-
-  ///校车点
-  int busstop = 0;
-
-  ///校区名
-  String name = '校区';
-
-  MapCampus();
-
-  ///通过json构建对象
-  MapCampus.fromJson(Map<String, dynamic> json) {
-    List campusShapeJson = json['campusShape'] as List;
-    campusShapeJson.forEach((element) {
-      campusShape.add(latLngfromJson(element));
-    });
-    gate = json['gate'] as int? ?? 0;
-    busstop = json['busstop'] as int? ?? 0;
-    name = json['name'] as String? ?? '校区';
-  }
-
-  ///通过对象创建json
-  Map<String, dynamic> toJson() {
-    List campusShapeJson = [];
-    campusShape.forEach((element) {
-      campusShapeJson.add(latLngtoJson(element));
-    });
-    return <String, dynamic>{
-      'campusShape': campusShapeJson,
-      'gate': gate,
-      'busstop': busstop,
-      'name': name,
-    };
-  }
-}
-
 ///边类,道路上两点构成的边，存储两点在点集中的角标
 class Edge {
   ///道路两点
@@ -215,30 +122,80 @@ class Edge {
   }
 }
 
-///边集类
-class MapEdge {
-  List<Edge> listEdge = [];
+///校区类,描述校区的范围，入口，校车点等信息
+class MapCampus {
+  ///校区范围，校区多边形的点集构成
+  List<LatLng> campusShape = [];
+
+  ///校区大门
+  int gate = 0;
+
+  ///校车点
+  int busstop = 0;
+
+  ///校区名
+  String name = '校区';
 
   ///拥挤度开关
   bool crowded = false;
 
-  MapEdge();
+  ///校区内建筑列表
+  List<Building> listBuilding = [];
 
-  ///通过对象创建json
-  MapEdge.fromJson(Map<String, dynamic> json) {
+  ///校区内点与编号对应表
+  List<LatLng> listVertex = [];
+
+  ///校区内边与地图结构数据，按校区分成多个
+  List<Edge> listEdge = [];
+
+  MapCampus();
+
+  ///通过json构建对象
+  MapCampus.fromJson(Map<String, dynamic> json) {
+    List campusShapeJson = json['campusShape'] as List;
+    campusShapeJson.forEach((element) {
+      campusShape.add(latLngfromJson(element));
+    });
+    gate = json['gate'] as int? ?? 0;
+    busstop = json['busstop'] as int? ?? 0;
+    name = json['name'] as String? ?? '校区';
+    List listBuildingJson = json['listBuilding'] as List;
+    listBuildingJson.forEach((element) {
+      listBuilding.add(Building.fromJson(element));
+    });
+    List listVertexJson = json['listVertex'] as List;
+    listVertexJson.forEach((element) {
+      listVertex.add(latLngfromJson(element));
+    });
     List listEdgeJson = json['listEdge'] as List;
     listEdgeJson.forEach((element) {
       listEdge.add(Edge.fromJson(element));
     });
+    listEdge.forEach((curEdge) {
+      if (curEdge.availmthod >= 0 && curEdge.length == double.infinity) {
+        curEdge.length = AMapTools.distanceBetween(
+            listVertex[curEdge.pointa], listVertex[curEdge.pointb]);
+      }
+    });
   }
 
-  ///通过json创建对象
+  ///通过对象创建json
   Map<String, dynamic> toJson() {
-    /*List listEdgeJson = [];
-    listEdge.forEach((element) {
-      listEdgeJson.add(element.toJson());
-    });*/
+    List campusShapeJson = [];
+    campusShape.forEach((element) {
+      campusShapeJson.add(latLngtoJson(element));
+    });
+    List listVertexJson = [];
+    listVertex.forEach((element) {
+      listVertexJson.add(latLngtoJson(element));
+    });
     return <String, dynamic>{
+      'campusShape': campusShapeJson,
+      'gate': gate,
+      'busstop': busstop,
+      'name': name,
+      'listBuilding': listBuilding,
+      'listVertex': listVertexJson,
       'listEdge': listEdge,
     };
   }
@@ -324,19 +281,14 @@ class MapData {
   ///校区与编号的对应表
   List<MapCampus> mapCampus = [];
 
-  ///建筑列表
-  List<MapBuilding> mapBuilding = [];
-
-  ///点与编号对应表
-  List<MapVertex> mapVertex = [];
-
-  ///边与地图结构数据，按校区分成多个
-  List<MapEdge> mapEdge = [];
-
   ///校车时间表
   List<BusTimeTable> busTimeTable = [];
 
   MapData();
+
+  MapCampus operator [](int index) {
+    return mapCampus[index];
+  }
 
   ///从json对象中读取
   MapData.fromJson(Map<String, dynamic> json) {
@@ -344,42 +296,16 @@ class MapData {
     mapCampusJson.forEach((element) {
       mapCampus.add(MapCampus.fromJson(element));
     });
-    List mapBuildingJson = json['mapBuilding'] as List;
-    mapBuildingJson.forEach((element) {
-      mapBuilding.add(MapBuilding.fromJson(element));
-    });
-    List mapVertexJson = json['mapVertex'] as List;
-    mapVertexJson.forEach((element) {
-      mapVertex.add(MapVertex.fromJson(element));
-    });
-    List mapEdgeJson = json['mapEdge'] as List;
-    mapEdgeJson.forEach((element) {
-      mapEdge.add(MapEdge.fromJson(element));
-    });
     List busTimeTableJson = json['busTimeTable'] as List;
     busTimeTableJson.forEach((element) {
       busTimeTable.add(BusTimeTable.fromJson(element));
     });
-    for (int i = 0; i < mapEdge.length; ++i) {
-      List<Edge> curListEdge = mapEdge[i].listEdge;
-      for (int j = 0; j < curListEdge.length; ++j) {
-        Edge curEdge = curListEdge[j];
-        if (curEdge.availmthod >= 0 && curEdge.length == double.infinity) {
-          curEdge.length = AMapTools.distanceBetween(
-              mapVertex[i].listVertex[curEdge.pointa],
-              mapVertex[i].listVertex[curEdge.pointb]);
-        }
-      }
-    }
   }
 
   ///生成json对象
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'mapCampus': mapCampus,
-      'mapBuilding': mapBuilding,
-      'mapVertex': mapVertex,
-      'mapEdge': mapEdge,
       'busTimeTable': busTimeTable,
     };
   }
@@ -396,15 +322,15 @@ class MapData {
   ///判断某建筑building所属校区
   int buildingInCampus(Building building) {
     for (int i = 0; i < mapCampus.length; ++i) {
-      if (mapBuilding[i].listBuilding.contains(building)) return i;
+      if (mapCampus[i].listBuilding.contains(building)) return i;
     }
     return -1;
   }
 
   ///由校区campusNum的边集构造边二维邻接矩阵
   List<List<Edge>> getAdjacentMatrix(int campusNum) {
-    List<Edge> listEdge = mapEdge[campusNum].listEdge;
-    int squareSize = mapVertex[campusNum].listVertex.length;
+    List<Edge> listEdge = mapCampus[campusNum].listEdge;
+    int squareSize = mapCampus[campusNum].listVertex.length;
     List<List<Edge>> tmp = List.generate(
         squareSize, (_) => List.generate(squareSize, (_) => Edge()));
     listEdge.forEach((element) {
@@ -416,7 +342,7 @@ class MapData {
 
   ///获取距离点location最近的导航点编号
   int nearestVertex(int campusNum, LatLng location) {
-    List<LatLng> listVertex = mapVertex[campusNum].listVertex;
+    List<LatLng> listVertex = mapCampus[campusNum].listVertex;
     late int shortestVtx;
     double shortestLength = double.infinity;
     for (int i = 0; i < listVertex.length; ++i) {
@@ -431,12 +357,12 @@ class MapData {
 
   ///获取校区campusNum中编号为vertexNum的点的坐标
   LatLng getVertexLatLng(int campusNum, int vertexNum) {
-    return mapVertex[campusNum].listVertex[vertexNum];
+    return mapCampus[campusNum].listVertex[vertexNum];
   }
 
   ///随机拥挤度函数
   void randomCrowding() {
-    mapEdge.forEach((element) {
+    mapCampus.forEach((element) {
       if (!element.crowded) {
         element.listEdge.forEach((element1) {
           element1.crowding = 1.0 - Random().nextDouble();
@@ -448,7 +374,7 @@ class MapData {
 
   ///关闭拥挤度
   void disableCrowding() {
-    mapEdge.forEach((element) {
+    mapCampus.forEach((element) {
       if (element.crowded) {
         element.listEdge.forEach((element2) {
           element2.crowding = 1;
@@ -762,7 +688,7 @@ class NaviTools {
   ///导航道路，传入dijstra得到的route和某校区点集，返回直线
   static void displayRoute(List<int> path, int campusNum) {
     List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
-    List<LatLng> listvertex = mapData.mapVertex[campusNum].listVertex;
+    List<LatLng> listvertex = mapData[campusNum].listVertex;
     for (int i = 0; i < path.length - 1; ++i) {
       int a = edgevertex[path[i]][path[i + 1]].crowding * 3 ~/ 1;
       Polyline polyline = Polyline(
@@ -1010,8 +936,8 @@ class NaviTools {
                     startVertex.vertexNum,
                     endVertex.vertexNum,
                     transmethod);
-                naviState.routeLength += path.getrelativelen();
-                displayRoute(path.getroute(), startVertex.campusNum);
+                naviState.routeLength += path.getRelativeLen();
+                displayRoute(path.getRoute(), startVertex.campusNum);
               }
             } //跨校区
             else {
@@ -1023,19 +949,18 @@ class NaviTools {
               List<int> routePublicTransEnd = [];
               List<int> routeSchoolBusStart = [];
               List<int> routeSchoolBusEnd = [];
-              int startBusStop =
-                  mapData.mapCampus[startVertex.campusNum].busstop;
-              int endBusStop = mapData.mapCampus[endVertex.campusNum].busstop;
-              int startGate = mapData.mapCampus[startVertex.campusNum].gate;
-              int endGate = mapData.mapCampus[endVertex.campusNum].gate;
+              int startBusStop = mapData[startVertex.campusNum].busstop;
+              int endBusStop = mapData[endVertex.campusNum].busstop;
+              int startGate = mapData[startVertex.campusNum].gate;
+              int endGate = mapData[endVertex.campusNum].gate;
               if (startVertex.vertexNum != startBusStop) {
                 ShortPath startBusStopPath = ShortPath(
                     mapData.getAdjacentMatrix(startVertex.campusNum),
                     startVertex.vertexNum,
                     startBusStop,
                     transmethod);
-                lengthSchoolBusStart = startBusStopPath.getrelativelen();
-                routeSchoolBusStart = startBusStopPath.getroute();
+                lengthSchoolBusStart = startBusStopPath.getRelativeLen();
+                routeSchoolBusStart = startBusStopPath.getRoute();
               }
               if (startVertex.vertexNum != startGate) {
                 ShortPath startGatePath = ShortPath(
@@ -1043,8 +968,8 @@ class NaviTools {
                     startVertex.vertexNum,
                     startGate,
                     transmethod);
-                lengthPublicTransStart = startGatePath.getrelativelen();
-                routePublicTransStart = startGatePath.getroute();
+                lengthPublicTransStart = startGatePath.getRelativeLen();
+                routePublicTransStart = startGatePath.getRoute();
               }
               if (endVertex.vertexNum != endBusStop) {
                 ShortPath endBusStopPath = ShortPath(
@@ -1052,8 +977,8 @@ class NaviTools {
                     endBusStop,
                     endVertex.vertexNum,
                     transmethod);
-                lengthSchoolBusEnd = endBusStopPath.getrelativelen();
-                routeSchoolBusEnd = endBusStopPath.getroute();
+                lengthSchoolBusEnd = endBusStopPath.getRelativeLen();
+                routeSchoolBusEnd = endBusStopPath.getRoute();
               }
               if (endVertex.vertexNum != endGate) {
                 ShortPath endGatePath = ShortPath(
@@ -1061,8 +986,8 @@ class NaviTools {
                     endGate,
                     endVertex.vertexNum,
                     transmethod);
-                lengthPublicTransEnd = endGatePath.getrelativelen();
-                routePublicTransEnd = endGatePath.getroute();
+                lengthPublicTransEnd = endGatePath.getRelativeLen();
+                routePublicTransEnd = endGatePath.getRoute();
               }
               DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
                 seconds:
@@ -1083,10 +1008,8 @@ class NaviTools {
                   onlySchoolBus: true);
               if (bestPubTrans.isEmpty && bestSchoolBus.isEmpty) throw '!';
               late String toPrint;
-              String startCampusName =
-                  mapData.mapCampus[startVertex.campusNum].name;
-              String endCampusName =
-                  mapData.mapCampus[endVertex.campusNum].name;
+              String startCampusName = mapData[startVertex.campusNum].name;
+              String endCampusName = mapData[endVertex.campusNum].name;
               if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
                 naviState.routeLength += (lengthSchoolBusStart +
                     lengthSchoolBusEnd +
