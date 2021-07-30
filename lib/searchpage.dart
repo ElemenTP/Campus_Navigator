@@ -478,11 +478,11 @@ class _MySearchPageState extends State<MySearchPage> {
           List<Widget> listCampusCheckBox = [];
           for (int index = 0; index < mapData.mapCampus.length; ++index) {
             listCampusCheckBox.add(Card(
-              child: ListTile(
+              child: SwitchListTile(
+                value: campusFilter[index],
                 title: Text(mapData[index].name),
-                selected: campusFilter[index],
-                onTap: () =>
-                    _setState(() => campusFilter[index] = !campusFilter[index]),
+                onChanged: (value) =>
+                    _setState(() => campusFilter[index] = value),
               ),
             ));
           }

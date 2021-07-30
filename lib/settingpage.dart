@@ -189,6 +189,8 @@ class _MySettingPageState extends State<MySettingPage> {
     if (!await customMapDataDir.exists())
       await customMapDataDir.create(recursive: true);
     int prefixLength = customMapDataPath.length + 1;
+    /*Navigator.push(
+        context, MaterialPageRoute(builder: (context) => _MapDataManagePage()));*/
     await showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -494,6 +496,59 @@ class _MySettingPageState extends State<MySettingPage> {
     setState(() {});
   }
 
+  ///展示关于软件界面
+  void _showAbout() async {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text("关于"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '校园导航',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '卫星地图审图号 $_satelliteImageApprovalNumber',
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+                  ),
+                  Text(
+                    packageInfo.version +
+                        '+' +
+                        packageInfo.buildNumber +
+                        ' ' +
+                        (isRelease ? 'Release' : 'Debug'),
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                  ),
+                  Text(
+                    '@notsabers 2021',
+                    style:
+                        TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                  ),
+                ],
+              ),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Lisenses"),
+                  onPressed: () => showLicensePage(
+                    context: context,
+                    applicationName: '校园导航',
+                    applicationVersion:
+                        packageInfo.version + '+' + packageInfo.buildNumber,
+                  ),
+                ),
+                TextButton(
+                  child: Text("确定"),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ));
+  }
+
   @override
   void initState() {
     //获取审图号
@@ -503,6 +558,7 @@ class _MySettingPageState extends State<MySettingPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool logFileExists = logFile.existsSync();
     return Scaffold(
       //顶栏
       appBar: AppBar(
@@ -511,151 +567,120 @@ class _MySettingPageState extends State<MySettingPage> {
       //中央内容区
       body: SingleChildScrollView(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Card(
-                child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '地图数据',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  child: Text(
-                    '导入数据',
-                  ),
-                  onPressed: _pickMapData,
-                ),
-                TextButton(
-                  child: Text(
-                    '管理数据',
-                  ),
-                  onPressed: _manageMapData,
-                ),
-              ],
-            )),
-            Card(
-                child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '逻辑位置',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                TextButton(
-                  child: Text(
-                    '导入数据',
-                  ),
-                  onPressed: _pickLogicData,
-                ),
-                TextButton(
-                  child: Text(
-                    '管理数据',
-                  ),
-                  onPressed: _manageLogicData,
-                ),
-              ],
-            )),
-            Card(
-                child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '日志',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '开关',
-                    ),
-                    Switch(
-                        value: logEnabled,
-                        onChanged: (value) {
-                          setState(() => logEnabled = value);
-                          prefs.setBool('logEnabled', logEnabled);
-                          if (logEnabled && (!logFile.existsSync()))
-                            logSink = logFile.openWrite(mode: FileMode.append);
-                        }),
-                  ],
-                ),
-                TextButton(
-                  child: Text(
-                    '查看日志',
-                  ),
-                  onPressed: logFile.existsSync()
-                      ? () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => MyLogPage()))
-                      : null,
-                ),
-                TextButton(
-                  child: Text(
-                    '导出日志',
-                  ),
-                  onPressed: logFile.existsSync() ? _outputLogFile : null,
-                ),
-                TextButton(
-                  child: Text(
-                    '清除日志',
-                  ),
-                  onPressed: logFile.existsSync() ? _cleanLogFile : null,
-                ),
-              ],
-            )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  child: Text(
-                    locatePermissionStatus.isGranted ? '已获取定位权限' : '获取定位权限',
-                  ),
-                  onPressed: locatePermissionStatus.isGranted
-                      ? null
-                      : _requestLocationPermission,
-                ),
-              ],
+            ListTile(
+              subtitle: Text(
+                '地图数据',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  child: Text(
-                    '清除缓存',
-                  ),
-                  onPressed: _cleanMapCache,
+            ListTile(
+              title: Text(
+                '导入数据',
+              ),
+              subtitle: Text('从文件导入地图数据'),
+              onTap: _pickMapData,
+            ),
+            ListTile(
+              title: Text(
+                '管理数据',
+              ),
+              subtitle: Text('管理已导入地图数据'),
+              onTap: _manageMapData,
+            ),
+            ListTile(
+              subtitle: Text(
+                '逻辑位置',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                '导入数据',
+              ),
+              subtitle: Text('从文件导入逻辑位置数据'),
+              onTap: _pickLogicData,
+            ),
+            ListTile(
+              title: Text(
+                '管理数据',
+              ),
+              subtitle: Text('管理已导入逻辑位置数据'),
+              onTap: _manageLogicData,
+            ),
+            ListTile(
+              subtitle: Text(
+                '日志',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+            ),
+            SwitchListTile(
+                value: logEnabled,
+                title: Text(
+                  '日志开关',
                 ),
-              ],
+                onChanged: (value) {
+                  setState(() => logEnabled = value);
+                  prefs.setBool('logEnabled', logEnabled);
+                  if (logEnabled && (!logFileExists))
+                    logSink = logFile.openWrite(mode: FileMode.append);
+                }),
+            ListTile(
+              title: Text(
+                '查看日志',
+              ),
+              subtitle: logFileExists ? Text('查看存储的日志') : Text('没有日志'),
+              onTap: logFileExists
+                  ? () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => _MyLogPage()))
+                  : null,
             ),
-            Text(
-              '卫星地图审图号：$_satelliteImageApprovalNumber',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ListTile(
+              title: Text(
+                '导出日志',
+              ),
+              subtitle: logFileExists ? Text('导出日志到内部存储空间') : Text('没有日志'),
+              onTap: logFileExists ? _outputLogFile : null,
             ),
-            Text(
-              '校园导航 ' + (isRelease ? 'Release' : 'Debug'),
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+            ListTile(
+              title: Text(
+                '清除日志',
+              ),
+              subtitle: logFileExists ? Text('清除存储的日志') : Text('没有日志'),
+              onTap: logFileExists ? _cleanLogFile : null,
             ),
-            Text(
-              '@notsabers 2021',
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+            ListTile(
+              subtitle: Text(
+                '其他',
+                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              title: Text(
+                '申请定位权限',
+              ),
+              subtitle: Text(
+                locatePermissionStatus.isGranted
+                    ? '已获取定位权限'
+                    : '定位与导航功能依赖定位权限工作',
+              ),
+              onTap: locatePermissionStatus.isGranted
+                  ? null
+                  : _requestLocationPermission,
+            ),
+            ListTile(
+              title: Text(
+                '清除缓存',
+              ),
+              subtitle: Text('清除地图缓存'),
+              onTap: _cleanMapCache,
+            ),
+            ListTile(
+              title: Text(
+                '关于',
+              ),
+              onTap: _showAbout,
             ),
           ],
         ),
@@ -665,7 +690,7 @@ class _MySettingPageState extends State<MySettingPage> {
 }
 
 ///日志内容展示界面，从文件中按行读出日志并放在列表中
-class MyLogPage extends StatelessWidget {
+class _MyLogPage extends StatelessWidget {
   late final List<String> listLogString;
 
   @override
@@ -689,5 +714,35 @@ class MyLogPage extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+///地图数据管理界面
+class _MapDataManagePage extends StatefulWidget {
+  _MapDataManagePage({Key key = const Key('mapdata')}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _MapDataManagePageState();
+}
+
+class _MapDataManagePageState extends State<_MapDataManagePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold();
+  }
+}
+
+///地图数据管理界面
+class _LogicDataManagePage extends StatefulWidget {
+  _LogicDataManagePage({Key key = const Key('mapdata')}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _LogicDataManagePageState();
+}
+
+class _LogicDataManagePageState extends State<_LogicDataManagePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold();
   }
 }

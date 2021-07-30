@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,10 +15,13 @@ import 'header.dart';
 import 'amapapikey.dart';
 import 'searchpage.dart';
 import 'settingpage.dart';
+import 'shortpath.dart';
 
 void main() async {
   //初始化Flutter环境
   WidgetsFlutterBinding.ensureInitialized();
+  //获取软件信息
+  packageInfo = await PackageInfo.fromPlatform();
   //获取持久化设置内容
   prefs = await SharedPreferences.getInstance();
   //初始化日志功能
@@ -306,7 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
             if (logEnabled)
               logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
-            await NaviTools.showRoute(context);
+            await _showRoute();
             setState(() {});
           }
         } else if (distanceDest < 5 ||
@@ -322,8 +327,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ///导航按钮按下功能函数，调用导航设置管理界面
   void _setNavigation() async {
-    if (await naviState.manageNaviState(context)) {
-      await NaviTools.showRoute(context);
+    if (await _manageNaviState()) {
+      await _showRoute();
     }
     setState(() {});
   }
@@ -426,6 +431,466 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ));
+    }
+  }
+
+  ///管理导航状态界面，用户可1. 管理起点和各个终点。2. 选择是否以当前位置为起点。3. 当以当前
+  ///位置为起点时可以选择使用实时导航。4. 选择是否使用最短时间策略，使用则显示时间而非路程长度。
+  ///5. 是否骑车。6. 是否考略拥挤度。当存在起点和终点时可以开始导航。
+  Future<bool> _manageNaviState() async {
+    return await showDialog(
+            context: context,
+            builder: (context) => StatefulBuilder(
+                  builder: (context, _setState) => AlertDialog(
+                    title: Text('导航'),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          naviState.getStartWidget(_setState),
+                          SwitchListTile(
+                              value: naviState.startOnUserLoc,
+                              title: Text('从当前位置开始'),
+                              onChanged: (state) {
+                                _setState(() {
+                                  naviState.startOnUserLoc = state;
+                                  if (!state) naviState.realTime = state;
+                                });
+                                naviState.start = null;
+                                mapMarkers.remove('start');
+                              }),
+                          SwitchListTile(
+                            value: naviState.realTime,
+                            title: Text('实时导航'),
+                            onChanged: naviState.startOnUserLoc
+                                ? (state) =>
+                                    _setState(() => naviState.realTime = state)
+                                : null,
+                          ),
+                          LimitedBox(
+                            maxHeight: 270,
+                            child: SingleChildScrollView(
+                              child: naviState.getEndWidget(_setState),
+                            ),
+                          ),
+                          TextButton.icon(
+                            onPressed: () {
+                              _setState(() {
+                                naviState.start = null;
+                                naviState.end.clear();
+                              });
+                              mapMarkers.removeWhere(
+                                  (key, value) => !key.contains('onTap'));
+                            },
+                            icon: Icon(Icons.delete),
+                            label: Text('清除全部地点'),
+                          ),
+                          SwitchListTile(
+                            value: naviState.onbike,
+                            title: Text('允许骑车'),
+                            onChanged: (state) =>
+                                _setState(() => naviState.onbike = state),
+                          ),
+                          SwitchListTile(
+                            value: naviState.minTime,
+                            title: Text('最短时间'),
+                            onChanged: (state) => _setState(() {
+                              naviState.minTime = state;
+                              if (!state) naviState.crowding = state;
+                            }),
+                          ),
+                          SwitchListTile(
+                            value: naviState.crowding,
+                            title: Text('拥挤'),
+                            onChanged: naviState.minTime
+                                ? (state) =>
+                                    _setState(() => naviState.crowding = state)
+                                : null,
+                          ),
+                          Text(
+                            '提示：点击可删除起点/终点',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.normal),
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('取消'),
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
+                      TextButton(
+                        child: Text('停止'),
+                        onPressed: naviState.naviStatus
+                            ? () {
+                                naviState.naviStatus = false;
+                                Navigator.of(context).pop(true);
+                              }
+                            : null,
+                      ),
+                      TextButton(
+                        child: Text('开始'),
+                        onPressed: (naviState.startOnUserLoc ||
+                                    naviState.start != null) &&
+                                naviState.end.isNotEmpty
+                            ? () {
+                                naviState.naviStatus = true;
+                                Navigator.of(context).pop(true);
+                              }
+                            : null,
+                      ),
+                    ],
+                  ),
+                )) ??
+        false;
+  }
+
+  ///展示导航路线函数，先对终点列表进行排序：当前点从起点开始，在未排序的点中寻找与当前点直线
+  ///距离最短的点，设为当前点的下一个点。坐标类型的点以本身为特征坐标，建筑类型的点则以一种平
+  ///均算法得到的点作为排序特质点。排序结束后，逐个使用狄杰斯特拉算法生成路线并绘制在地图上。
+  ///对建筑类型的点此时将会遍历选择路程最近的门作为狄杰斯特拉点。当路程跨校区时，将在地图数据
+  ///提供的交通工具信息中智能选择校区间导航方法，导航采用最短路程策略则确保人行走时间最短，最
+  ///短时间策略则确保交通耗时最短。
+  Future<void> _showRoute() async {
+    //清空线列表和路线长度
+    mapPolylines.clear();
+    naviState.routeLength = 0;
+    //检查导航状态，为开始时绘制路线
+    if (naviState.naviStatus) {
+      //导航开始时的日期时间，用于智能选择校区间导航方法
+      DateTime routeBeginTime = DateTime.now();
+      if (logEnabled) {
+        logSink.write(routeBeginTime.toString() + ': 开始导航，开始计算路线。\n');
+        logSink.write(DateTime.now().toString() +
+            ': ' +
+            '实时导航' +
+            (naviState.realTime ? '开启' : '关闭') +
+            '，骑车' +
+            (naviState.onbike ? '开启' : '关闭') +
+            '。\n');
+        logSink.write(DateTime.now().toString() +
+            ': ' +
+            '最短时间' +
+            (naviState.minTime ? '开启' : '关闭') +
+            '，拥挤度' +
+            (naviState.crowding ? '开启' : '关闭') +
+            '。\n');
+      }
+      //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
+      if (naviState.startOnUserLoc) {
+        if (NaviTools.stateLocationReqiurement(context)) {
+          int startCampus = mapData.locationInCampus(userLocation.latLng);
+          if (startCampus >= 0) {
+            naviState.start = userLocation.latLng;
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
+          } else {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: Text('提示'),
+                      content: Text('您不在任何校区内。'),
+                      actions: <Widget>[
+                        TextButton(
+                          child: Text('取消'),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ],
+                    ));
+            if (logEnabled)
+              logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止导航。\n');
+            naviState.naviStatus = false;
+            return;
+          }
+        } else {
+          if (logEnabled)
+            logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。\n');
+          naviState.naviStatus = false;
+          return;
+        }
+      }
+      if (logEnabled) logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
+      try {
+        //排序所用新列表
+        List naviOrder = [naviState.start];
+        naviOrder.addAll(naviState.end);
+        //终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
+        for (int i = 0; i < naviOrder.length - 2; ++i) {
+          int nextEnd = i + 1;
+          double minDistance = double.infinity;
+          for (int j = i + 1; j < naviOrder.length; ++j) {
+            double curDistance = AMapTools.distanceBetween(
+                NaviTools.getLocation(naviOrder[i]),
+                NaviTools.getLocation(naviOrder[j]));
+            if (curDistance < minDistance) {
+              minDistance = curDistance;
+              nextEnd = j;
+            }
+          }
+          if (nextEnd != i + 1) {
+            var tmp = naviOrder[i + 1];
+            naviOrder[i + 1] = naviOrder[nextEnd];
+            naviOrder[nextEnd] = tmp;
+          }
+        }
+        int transmethod = naviState.onbike ? 1 : 0;
+        naviState.crowding
+            ? mapData.randomCrowding()
+            : mapData.disableCrowding();
+        if (logEnabled) {
+          logSink.write(DateTime.now().toString() + ': 完成目的地排序。\n');
+          naviOrder.forEach((element) {
+            logSink.write(DateTime.now().toString() +
+                ': ' +
+                (element.runtimeType == LatLng
+                    ? '坐标: ' + element.toJson().toString()
+                    : '建筑: ' + (element as Building).description.first) +
+                '\n');
+          });
+          logSink.write(DateTime.now().toString() + ': 开始狄杰斯特拉算法。\n');
+        }
+        //将排好序的列表中的元素一一绘制虚线，使用狄杰斯特拉算法得到路径，绘制实线
+        for (int i = 0; i < naviOrder.length; ++i) {
+          int campusNum = 0;
+          LatLng realLatLng = LatLng(0, 0);
+          LatLng juncLatLng = LatLng(0, 0);
+          double juncLength = 114514;
+          NaviLoc curNaviLoc = NaviLoc(campusNum, 0, realLatLng);
+          if (naviOrder[i].runtimeType == LatLng) {
+            realLatLng = naviOrder[i];
+            campusNum = mapData.locationInCampus(realLatLng);
+            int nearVertex = mapData.nearestVertex(campusNum, realLatLng);
+            juncLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
+            juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
+                    (naviState.onbike ? BIKESPEED : 1)) /
+                (naviState.crowding ? 1 - Random().nextDouble() : 1);
+            curNaviLoc = NaviLoc(campusNum, nearVertex, naviOrder[i]);
+          } else if (naviOrder[i].runtimeType == Building) {
+            Building curBuilding = naviOrder[i] as Building;
+            campusNum = mapData.buildingInCampus(curBuilding);
+            LatLng disReference = i == 0
+                ? NaviTools.getLocation(naviOrder[1])
+                : (naviOrder[i - 1] as NaviLoc).location;
+            int choosedDoor = 0;
+            if (curBuilding.doors.length > 1) {
+              double minDistance = double.infinity;
+              for (int j = 0; j < curBuilding.doors.length; ++j) {
+                double curDistance = AMapTools.distanceBetween(
+                    disReference, curBuilding.doors[j]);
+                if (curDistance < minDistance) {
+                  minDistance = curDistance;
+                  choosedDoor = j;
+                }
+              }
+            }
+            realLatLng = curBuilding.doors[choosedDoor];
+            int juncVertex = curBuilding.juncpoint[choosedDoor];
+            juncLatLng = mapData.getVertexLatLng(campusNum, juncVertex);
+            juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
+                    (naviState.onbike ? BIKESPEED : 1)) /
+                (naviState.crowding ? 1 - Random().nextDouble() : 1);
+            curNaviLoc = NaviLoc(campusNum, juncVertex, realLatLng);
+          }
+          naviOrder[i] = curNaviLoc;
+          //该点不是起点，与前一个点狄杰斯特拉并绘制路线
+          if (i != 0) {
+            NaviLoc startVertex = naviOrder[i - 1] as NaviLoc;
+            NaviLoc endVertex = curNaviLoc;
+            //未跨校区
+            if (startVertex.campusNum == endVertex.campusNum) {
+              if (startVertex.vertexNum != endVertex.vertexNum) {
+                ShortPath path = ShortPath(
+                    mapData.getAdjacentMatrix(startVertex.campusNum),
+                    startVertex.vertexNum,
+                    endVertex.vertexNum,
+                    transmethod);
+                naviState.routeLength += path.getRelativeLen();
+                NaviTools.displayRoute(path.getRoute(), startVertex.campusNum);
+              }
+            } //跨校区
+            else {
+              double lengthPublicTransStart = 0;
+              double lengthPublicTransEnd = 0;
+              double lengthSchoolBusStart = 0;
+              double lengthSchoolBusEnd = 0;
+              List<int> routePublicTransStart = [];
+              List<int> routePublicTransEnd = [];
+              List<int> routeSchoolBusStart = [];
+              List<int> routeSchoolBusEnd = [];
+              int startBusStop = mapData[startVertex.campusNum].busstop;
+              int endBusStop = mapData[endVertex.campusNum].busstop;
+              int startGate = mapData[startVertex.campusNum].gate;
+              int endGate = mapData[endVertex.campusNum].gate;
+              if (startVertex.vertexNum != startBusStop) {
+                ShortPath startBusStopPath = ShortPath(
+                    mapData.getAdjacentMatrix(startVertex.campusNum),
+                    startVertex.vertexNum,
+                    startBusStop,
+                    transmethod);
+                lengthSchoolBusStart = startBusStopPath.getRelativeLen();
+                routeSchoolBusStart = startBusStopPath.getRoute();
+              }
+              if (startVertex.vertexNum != startGate) {
+                ShortPath startGatePath = ShortPath(
+                    mapData.getAdjacentMatrix(startVertex.campusNum),
+                    startVertex.vertexNum,
+                    startGate,
+                    transmethod);
+                lengthPublicTransStart = startGatePath.getRelativeLen();
+                routePublicTransStart = startGatePath.getRoute();
+              }
+              if (endVertex.vertexNum != endBusStop) {
+                ShortPath endBusStopPath = ShortPath(
+                    mapData.getAdjacentMatrix(endVertex.campusNum),
+                    endBusStop,
+                    endVertex.vertexNum,
+                    transmethod);
+                lengthSchoolBusEnd = endBusStopPath.getRelativeLen();
+                routeSchoolBusEnd = endBusStopPath.getRoute();
+              }
+              if (endVertex.vertexNum != endGate) {
+                ShortPath endGatePath = ShortPath(
+                    mapData.getAdjacentMatrix(endVertex.campusNum),
+                    endGate,
+                    endVertex.vertexNum,
+                    transmethod);
+                lengthPublicTransEnd = endGatePath.getRelativeLen();
+                routePublicTransEnd = endGatePath.getRoute();
+              }
+              DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
+                seconds:
+                    (naviState.routeLength + lengthPublicTransStart).toInt(),
+              ));
+              DateTime timeAtGetOnSchoolBus = routeBeginTime.add(Duration(
+                  seconds:
+                      (naviState.routeLength + lengthSchoolBusStart).toInt()));
+              List bestPubTrans = mapData.getBestTimeTable(
+                  startVertex.campusNum,
+                  endVertex.campusNum,
+                  timeAtGetOnPubTrans,
+                  onlySchoolBus: false);
+              List bestSchoolBus = mapData.getBestTimeTable(
+                  startVertex.campusNum,
+                  endVertex.campusNum,
+                  timeAtGetOnSchoolBus,
+                  onlySchoolBus: true);
+              if (bestPubTrans.isEmpty && bestSchoolBus.isEmpty) throw '!';
+              late String toPrint;
+              String startCampusName = mapData[startVertex.campusNum].name;
+              String endCampusName = mapData[endVertex.campusNum].name;
+              if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
+                naviState.routeLength += (lengthSchoolBusStart +
+                    lengthSchoolBusEnd +
+                    (naviState.minTime ? (bestSchoolBus.last as int) * 60 : 0));
+                if (routeSchoolBusStart.isNotEmpty)
+                  NaviTools.displayRoute(
+                      routeSchoolBusStart, startVertex.campusNum);
+                if (routeSchoolBusEnd.isNotEmpty)
+                  NaviTools.displayRoute(
+                      routeSchoolBusEnd, endVertex.campusNum);
+                toPrint = (bestSchoolBus.first as BusTimeTable).description;
+              } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
+                naviState.routeLength += (lengthPublicTransStart +
+                    lengthPublicTransEnd +
+                    (naviState.minTime ? (bestPubTrans.last as int) * 60 : 0));
+                if (routePublicTransStart.isNotEmpty)
+                  NaviTools.displayRoute(
+                      routePublicTransStart, startVertex.campusNum);
+                if (routePublicTransEnd.isNotEmpty)
+                  NaviTools.displayRoute(
+                      routePublicTransEnd, endVertex.campusNum);
+                toPrint = (bestPubTrans.first as BusTimeTable).description;
+              } else {
+                if ((lengthSchoolBusStart +
+                        lengthSchoolBusEnd +
+                        (naviState.minTime
+                            ? (bestSchoolBus.last as int) * 60
+                            : 0)) >
+                    (lengthPublicTransStart +
+                        lengthPublicTransEnd +
+                        (naviState.minTime
+                            ? (bestPubTrans.last as int) * 60
+                            : 0))) {
+                  naviState.routeLength += (lengthPublicTransStart +
+                      lengthPublicTransEnd +
+                      (naviState.minTime
+                          ? (bestPubTrans.last as int) * 60
+                          : 0));
+                  if (routePublicTransStart.isNotEmpty)
+                    NaviTools.displayRoute(
+                        routePublicTransStart, startVertex.campusNum);
+                  if (routePublicTransEnd.isNotEmpty)
+                    NaviTools.displayRoute(
+                        routePublicTransEnd, endVertex.campusNum);
+                  toPrint = (bestPubTrans.first as BusTimeTable).description;
+                } else {
+                  naviState.routeLength += (lengthSchoolBusStart +
+                      lengthSchoolBusEnd +
+                      (naviState.minTime
+                          ? (bestSchoolBus.last as int) * 60
+                          : 0));
+                  if (routeSchoolBusStart.isNotEmpty)
+                    NaviTools.displayRoute(
+                        routeSchoolBusStart, startVertex.campusNum);
+                  if (routeSchoolBusEnd.isNotEmpty)
+                    NaviTools.displayRoute(
+                        routeSchoolBusEnd, endVertex.campusNum);
+                  toPrint = (bestSchoolBus.first as BusTimeTable).description;
+                }
+              }
+              await showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title: Text('提示'),
+                        content: Text('从$startCampusName移动到$endCampusName，请乘坐' +
+                            toPrint +
+                            '。'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('取消'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ));
+            }
+          }
+          //该点不是终点，绘制其与连接点间的虚线
+          if (i != naviOrder.length - 1) {
+            NaviTools.entryRoute(realLatLng, juncLatLng);
+            naviState.routeLength += juncLength;
+          }
+          //该点不是起点，绘制连接点与其之间的虚线
+          if (i != 0) {
+            NaviTools.entryRoute(juncLatLng, realLatLng);
+            naviState.routeLength += juncLength;
+          }
+        }
+        if (logEnabled)
+          logSink
+              .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
+      } catch (_) {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+                  title: Text('提示'),
+                  content: Text('未找到路线。请检查地图数据。'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('取消'),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ));
+        if (logEnabled)
+          logSink.write(DateTime.now().toString() + ': 未找到路线。停止导航。\n');
+        //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
+        naviState.naviStatus = false;
+        mapPolylines.clear();
+        naviState.routeLength = 0;
+      }
+    } else {
+      if (logEnabled) logSink.write(DateTime.now().toString() + ': 停止导航。\n');
     }
   }
 
