@@ -1,4 +1,5 @@
-import 'header.dart';
+import 'package:campnavi/global/global.dart';
+import 'package:campnavi/model/edge.dart';
 
 ///最短路径类，输入路径矩阵和起点，终点，交通类型，得到一条最短路径。
 class ShortPath {
