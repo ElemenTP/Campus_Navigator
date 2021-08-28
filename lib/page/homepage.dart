@@ -874,66 +874,67 @@ class HomePage extends StatelessWidget {
       body: Scaffold(
         body: ConstrainedBox(
           constraints: BoxConstraints.expand(),
-          child: Obx(() {
-            AMapWidget map = AMapWidget(
-              key: UniqueKey(),
-              //高德api Key
-              apiKey: amapApiKeys,
-              //创建地图回调函数，获得controller。
-              onMapCreated: (controller) => hpc.mapController = controller.obs,
-              //地图初始视角
-              initialCameraPosition: CameraPosition(
-                bearing: prefs.read<double>('lastCamPositionbearing') ?? 0,
-                target: LatLng(
-                    prefs.read<double>('lastCamPositionLat') ?? 39.909187,
-                    prefs.read<double>('lastCamPositionLng') ?? 116.397451),
-                zoom: prefs.read<double>('lastCamPositionzoom') ?? DEFAULT_ZOOM,
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Obx(
+                () => AMapWidget(
+                  //高德api Key
+                  apiKey: amapApiKeys,
+                  //创建地图回调函数，获得controller。
+                  onMapCreated: (controller) =>
+                      hpc.mapController = controller.obs,
+                  //地图初始视角
+                  initialCameraPosition: CameraPosition(
+                    bearing: prefs.read<double>('lastCamPositionbearing') ?? 0,
+                    target: LatLng(
+                        prefs.read<double>('lastCamPositionLat') ?? 39.909187,
+                        prefs.read<double>('lastCamPositionLng') ?? 116.397451),
+                    zoom: prefs.read<double>('lastCamPositionzoom') ??
+                        DEFAULT_ZOOM,
+                  ),
+                  //地图点击回调函数
+                  onTap: _onMapTapped,
+                  //地图视角移动回调函数，移除点击添加的标志。
+                  onCameraMove: (_) => hpc.mapMarkers.remove('onTap'),
+                  //地图视角移动结束回调函数
+                  onCameraMoveEnd: _onCameraMoveEnd,
+                  //用户位置移动回调函数
+                  onLocationChanged: _onLocationChanged,
+                  //开启指南针
+                  compassEnabled: spc.compassEnabled.value,
+                  //开启显示用户位置功能
+                  myLocationStyleOptions:
+                      MyLocationStyleOptions(spc.locateEnabled.value),
+                  //地图类型，使用卫星地图
+                  mapType: spc.preferMapType.value,
+                  //地图上的标志
+                  markers: Set<Marker>.of(hpc.mapMarkers.values),
+                  //地图上的线
+                  polylines: Set<Polyline>.of(hpc.mapPolylines),
+                ),
               ),
-              //地图点击回调函数
-              onTap: _onMapTapped,
-              //地图视角移动回调函数，移除点击添加的标志。
-              onCameraMove: (_) => hpc.mapMarkers.remove('onTap'),
-              //地图视角移动结束回调函数
-              onCameraMoveEnd: _onCameraMoveEnd,
-              //用户位置移动回调函数
-              onLocationChanged: _onLocationChanged,
-              //开启指南针
-              compassEnabled: spc.compassEnabled.value,
-              //开启显示用户位置功能
-              myLocationStyleOptions:
-                  MyLocationStyleOptions(spc.locateEnabled.value),
-              //地图类型，使用卫星地图
-              mapType: spc.preferMapType.value,
-              //地图上的标志
-              markers: Set<Marker>.of(hpc.mapMarkers.values),
-              //地图上的线
-              polylines: Set<Polyline>.of(hpc.mapPolylines),
-            );
-
-            List<Widget> listWidget = <Widget>[
-              map,
-            ];
-            //如果正在导航则显示路程/时间
-            if (hpc.naviStatus.value) {
-              listWidget.add(Positioned(
-                left: 18.0,
-                child: Chip(
-                    label: Text(hpc.minTime.value
-                        ? '约' +
-                            (hpc.routeLength.value / 60).toStringAsFixed(0) +
-                            '分钟'
-                        : '约' +
-                            (hpc.routeLength.value /
-                                    (hpc.onbike.value ? BIKESPEED : 1))
-                                .toStringAsFixed(0) +
-                            '米')),
-              ));
-            }
-            return Stack(
-              alignment: Alignment.center,
-              children: listWidget,
-            );
-          }),
+              Obx(
+                () => Visibility(
+                  visible: hpc.naviStatus.value,
+                  child: Positioned(
+                    left: 18.0,
+                    child: Chip(
+                        label: Text(hpc.minTime.value
+                            ? '约' +
+                                (hpc.routeLength.value / 60)
+                                    .toStringAsFixed(0) +
+                                '分钟'
+                            : '约' +
+                                (hpc.routeLength.value /
+                                        (hpc.onbike.value ? BIKESPEED : 1))
+                                    .toStringAsFixed(0) +
+                                '米')),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         floatingActionButton: FloatingActionButton(
           heroTag: UniqueKey(),
@@ -942,6 +943,8 @@ class HomePage extends StatelessWidget {
           child: Icon(Icons.location_searching),
           mini: true,
         ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        //避免被屏幕键盘改变形状
       ),
       //底导航栏
       bottomNavigationBar: BottomNavigationBar(

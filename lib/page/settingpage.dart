@@ -625,7 +625,7 @@ class SettingPage extends StatelessWidget {
                             groupValue: spc.preferMapType.value,
                             onChanged: (MapType? value) {
                               spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', value);
+                              prefs.write('preferMapType', 'satellite');
                             },
                           ),
                           RadioListTile(
@@ -634,7 +634,7 @@ class SettingPage extends StatelessWidget {
                             groupValue: spc.preferMapType.value,
                             onChanged: (MapType? value) {
                               spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', value);
+                              prefs.write('preferMapType', 'normal');
                             },
                           ),
                           RadioListTile(
@@ -643,25 +643,7 @@ class SettingPage extends StatelessWidget {
                             groupValue: spc.preferMapType.value,
                             onChanged: (MapType? value) {
                               spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', value);
-                            },
-                          ),
-                          RadioListTile(
-                            title: Text('导航地图'),
-                            value: MapType.navi,
-                            groupValue: spc.preferMapType.value,
-                            onChanged: (MapType? value) {
-                              spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', value);
-                            },
-                          ),
-                          RadioListTile(
-                            title: Text('公交地图'),
-                            value: MapType.bus,
-                            groupValue: spc.preferMapType.value,
-                            onChanged: (MapType? value) {
-                              spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', value);
+                              prefs.write('preferMapType', 'night');
                             },
                           ),
                         ],

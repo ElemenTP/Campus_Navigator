@@ -507,15 +507,19 @@ class SearchPage extends StatelessWidget {
             ],
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: shc.searchResult.length,
-              itemBuilder: (BuildContext context, int index) => Card(
-                child: ListTile(
-                  title: Text(shc.searchResult[index].result.description.first),
-                  subtitle: Text(shc.searchResult[index].matched),
-                  selected: shc.searchResult[index].result == hpc.start.value ||
-                      hpc.end.contains(shc.searchResult[index].result),
-                  onTap: () => _onListTileTapped(index),
+            child: Obx(
+              () => ListView.builder(
+                itemCount: shc.searchResult.length,
+                itemBuilder: (BuildContext context, int index) => Card(
+                  child: ListTile(
+                    title:
+                        Text(shc.searchResult[index].result.description.first),
+                    subtitle: Text(shc.searchResult[index].matched),
+                    selected:
+                        shc.searchResult[index].result == hpc.start.value ||
+                            hpc.end.contains(shc.searchResult[index].result),
+                    onTap: () => _onListTileTapped(index),
+                  ),
                 ),
               ),
             ),
