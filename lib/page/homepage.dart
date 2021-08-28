@@ -943,8 +943,8 @@ class HomePage extends StatelessWidget {
           child: Icon(Icons.location_searching),
           mini: true,
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         //避免被屏幕键盘改变形状
+        resizeToAvoidBottomInset: false,
       ),
       //底导航栏
       bottomNavigationBar: BottomNavigationBar(
