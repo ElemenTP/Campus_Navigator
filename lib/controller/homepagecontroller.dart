@@ -22,7 +22,7 @@ class HomePageController extends GetxController {
   RxBool minTime = false.obs;
 
   ///起点
-  Rx<dynamic> start = null.obs;
+  RxList start = [].obs;
 
   ///终点集合
   RxList end = [].obs;

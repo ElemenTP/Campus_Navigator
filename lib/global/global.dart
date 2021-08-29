@@ -1,9 +1,11 @@
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/model/logicloc.dart';
 import 'package:package_info/package_info.dart';
+import 'package:amap_flutter_map/amap_flutter_map.dart';
 
 ///自行车速度
 const double BIKESPEED = 0.5;
@@ -31,3 +33,15 @@ late IOSink logSink;
 
 ///软件信息
 late PackageInfo packageInfo;
+
+const Map<String, ThemeMode> str2ThemeMode = <String, ThemeMode>{
+  'system': ThemeMode.system,
+  'light': ThemeMode.light,
+  'dark': ThemeMode.dark,
+};
+
+const Map<String, MapType> str2MapType = <String, MapType>{
+  'satellite': MapType.satellite,
+  'normal': MapType.normal,
+  'night': MapType.night,
+};

@@ -77,19 +77,19 @@ class SearchPage extends StatelessWidget {
   ///列表元素点击回调函数，弹窗询问用户将该建筑设为起点或终点
   void _onListTileTapped(int index) async {
     shc.textFocusNode.unfocus();
-    if (hpc.start.value == shc.searchResult[index].result) {
+    if (hpc.start.first == shc.searchResult[index].result) {
       await Get.dialog(AlertDialog(
         title: Text('提示'),
         content: Text('该建筑已是起点。'),
         actions: <Widget>[
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
             child: Text('删除该起点'),
             onPressed: () {
-              hpc.start.value = null;
+              hpc.start.clear();
               hpc.mapMarkers.remove('start');
               Get.back();
             },
@@ -102,7 +102,7 @@ class SearchPage extends StatelessWidget {
         content: Text('该建筑已是终点之一。'),
         actions: <Widget>[
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -122,7 +122,7 @@ class SearchPage extends StatelessWidget {
         content: Text('要将它作为？'),
         actions: <Widget>[
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
@@ -130,15 +130,30 @@ class SearchPage extends StatelessWidget {
             onPressed: hpc.startOnUserLoc.value
                 ? null
                 : () {
-                    hpc.start.value = shc.searchResult[index].result;
+                    Building curResult = shc.searchResult[index].result;
+                    hpc.start.first = curResult;
                     hpc.mapMarkers['start'] = Marker(
-                      position:
-                          shc.searchResult[index].result.getApproxLocation(),
+                      position: curResult.getApproxLocation(),
                       icon: BitmapDescriptor.defaultMarkerWithHue(
                           BitmapDescriptor.hueOrange),
-                      infoWindow: InfoWindow(
-                          title:
-                              shc.searchResult[index].result.description.first),
+                      onTap: (_) => Get.dialog(AlertDialog(
+                        title: Text('删除起点'),
+                        content: Text('删除起点吗？'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('cancel'.tr),
+                            onPressed: () => Get.back(),
+                          ),
+                          TextButton(
+                            child: Text('ok'.tr),
+                            onPressed: () {
+                              hpc.start.clear();
+                              hpc.mapMarkers.remove('start');
+                              Get.back();
+                            },
+                          ),
+                        ],
+                      )),
                     );
                     Get.back();
                   },
@@ -146,14 +161,33 @@ class SearchPage extends StatelessWidget {
           TextButton(
             child: Text('终点'),
             onPressed: () {
-              hpc.end.add(shc.searchResult[index].result);
-              hpc.mapMarkers['end' +
-                  shc.searchResult[index].result.hashCode.toString()] = Marker(
-                position: shc.searchResult[index].result.getApproxLocation(),
+              Building curResult = shc.searchResult[index].result;
+              hpc.end.add(curResult);
+              String markerId = 'end' + curResult.hashCode.toString();
+              hpc.mapMarkers[markerId] = Marker(
+                position: curResult.getApproxLocation(),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                     BitmapDescriptor.hueGreen),
-                infoWindow: InfoWindow(
-                    title: shc.searchResult[index].result.description.first),
+                onTap: (_) => Get.dialog(
+                  AlertDialog(
+                    title: Text('删除终点'),
+                    content: Text('删除终点吗？'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('cancel'.tr),
+                        onPressed: () => Get.back(),
+                      ),
+                      TextButton(
+                        child: Text('ok'.tr),
+                        onPressed: () {
+                          hpc.end.remove(hpc.mapMarkers[markerId]!.position);
+                          hpc.mapMarkers.remove(markerId);
+                          Get.back();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               );
               Get.back();
             },
@@ -198,7 +232,7 @@ class SearchPage extends StatelessWidget {
                 ),
                 actions: <Widget>[
                   TextButton(
-                    child: Text('取消'),
+                    child: Text('cancel'.tr),
                     onPressed: () => Get.back<bool>(result: true),
                   ),
                   TextButton(
@@ -208,7 +242,7 @@ class SearchPage extends StatelessWidget {
                     },
                   ),
                   TextButton(
-                    child: Text('确定'),
+                    child: Text('ok'.tr),
                     onPressed: inputRadix > 0 ? onInputEnd : null,
                   ),
                 ],
@@ -243,7 +277,7 @@ class SearchPage extends StatelessWidget {
               content: Text('未搜索到任何建筑。'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('取消'),
+                  child: Text('cancel'.tr),
                   onPressed: () => Get.back(),
                 ),
               ],
@@ -285,7 +319,7 @@ class SearchPage extends StatelessWidget {
             content: Text('未找到路线。请检查地图数据。'),
             actions: <Widget>[
               TextButton(
-                child: Text('取消'),
+                child: Text('cancel'.tr),
                 onPressed: () => Get.back(),
               ),
             ],
@@ -302,7 +336,7 @@ class SearchPage extends StatelessWidget {
           content: Text('您不在任何校区内。'),
           actions: <Widget>[
             TextButton(
-              child: Text('取消'),
+              child: Text('cancel'.tr),
               onPressed: () => Get.back(),
             ),
           ],
@@ -348,7 +382,7 @@ class SearchPage extends StatelessWidget {
               content: Text('未搜索到符合条件的食堂。'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('取消'),
+                  child: Text('cancel'.tr),
                   onPressed: () => Get.back(),
                 ),
               ],
@@ -398,7 +432,7 @@ class SearchPage extends StatelessWidget {
             content: Text('未找到路线。请检查地图数据。'),
             actions: <Widget>[
               TextButton(
-                child: Text('取消'),
+                child: Text('cancel'.tr),
                 onPressed: () => Get.back(),
               ),
             ],
@@ -415,7 +449,7 @@ class SearchPage extends StatelessWidget {
           content: Text('您不在任何校区内。'),
           actions: <Widget>[
             TextButton(
-              child: Text('取消'),
+              child: Text('cancel'.tr),
               onPressed: () => Get.back(),
             ),
           ],
@@ -454,7 +488,7 @@ class SearchPage extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text("返回"),
+          child: Text('back'.tr),
           onPressed: () => Get.back(),
         ),
       ],
@@ -466,7 +500,7 @@ class SearchPage extends StatelessWidget {
     return Scaffold(
       //顶栏
       appBar: AppBar(
-        title: Text('搜索'),
+        title: Text('search'.tr),
       ),
       //中央内容区
       body: Column(
@@ -493,7 +527,7 @@ class SearchPage extends StatelessWidget {
               ),
               TextButton.icon(
                 icon: Icon(Icons.search),
-                label: Text('搜索'),
+                label: Text('search'.tr),
                 onPressed: _onStartSearch,
               ),
               TextButton.icon(
@@ -515,9 +549,6 @@ class SearchPage extends StatelessWidget {
                     title:
                         Text(shc.searchResult[index].result.description.first),
                     subtitle: Text(shc.searchResult[index].matched),
-                    selected:
-                        shc.searchResult[index].result == hpc.start.value ||
-                            hpc.end.contains(shc.searchResult[index].result),
                     onTap: () => _onListTileTapped(index),
                   ),
                 ),

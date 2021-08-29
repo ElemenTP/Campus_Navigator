@@ -78,7 +78,7 @@ class NaviUtil {
         content: Text('使用本功能需要打开定位开关。'),
         actions: <Widget>[
           TextButton(
-            child: Text('确定'),
+            child: Text('ok'.tr),
             onPressed: () {
               spc.locateEnabled.value = true;
               prefs.write('locateEnabled', true);
@@ -86,7 +86,7 @@ class NaviUtil {
             },
           ),
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -101,11 +101,11 @@ class NaviUtil {
         content: Text('欲使用此功能，请授予定位权限。'),
         actions: <Widget>[
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: Text('确定'),
+            child: Text('ok'.tr),
             onPressed: () async {
               spc.locatePermissionStatus.value =
                   await Permission.location.request();
@@ -124,7 +124,7 @@ class NaviUtil {
         content: Text('未开启系统定位开关，或者系统定位出错。'),
         actions: <Widget>[
           TextButton(
-            child: Text('确定'),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],

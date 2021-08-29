@@ -20,7 +20,10 @@ class SettingPageController extends GetxController {
   RxBool locateEnabled = (prefs.read<bool>('locateEnabled') ?? true).obs;
 
   ///显示地图类型
-  Rx<MapType> preferMapType = MapType.satellite.obs;
+  Rx<MapType> preferMapType =
+      (str2MapType[prefs.read<String>('preferMapType') ?? 'satellite'] ??
+              MapType.satellite)
+          .obs;
 
   ///预设卫星地图审图号
   RxString satelliteImageApprovalNumber = '卫星地图未正常加载'.obs;
@@ -28,16 +31,10 @@ class SettingPageController extends GetxController {
   ///预设常规地图审图号
   RxString mapContentApprovalNumber = '常规地图未正常加载'.obs;
 
-  SettingPageController() {
-    String preferMapTypeStr =
-        prefs.read<String>('preferMapType') ?? 'satellite';
-    switch (preferMapTypeStr) {
-      case 'normal':
-        preferMapType.value = MapType.normal;
-        break;
-      case 'night':
-        preferMapType.value = MapType.night;
-        break;
-    }
-  }
+  ///主题跟随系统
+  RxBool themeFollowSystem =
+      (prefs.read<bool>('themeFollowSystem') ?? true).obs;
+
+  ///使用暗色主题
+  RxBool useDarkTheme = (prefs.read<bool>('useDarkTheme') ?? false).obs;
 }

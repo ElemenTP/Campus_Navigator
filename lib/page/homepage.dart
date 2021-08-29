@@ -26,20 +26,6 @@ class HomePage extends StatelessWidget {
   static SettingPageController spc =
       Get.put<SettingPageController>(SettingPageController(), permanent: true);
 
-  ///底部导航栏内容，左侧是搜索界面按钮，右侧是设直界面按钮。
-  static List<BottomNavigationBarItem> _navbaritems = [
-    //搜索标志
-    BottomNavigationBarItem(
-      icon: Icon(Icons.search),
-      label: '搜索' /*'Search'*/,
-    ),
-    //设置标志
-    BottomNavigationBarItem(
-      icon: Icon(Icons.settings),
-      label: '设置' /*'Setting'*/,
-    )
-  ];
-
   ///地图点击回调函数，检测被点击处是否在任何校区内，在则显示一个标志，不在则弹窗提示
   void _onMapTapped(LatLng taplocation) async {
     if (mapData.locationInCampus(taplocation) >= 0) {
@@ -51,7 +37,7 @@ class HomePage extends StatelessWidget {
         content: Text('该点不在任何校区内。'),
         actions: <Widget>[
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -66,7 +52,7 @@ class HomePage extends StatelessWidget {
       content: Text('将坐标设为'),
       actions: <Widget>[
         TextButton(
-          child: Text('取消'),
+          child: Text('cancel'.tr),
           onPressed: () => Get.back(),
         ),
         TextButton(
@@ -93,7 +79,7 @@ class HomePage extends StatelessWidget {
 
   ///从地图上添加坐标形式的起点
   void _addStartLocation(LatLng location) {
-    hpc.start.value = location;
+    hpc.start.first = location;
     hpc.mapMarkers['start'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
@@ -119,13 +105,13 @@ class HomePage extends StatelessWidget {
       content: Text('删除起点吗？'),
       actions: <Widget>[
         TextButton(
-          child: Text('取消'),
+          child: Text('cancel'.tr),
           onPressed: () => Get.back(),
         ),
         TextButton(
-          child: Text('确定'),
+          child: Text('ok'.tr),
           onPressed: () {
-            hpc.start.value = null;
+            hpc.start.clear();
             hpc.mapMarkers.remove('start');
             Get.back();
           },
@@ -141,11 +127,11 @@ class HomePage extends StatelessWidget {
       content: Text('删除终点吗？'),
       actions: <Widget>[
         TextButton(
-          child: Text('取消'),
+          child: Text('cancel'.tr),
           onPressed: () => Get.back(),
         ),
         TextButton(
-          child: Text('确定'),
+          child: Text('ok'.tr),
           onPressed: () {
             hpc.end.remove(hpc.mapMarkers[markerid]!.position);
             hpc.mapMarkers.remove(markerid);
@@ -184,7 +170,7 @@ class HomePage extends StatelessWidget {
           content: Text('已到达全部终点，实时导航结束。'),
           actions: <Widget>[
             TextButton(
-              child: Text('确定'),
+              child: Text('ok'.tr),
               onPressed: () => Get.back(),
             ),
           ],
@@ -228,7 +214,7 @@ class HomePage extends StatelessWidget {
               content: Text('重新规划路线。'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('确定'),
+                  child: Text('ok'.tr),
                   onPressed: () => Get.back(),
                 ),
               ],
@@ -292,7 +278,7 @@ class HomePage extends StatelessWidget {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('取消'),
+              child: Text('cancel'.tr),
               onPressed: () => Get.back<bool>(result: false),
             ),
           ],
@@ -328,11 +314,11 @@ class HomePage extends StatelessWidget {
         content: Text('校园导航的大部分功能需要定位权限才能正常工作，请授予定位权限。'),
         actions: <Widget>[
           TextButton(
-            child: Text('取消'),
+            child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: Text('确定'),
+            child: Text('ok'.tr),
             onPressed: () async {
               Get.back();
               spc.locatePermissionStatus.value =
@@ -360,31 +346,31 @@ class HomePage extends StatelessWidget {
                       title: Text('当前位置。'),
                     ),
                   );
-                } else if (hpc.start.value.runtimeType == LatLng) {
-                  startWidget = Card(
-                    child: ListTile(
-                      title: Text(
-                          '坐标：${hpc.start.value!.longitude}，${hpc.start.value!.latitude}。'),
-                      onTap: () {
-                        hpc.start.value = null;
-                        hpc.mapMarkers.remove('start');
-                      },
-                    ),
-                  );
-                } else if (hpc.start.value.runtimeType == Building) {
-                  startWidget = Card(
-                    child: ListTile(
-                      title: Text('建筑：${hpc.start.value!.description.first}。'),
-                      onTap: () {
-                        hpc.start.value = null;
-                        hpc.mapMarkers.remove('start');
-                      },
-                    ),
-                  );
-                } else {
+                } else if (hpc.start.isEmpty) {
                   startWidget = Card(
                     child: ListTile(
                       title: Text('未设置出发点。'),
+                    ),
+                  );
+                } else if (hpc.start.first.runtimeType == LatLng) {
+                  startWidget = Card(
+                    child: ListTile(
+                      title: Text(
+                          '坐标：${hpc.start.first!.longitude}，${hpc.start.first!.latitude}。'),
+                      onTap: () {
+                        hpc.start.clear();
+                        hpc.mapMarkers.remove('start');
+                      },
+                    ),
+                  );
+                } else if (hpc.start.first.runtimeType == Building) {
+                  startWidget = Card(
+                    child: ListTile(
+                      title: Text('建筑：${hpc.start.first!.description.first}。'),
+                      onTap: () {
+                        hpc.start.clear();
+                        hpc.mapMarkers.remove('start');
+                      },
                     ),
                   );
                 }
@@ -433,7 +419,7 @@ class HomePage extends StatelessWidget {
                         onChanged: (state) {
                           hpc.startOnUserLoc.value = state;
                           if (!state) hpc.realTime.value = state;
-                          hpc.start.value = null;
+                          hpc.start.clear();
                           hpc.mapMarkers.remove('start');
                         }),
                     SwitchListTile(
@@ -451,10 +437,10 @@ class HomePage extends StatelessWidget {
                     ),
                     TextButton.icon(
                       onPressed: () {
-                        hpc.start.value = null;
+                        hpc.start.clear();
                         hpc.end.clear();
-                        hpc.mapMarkers.removeWhere(
-                            (key, value) => !key.contains('onTap'));
+                        hpc.mapMarkers
+                            .removeWhere((key, value) => key != ('onTap'));
                       },
                       icon: Icon(Icons.delete),
                       label: Text('清除全部地点'),
@@ -490,28 +476,32 @@ class HomePage extends StatelessWidget {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text('取消'),
+                child: Text('cancel'.tr),
                 onPressed: () => Get.back<bool>(result: false),
               ),
-              TextButton(
-                child: Text('停止'),
-                onPressed: hpc.naviStatus.value
-                    ? () {
-                        hpc.naviStatus.value = false;
-                        Get.back(result: true);
-                      }
-                    : null,
+              Obx(
+                () => TextButton(
+                  child: Text('stop'.tr),
+                  onPressed: hpc.naviStatus.value
+                      ? () {
+                          hpc.naviStatus.value = false;
+                          Get.back(result: true);
+                        }
+                      : null,
+                ),
               ),
-              TextButton(
-                child: Text('开始'),
-                onPressed:
-                    (hpc.startOnUserLoc.value || hpc.start.value != null) &&
-                            hpc.end.isNotEmpty
-                        ? () {
-                            hpc.naviStatus.value = true;
-                            Get.back(result: true);
-                          }
-                        : null,
+              Obx(
+                () => TextButton(
+                  child: Text('start'.tr),
+                  onPressed:
+                      (hpc.startOnUserLoc.value || hpc.start.isNotEmpty) &&
+                              hpc.end.isNotEmpty
+                          ? () {
+                              hpc.naviStatus.value = true;
+                              Get.back(result: true);
+                            }
+                          : null,
+                ),
               ),
             ],
           ),
@@ -556,7 +546,7 @@ class HomePage extends StatelessWidget {
           int startCampus =
               mapData.locationInCampus(hpc.userLocation.value.latLng);
           if (startCampus >= 0) {
-            hpc.start.value = hpc.userLocation.value.latLng;
+            hpc.start.add(hpc.userLocation.value.latLng);
             if (spc.logEnabled.value)
               logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
           } else {
@@ -565,7 +555,7 @@ class HomePage extends StatelessWidget {
               content: Text('您不在任何校区内。'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('取消'),
+                  child: Text('cancel'.tr),
                   onPressed: () => Get.back(),
                 ),
               ],
@@ -586,7 +576,7 @@ class HomePage extends StatelessWidget {
         logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
       try {
         //排序所用新列表
-        List naviOrder = [hpc.start];
+        List naviOrder = [hpc.start.first];
         naviOrder.addAll(hpc.end);
         //终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
         for (int i = 0; i < naviOrder.length - 2; ++i) {
@@ -817,7 +807,7 @@ class HomePage extends StatelessWidget {
                     '从$startCampusName移动到$endCampusName，请乘坐' + toPrint + '。'),
                 actions: <Widget>[
                   TextButton(
-                    child: Text('取消'),
+                    child: Text('cancel'.tr),
                     onPressed: () => Get.back(),
                   ),
                 ],
@@ -844,7 +834,7 @@ class HomePage extends StatelessWidget {
           content: Text('未找到路线。请检查地图数据。'),
           actions: <Widget>[
             TextButton(
-              child: Text('取消'),
+              child: Text('cancel'.tr),
               onPressed: () => Get.back(),
             ),
           ],
@@ -948,19 +938,31 @@ class HomePage extends StatelessWidget {
       ),
       //底导航栏
       bottomNavigationBar: BottomNavigationBar(
-        items: _navbaritems,
-        unselectedItemColor: Colors.blue,
+        items: <BottomNavigationBarItem>[
+          //搜索标志
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: 'search'.tr /*'Search'*/,
+          ),
+          //设置标志
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'setting'.tr /*'Setting'*/,
+          )
+        ],
         onTap: _onBarItemTapped,
       ),
       //悬浮按键
-      floatingActionButton: FloatingActionButton(
-        heroTag: UniqueKey(),
-        onPressed: _setNavigation,
-        tooltip: hpc.naviStatus.value
-            ? '停止导航'
-            : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
-        child: hpc.naviStatus.value ? Icon(Icons.stop) : Icon(Icons.play_arrow),
-      ),
+      floatingActionButton: Obx(() => FloatingActionButton(
+            heroTag: UniqueKey(),
+            onPressed: _setNavigation,
+            tooltip: hpc.naviStatus.value
+                ? '停止导航'
+                : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
+            child: hpc.naviStatus.value
+                ? Icon(Icons.stop)
+                : Icon(Icons.play_arrow),
+          )),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       //避免被屏幕键盘改变形状

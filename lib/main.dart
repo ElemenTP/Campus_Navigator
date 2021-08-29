@@ -56,6 +56,8 @@ void main() async {
           logicLocFileDir.split('/').last +
           '\n');
   }
+  //读取语言偏好
+  String preferLocaleStr = prefs.read<String>('preferLocale') ?? 'device';
   //运行应用界面
   runApp(GetMaterialApp(
     key: UniqueKey(),
@@ -64,20 +66,24 @@ void main() async {
       return 'title'.tr;
     },
     translations: Translation(),
-    supportedLocales: const <Locale>[
-      Locale('en', 'US'),
-      Locale('zh', 'CN'),
-    ],
+    supportedLocales: supporedLocales,
     localizationsDelegates: <LocalizationsDelegate<dynamic>>[
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
     ],
-    locale: Get.deviceLocale,
-    fallbackLocale: Locale('zh', 'CN'),
+    locale: preferLocaleStr == 'device'
+        ? Get.deviceLocale
+        : Locale(preferLocaleStr),
+    fallbackLocale: supporedLocales.last,
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),
     darkTheme: ThemeData.dark(),
+    themeMode: (prefs.read<bool>('themeFollowSystem') ?? true)
+        ? ThemeMode.system
+        : (prefs.read<bool>('useDarkTheme') ?? false)
+            ? ThemeMode.dark
+            : ThemeMode.light,
     home: HomePage(),
   ));
 }

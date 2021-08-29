@@ -11,6 +11,7 @@ import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/model/logicloc.dart';
 import 'package:campnavi/controller/settingpagecontroller.dart';
 import 'package:campnavi/controller/homepagecontroller.dart';
+import 'package:campnavi/translation/translation.dart';
 
 ///设置界面
 class SettingPage extends StatelessWidget {
@@ -21,7 +22,7 @@ class SettingPage extends StatelessWidget {
   static HomePageController hpc = Get.find();
 
   ///检查软件是否为发行版
-  static bool get isRelease => bool.fromEnvironment("dart.vm.product");
+  static bool get isRelease => bool.fromEnvironment('dart.vm.product');
 
   ///获取审图号函数，遵守高德地图Open Api的要求
   void _getApprovalNumber() async {
@@ -41,11 +42,11 @@ class SettingPage extends StatelessWidget {
   void _cleanMapCache() async {
     await hpc.mapController?.value.clearDisk();
     Get.dialog(AlertDialog(
-      title: Text("提示"),
+      title: Text('tip'.tr),
       content: Text("地图缓存已清除。"),
       actions: <Widget>[
         TextButton(
-          child: Text("确定"),
+          child: Text('ok'.tr),
           onPressed: () => Get.back(),
         ),
       ],
@@ -61,11 +62,11 @@ class SettingPage extends StatelessWidget {
       spc.logExisted.value = false;
     }
     Get.dialog(AlertDialog(
-      title: Text("提示"),
+      title: Text('tip'.tr),
       content: Text("日志文件已清除。"),
       actions: <Widget>[
         TextButton(
-          child: Text("确定"),
+          child: Text('ok'.tr),
           onPressed: () => Get.back(),
         ),
       ],
@@ -81,22 +82,22 @@ class SettingPage extends StatelessWidget {
       File optData = File(optFilePath);
       await optData.writeAsString(await logFile.readAsString());
       Get.dialog(AlertDialog(
-        title: Text("提示"),
+        title: Text('tip'.tr),
         content: Text("导出成功，文件路径$optFilePath。"),
         actions: <Widget>[
           TextButton(
-            child: Text("确定"),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],
       ));
     } else {
       Get.dialog(AlertDialog(
-        title: Text("提示"),
+        title: Text('tip'.tr),
         content: Text("导出失败，无法访问路径。"),
         actions: <Widget>[
           TextButton(
-            child: Text("确定"),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -115,11 +116,11 @@ class SettingPage extends StatelessWidget {
           allowedExtensions: ['json']);
     } catch (_) {
       Get.dialog(AlertDialog(
-        title: Text("提示"),
+        title: Text('tip'.tr),
         content: Text("导入地图数据文件功能需要存储权限。"),
         actions: <Widget>[
           TextButton(
-            child: Text("确定"),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -133,11 +134,11 @@ class SettingPage extends StatelessWidget {
         if (newData.mapCampus.length == 0) throw '!';
       } catch (_) {
         Get.dialog(AlertDialog(
-          title: Text("提示"),
+          title: Text('tip'.tr),
           content: Text("地图数据格式不正确，请检查地图数据。"),
           actions: <Widget>[
             TextButton(
-              child: Text("确定"),
+              child: Text('ok'.tr),
               onPressed: () => Get.back(),
             ),
           ],
@@ -155,11 +156,11 @@ class SettingPage extends StatelessWidget {
       await customMapDataFile.writeAsString(jsonEncode(newData));
       prefs.write('dataFileDir', customMapDataPath);
       Get.dialog(AlertDialog(
-        title: Text("提示"),
+        title: Text('tip'.tr),
         content: Text("地图数据已成功应用，重启软件生效。"),
         actions: <Widget>[
           TextButton(
-            child: Text("确定"),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -201,11 +202,11 @@ class SettingPage extends StatelessWidget {
                         content: Text('将地图数据设为默认吗？重启软件生效。'),
                         actions: <Widget>[
                           TextButton(
-                            child: Text('取消'),
+                            child: Text('cancel'.tr),
                             onPressed: () => Get.back(),
                           ),
                           TextButton(
-                            child: Text('确定'),
+                            child: Text('ok'.tr),
                             onPressed: () async {
                               await prefs.remove('dataFileDir');
                               _setState(() {});
@@ -230,7 +231,7 @@ class SettingPage extends StatelessWidget {
                             content: Text('如何处理该地图数据？重启软件生效。'),
                             actions: <Widget>[
                               TextButton(
-                                child: Text('取消'),
+                                child: Text('cancel'.tr),
                                 onPressed: () => Get.back(),
                               ),
                               TextButton(
@@ -275,7 +276,7 @@ class SettingPage extends StatelessWidget {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text("返回"),
+                child: Text('back'.tr),
                 onPressed: () => Get.back(),
               ),
             ],
@@ -296,11 +297,11 @@ class SettingPage extends StatelessWidget {
           allowedExtensions: ['json']);
     } catch (_) {
       Get.dialog(AlertDialog(
-        title: Text("提示"),
+        title: Text('tip'.tr),
         content: Text("导入地图数据文件功能需要存储权限。"),
         actions: <Widget>[
           TextButton(
-            child: Text("确定"),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -315,11 +316,11 @@ class SettingPage extends StatelessWidget {
         if (newLogicLoc.logicLoc.isEmpty) throw '!';
       } catch (_) {
         Get.dialog(AlertDialog(
-          title: Text("提示"),
+          title: Text('tip'.tr),
           content: Text("逻辑位置数据格式不正确，请检查逻辑位置数据。"),
           actions: <Widget>[
             TextButton(
-              child: Text("确定"),
+              child: Text('ok'.tr),
               onPressed: () => Get.back(),
             ),
           ],
@@ -338,11 +339,11 @@ class SettingPage extends StatelessWidget {
       prefs.write('logicLocFileDir', customLogicLocPath);
       mapLogicLoc = newLogicLoc;
       Get.dialog(AlertDialog(
-        title: Text("提示"),
+        title: Text('tip'.tr),
         content: Text("逻辑位置数据已成功应用。"),
         actions: <Widget>[
           TextButton(
-            child: Text("确定"),
+            child: Text('ok'.tr),
             onPressed: () => Get.back(),
           ),
         ],
@@ -383,11 +384,11 @@ class SettingPage extends StatelessWidget {
                         content: Text('不使用逻辑位置功能吗？立即生效。'),
                         actions: <Widget>[
                           TextButton(
-                            child: Text('取消'),
+                            child: Text('cancel'.tr),
                             onPressed: () => Get.back(),
                           ),
                           TextButton(
-                            child: Text('确定'),
+                            child: Text('ok'.tr),
                             onPressed: () async {
                               await prefs.remove('logicLocFileDir');
                               mapLogicLoc = LogicLoc();
@@ -414,7 +415,7 @@ class SettingPage extends StatelessWidget {
                             content: Text('如何处理该逻辑位置数据？立即生效。'),
                             actions: <Widget>[
                               TextButton(
-                                child: Text('取消'),
+                                child: Text('cancel'.tr),
                                 onPressed: () => Get.back(),
                               ),
                               TextButton(
@@ -464,7 +465,7 @@ class SettingPage extends StatelessWidget {
             ),
             actions: <Widget>[
               TextButton(
-                child: Text("返回"),
+                child: Text('back'.tr),
                 onPressed: () => Get.back(),
               ),
             ],
@@ -489,7 +490,7 @@ class SettingPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            '校园导航',
+            'title'.tr,
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           Text(
@@ -519,22 +520,21 @@ class SettingPage extends StatelessWidget {
           child: Text("许可"),
           onPressed: () => showLicensePage(
             context: Get.context!,
-            applicationName: '校园导航',
+            applicationName: 'title'.tr,
             applicationVersion:
                 packageInfo.version + '+' + packageInfo.buildNumber,
           ),
         ),
         TextButton(
-          child: Text("确定"),
+          child: Text('ok'.tr),
           onPressed: () => Get.back(),
         ),
       ],
     ));
   }*/
-
   void _showAmapAbout() async {
     Get.dialog(AlertDialog(
-      title: Text("高德地图审图号"),
+      title: Text('高德地图审图号'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -559,11 +559,215 @@ class SettingPage extends StatelessWidget {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text("确定"),
+          child: Text('ok'.tr),
           onPressed: () => Get.back(),
         ),
       ],
     ));
+  }
+
+  ///选择地图类型
+  void _selectMapType() {
+    Get.dialog(
+      AlertDialog(
+        title: Text(
+          '地图类型',
+        ),
+        content: SingleChildScrollView(
+          child: Obx(() => Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  RadioListTile(
+                    title: Text('卫星地图（默认）'),
+                    value: MapType.satellite,
+                    groupValue: spc.preferMapType.value,
+                    onChanged: (MapType? value) {
+                      spc.preferMapType.value = value!;
+                      prefs.write('preferMapType', 'satellite');
+                    },
+                  ),
+                  RadioListTile(
+                    title: Text('普通地图'),
+                    value: MapType.normal,
+                    groupValue: spc.preferMapType.value,
+                    onChanged: (MapType? value) {
+                      spc.preferMapType.value = value!;
+                      prefs.write('preferMapType', 'normal');
+                    },
+                  ),
+                  RadioListTile(
+                    title: Text('夜间地图'),
+                    value: MapType.night,
+                    groupValue: spc.preferMapType.value,
+                    onChanged: (MapType? value) {
+                      spc.preferMapType.value = value!;
+                      prefs.write('preferMapType', 'night');
+                    },
+                  ),
+                ],
+              )),
+        ),
+        actions: [
+          TextButton(
+            child: Text('ok'.tr),
+            onPressed: () => Get.back(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  ///选择应用主题
+/*  void _selectTheme() {
+    Get.dialog(Obx(
+      () => AlertDialog(
+        title: Text('主题'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RadioListTile(
+                title: Text('跟随系统'),
+                value: ThemeMode.system,
+                groupValue: spc.preferThemeMode.value,
+                onChanged: (ThemeMode? value) {
+                  spc.preferThemeMode.value = value!;
+                  Get.changeThemeMode(value);
+                  prefs.write('preferThemeMode', 'system');
+                },
+              ),
+              RadioListTile(
+                title: Text('亮色主题'),
+                value: ThemeMode.light,
+                groupValue: spc.preferThemeMode.value,
+                onChanged: (ThemeMode? value) {
+                  spc.preferThemeMode.value = value!;
+                  Get.changeThemeMode(value);
+                  prefs.write('preferThemeMode', 'light');
+                },
+              ),
+              RadioListTile(
+                title: Text('暗色主题'),
+                value: ThemeMode.dark,
+                groupValue: spc.preferThemeMode.value,
+                onChanged: (ThemeMode? value) {
+                  spc.preferThemeMode.value = value!;
+                  Get.changeThemeMode(value);
+                  prefs.write('preferThemeMode', 'dark');
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('ok'.tr),
+            onPressed: () => Get.back(),
+          ),
+        ],
+      ),
+    ));
+  }
+  void _selectTheme() {
+    Get.defaultDialog(
+      title: 'theme'.tr,
+      content: Obx(
+        () => SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              RadioListTile(
+                title: Text('跟随系统'),
+                value: ThemeMode.system,
+                groupValue: spc.preferThemeMode.value,
+                onChanged: (ThemeMode? value) {
+                  spc.preferThemeMode.value = value!;
+                  Get.changeThemeMode(value);
+                  prefs.write('preferThemeMode', 'system');
+                },
+              ),
+              RadioListTile(
+                title: Text('亮色主题'),
+                value: ThemeMode.light,
+                groupValue: spc.preferThemeMode.value,
+                onChanged: (ThemeMode? value) {
+                  spc.preferThemeMode.value = value!;
+                  Get.changeThemeMode(value);
+                  prefs.write('preferThemeMode', 'light');
+                },
+              ),
+              RadioListTile(
+                title: Text('暗色主题'),
+                value: ThemeMode.dark,
+                groupValue: spc.preferThemeMode.value,
+                onChanged: (ThemeMode? value) {
+                  spc.preferThemeMode.value = value!;
+                  Get.changeThemeMode(value);
+                  prefs.write('preferThemeMode', 'dark');
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          child: Text('ok'.tr),
+          onPressed: () => Get.back(),
+        ),
+      ],
+    );
+  }*/
+
+  ///选择应用语言
+  void _selectLanguage() {
+    Get.dialog(
+      StatefulBuilder(builder: (context, _setState) {
+        List<Widget> widgets = <Widget>[
+          RadioListTile(
+            title: Text('跟随系统'),
+            value: Get.deviceLocale!,
+            groupValue: Get.locale,
+            onChanged: (Locale? value) {
+              _setState(() {
+                Get.updateLocale(value!);
+              });
+              prefs.write('preferLocale', 'device');
+            },
+          ),
+        ];
+        supporedLocales.forEach((element) {
+          widgets.add(
+            RadioListTile(
+              title: Text(languagecode2Str[element.languageCode] ?? 'err!'),
+              value: element,
+              groupValue: Get.locale,
+              onChanged: (Locale? value) {
+                _setState(() {
+                  Get.updateLocale(value!);
+                });
+                prefs.write('preferLocale', element.languageCode);
+              },
+            ),
+          );
+        });
+        return AlertDialog(
+          title: Text('language'.tr),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: widgets,
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text('ok'.tr),
+              onPressed: () => Get.back(),
+            ),
+          ],
+        );
+      }),
+    );
   }
 
   @override
@@ -573,7 +777,7 @@ class SettingPage extends StatelessWidget {
     return Scaffold(
       //顶栏
       appBar: AppBar(
-        title: Text('设置'),
+        title: Text('setting'.tr),
       ),
       //中央内容区
       body: SingleChildScrollView(
@@ -610,53 +814,7 @@ class SettingPage extends StatelessWidget {
                   '地图类型',
                 ),
                 subtitle: Text('选择使用的地图类型'),
-                onTap: () => Get.dialog(AlertDialog(
-                  title: Text(
-                    '地图类型',
-                  ),
-                  content: SingleChildScrollView(
-                    child: Obx(() {
-                      return Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          RadioListTile(
-                            title: Text('卫星地图（默认）'),
-                            value: MapType.satellite,
-                            groupValue: spc.preferMapType.value,
-                            onChanged: (MapType? value) {
-                              spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', 'satellite');
-                            },
-                          ),
-                          RadioListTile(
-                            title: Text('普通地图'),
-                            value: MapType.normal,
-                            groupValue: spc.preferMapType.value,
-                            onChanged: (MapType? value) {
-                              spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', 'normal');
-                            },
-                          ),
-                          RadioListTile(
-                            title: Text('夜间地图'),
-                            value: MapType.night,
-                            groupValue: spc.preferMapType.value,
-                            onChanged: (MapType? value) {
-                              spc.preferMapType.value = value!;
-                              prefs.write('preferMapType', 'night');
-                            },
-                          ),
-                        ],
-                      );
-                    }),
-                  ),
-                  actions: [
-                    TextButton(
-                      child: Text("确定"),
-                      onPressed: () => Get.back(),
-                    ),
-                  ],
-                )),
+                onTap: _selectMapType,
               ),
               ListTile(
                 subtitle: Text(
@@ -744,6 +902,53 @@ class SettingPage extends StatelessWidget {
               ),
               ListTile(
                 subtitle: Text(
+                  '主题与语言',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SwitchListTile(
+                title: Text(
+                  'themefollowsystem'.tr,
+                ),
+                value: spc.themeFollowSystem.value,
+                onChanged: (bool? value) {
+                  if (value!)
+                    Get.changeThemeMode(ThemeMode.system);
+                  else {
+                    if (spc.useDarkTheme.value)
+                      Get.changeThemeMode(ThemeMode.dark);
+                    else
+                      Get.changeThemeMode(ThemeMode.light);
+                  }
+                  spc.themeFollowSystem.value = value;
+                  prefs.write('themeFollowSystem', value);
+                },
+              ),
+              SwitchListTile(
+                title: Text(
+                  'usedarktheme'.tr,
+                ),
+                value: spc.useDarkTheme.value,
+                onChanged: spc.themeFollowSystem.value
+                    ? null
+                    : (bool? value) {
+                        if (value!)
+                          Get.changeThemeMode(ThemeMode.dark);
+                        else
+                          Get.changeThemeMode(ThemeMode.light);
+                        spc.useDarkTheme.value = value;
+                        prefs.write('useDarkTheme', value);
+                      },
+              ),
+              ListTile(
+                title: Text(
+                  'language'.tr,
+                ),
+                subtitle: Text('选择语言'),
+                onTap: _selectLanguage,
+              ),
+              ListTile(
+                subtitle: Text(
                   '其他',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
@@ -781,7 +986,7 @@ class SettingPage extends StatelessWidget {
                 onTap: _showAmapAbout,
               ),
               AboutListTile(
-                applicationName: '校园导航',
+                applicationName: 'title'.tr,
                 applicationVersion: packageInfo.version +
                     '+' +
                     packageInfo.buildNumber +
