@@ -75,9 +75,7 @@ void main() async {
         ? Get.deviceLocale
         : Locale(preferLocaleStr),
     fallbackLocale: supporedLocales.last,
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
+    theme: ThemeData.light(),
     darkTheme: ThemeData.dark(),
     themeMode: (prefs.read<bool>('themeFollowSystem') ?? true)
         ? ThemeMode.system

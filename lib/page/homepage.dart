@@ -79,7 +79,8 @@ class HomePage extends StatelessWidget {
 
   ///从地图上添加坐标形式的起点
   void _addStartLocation(LatLng location) {
-    hpc.start.first = location;
+    hpc.start.clear();
+    hpc.start.add(location);
     hpc.mapMarkers['start'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
@@ -436,14 +437,14 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     TextButton.icon(
+                      icon: Icon(Icons.delete),
+                      label: Text('清除全部地点'),
                       onPressed: () {
                         hpc.start.clear();
                         hpc.end.clear();
                         hpc.mapMarkers
                             .removeWhere((key, value) => key != ('onTap'));
                       },
-                      icon: Icon(Icons.delete),
-                      label: Text('清除全部地点'),
                     ),
                     SwitchListTile(
                       value: hpc.onbike.value,

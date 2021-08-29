@@ -16,14 +16,6 @@ import 'package:campnavi/controller/homepagecontroller.dart';
 class SearchPage extends StatelessWidget {
   SearchPage({Key key = const Key('search')}) : super(key: key);
 
-  ///输入框风格
-  static const InputDecoration _textDecoration = InputDecoration(
-    labelText: '搜索校园建筑',
-    hintText: '名称或功能',
-    border: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20.0))),
-  );
-
   static SearchPageController shc =
       Get.put<SearchPageController>(SearchPageController(), permanent: true);
 
@@ -54,8 +46,11 @@ class SearchPage extends StatelessWidget {
               if (element1.contains(toSearch)) listLogicLoc.add(element1);
             });
             if (listLogicLoc.isNotEmpty) {
-              shc.searchResult.add(SearchResult(element,
-                  curCampusName + ' 逻辑位置: ' + listLogicLoc.join(', ')));
+              shc.searchResult.add(SearchResult(
+                  element,
+                  curCampusName +
+                      'matchlogicloc'.tr +
+                      listLogicLoc.join(', ')));
               return;
             }
             //匹配建筑描述关键字
@@ -65,7 +60,10 @@ class SearchPage extends StatelessWidget {
             });
             if (listMatched.isNotEmpty)
               shc.searchResult.add(SearchResult(
-                  element, curCampusName + ' 建筑描述: ' + listMatched.join(', ')));
+                  element,
+                  curCampusName +
+                      'matchbuildingdes'.tr +
+                      listMatched.join(', ')));
           }
         });
       }
@@ -77,17 +75,18 @@ class SearchPage extends StatelessWidget {
   ///列表元素点击回调函数，弹窗询问用户将该建筑设为起点或终点
   void _onListTileTapped(int index) async {
     shc.textFocusNode.unfocus();
-    if (hpc.start.first == shc.searchResult[index].result) {
+    Building curResult = shc.searchResult[index].result;
+    if (hpc.start.isNotEmpty && hpc.start.first == curResult) {
       await Get.dialog(AlertDialog(
-        title: Text('提示'),
-        content: Text('该建筑已是起点。'),
+        title: Text('tip'.tr),
+        content: Text('alreadystart'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: Text('删除该起点'),
+            child: Text('deletestart'.tr),
             onPressed: () {
               hpc.start.clear();
               hpc.mapMarkers.remove('start');
@@ -96,17 +95,17 @@ class SearchPage extends StatelessWidget {
           ),
         ],
       ));
-    } else if (hpc.end.contains(shc.searchResult[index].result)) {
+    } else if (hpc.end.contains(curResult)) {
       await Get.dialog(AlertDialog(
-        title: Text('提示'),
-        content: Text('该建筑已是终点之一。'),
+        title: Text('tip'.tr),
+        content: Text('alreadyend'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: Text('删除该终点'),
+            child: Text('deleteend'.tr),
             onPressed: () {
               hpc.end.remove(shc.searchResult[index].result);
               hpc.mapMarkers.remove(
@@ -118,27 +117,27 @@ class SearchPage extends StatelessWidget {
       ));
     } else {
       await Get.dialog(AlertDialog(
-        title: Text('提示'),
-        content: Text('要将它作为？'),
+        title: Text('tip'.tr),
+        content: Text('useitas'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('cancel'.tr),
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: Text('起点'),
+            child: Text('startpoint'.tr),
             onPressed: hpc.startOnUserLoc.value
                 ? null
                 : () {
-                    Building curResult = shc.searchResult[index].result;
-                    hpc.start.first = curResult;
+                    hpc.start.clear();
+                    hpc.start.add(curResult);
                     hpc.mapMarkers['start'] = Marker(
                       position: curResult.getApproxLocation(),
                       icon: BitmapDescriptor.defaultMarkerWithHue(
                           BitmapDescriptor.hueOrange),
                       onTap: (_) => Get.dialog(AlertDialog(
-                        title: Text('删除起点'),
-                        content: Text('删除起点吗？'),
+                        title: Text('deletestart'.tr),
+                        content: Text('wantdeletestart'.tr),
                         actions: <Widget>[
                           TextButton(
                             child: Text('cancel'.tr),
@@ -159,9 +158,8 @@ class SearchPage extends StatelessWidget {
                   },
           ),
           TextButton(
-            child: Text('终点'),
+            child: Text('endpoint'.tr),
             onPressed: () {
-              Building curResult = shc.searchResult[index].result;
               hpc.end.add(curResult);
               String markerId = 'end' + curResult.hashCode.toString();
               hpc.mapMarkers[markerId] = Marker(
@@ -170,8 +168,8 @@ class SearchPage extends StatelessWidget {
                     BitmapDescriptor.hueGreen),
                 onTap: (_) => Get.dialog(
                   AlertDialog(
-                    title: Text('删除终点'),
-                    content: Text('删除终点吗？'),
+                    title: Text('deleteend'.tr),
+                    content: Text('wantdeleteend'.tr),
                     actions: <Widget>[
                       TextButton(
                         child: Text('cancel'.tr),
@@ -205,7 +203,7 @@ class SearchPage extends StatelessWidget {
     if (NaviUtil.stateLocationReqiurement(spc, hpc)) {
       int campusNum = mapData.locationInCampus(hpc.userLocation.value.latLng);
       if (campusNum >= 0) {
-        int circleRad = 100;
+        int circleRad = DEFAULT_RADIX;
         if (await Get.dialog(StatefulBuilder(builder: (context, _setState) {
               int inputRadix = -1;
               void onInputEnd() {
@@ -214,18 +212,20 @@ class SearchPage extends StatelessWidget {
               }
 
               return AlertDialog(
-                title: Text('搜索半径'),
+                title: Text('searchradius'.tr),
                 content: TextFormField(
-                  decoration: const InputDecoration(
-                    labelText: '输入搜索半径，单位为米',
-                    hintText: '仅限正整数，默认100米',
+                  decoration: InputDecoration(
+                    labelText: 'inputlabel'.tr,
+                    hintText: 'inputhint'.tr,
                     border: const OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(20.0))),
                   ),
                   autofocus: true,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   keyboardType: TextInputType.number,
-                  validator: (_) => inputRadix > 0 ? null : '请输入正整数',
+                  validator: (value) => (int.tryParse(value ?? '-1') ?? -1) > 0
+                      ? null
+                      : 'inputvalidate'.tr,
                   onChanged: (value) =>
                       _setState(() => inputRadix = int.tryParse(value) ?? -1),
                   onEditingComplete: inputRadix > 0 ? onInputEnd : null,
@@ -236,7 +236,7 @@ class SearchPage extends StatelessWidget {
                     onPressed: () => Get.back<bool>(result: true),
                   ),
                   TextButton(
-                    child: Text('默认'),
+                    child: Text('default'.tr),
                     onPressed: () {
                       Get.back<bool>(result: false);
                     },
@@ -273,7 +273,7 @@ class SearchPage extends StatelessWidget {
           });
           if (nearBuilding.isEmpty) {
             Get.dialog(AlertDialog(
-              title: Text('提示'),
+              title: Text('tip'.tr),
               content: Text('未搜索到任何建筑。'),
               actions: <Widget>[
                 TextButton(
@@ -315,7 +315,7 @@ class SearchPage extends StatelessWidget {
           }
         } catch (_) {
           Get.dialog(AlertDialog(
-            title: Text('提示'),
+            title: Text('tip'.tr),
             content: Text('未找到路线。请检查地图数据。'),
             actions: <Widget>[
               TextButton(
@@ -332,7 +332,7 @@ class SearchPage extends StatelessWidget {
           logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
       } else {
         Get.dialog(AlertDialog(
-          title: Text('提示'),
+          title: Text('tip'.tr),
           content: Text('您不在任何校区内。'),
           actions: <Widget>[
             TextButton(
@@ -378,7 +378,7 @@ class SearchPage extends StatelessWidget {
           });
           if (canteens.isEmpty) {
             Get.dialog(AlertDialog(
-              title: Text('提示'),
+              title: Text('tip'.tr),
               content: Text('未搜索到符合条件的食堂。'),
               actions: <Widget>[
                 TextButton(
@@ -428,7 +428,7 @@ class SearchPage extends StatelessWidget {
           }
         } catch (_) {
           Get.dialog(AlertDialog(
-            title: Text('提示'),
+            title: Text('tip'.tr),
             content: Text('未找到路线。请检查地图数据。'),
             actions: <Widget>[
               TextButton(
@@ -445,7 +445,7 @@ class SearchPage extends StatelessWidget {
           logSink.write(DateTime.now().toString() + ': 食堂负载均衡完毕。\n');
       } else {
         Get.dialog(AlertDialog(
-          title: Text('提示'),
+          title: Text('tip'.tr),
           content: Text('您不在任何校区内。'),
           actions: <Widget>[
             TextButton(
@@ -512,7 +512,12 @@ class SearchPage extends StatelessWidget {
           TextField(
             controller: shc.textController,
             focusNode: shc.textFocusNode,
-            decoration: _textDecoration,
+            decoration: InputDecoration(
+              labelText: 'searchcampusbuilding'.tr,
+              hintText: 'nameorfeature'.tr,
+              border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            ),
             keyboardType: TextInputType.text,
             textInputAction: TextInputAction.search,
             onEditingComplete: _onStartSearch,
@@ -522,7 +527,7 @@ class SearchPage extends StatelessWidget {
             children: [
               TextButton.icon(
                 icon: Icon(Icons.filter_alt),
-                label: Text('校区'),
+                label: Text('campus'.tr),
                 onPressed: _campusFilter,
               ),
               TextButton.icon(
@@ -532,7 +537,7 @@ class SearchPage extends StatelessWidget {
               ),
               TextButton.icon(
                   icon: Icon(Icons.delete),
-                  label: Text('重置'),
+                  label: Text('reset'.tr),
                   onPressed: () {
                     shc.textController.clear();
                     shc.textFocusNode.unfocus();
@@ -563,7 +568,7 @@ class SearchPage extends StatelessWidget {
           FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: _onCanteenArrange,
-            tooltip: '推荐食堂',
+            tooltip: 'recommendcanteen'.tr,
             child: Icon(Icons.food_bank),
           ),
           SizedBox(
@@ -573,7 +578,7 @@ class SearchPage extends StatelessWidget {
           FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: _searchNearBuilding,
-            tooltip: '搜索附近建筑',
+            tooltip: 'searchnearby'.tr,
             child: Icon(Icons.near_me),
           ),
         ],

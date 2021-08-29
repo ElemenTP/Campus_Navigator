@@ -481,66 +481,16 @@ class SettingPage extends StatelessWidget {
     spc.locatePermissionStatus.value = await Permission.location.request();
   }
 
-  ///展示关于软件界面
-  /*void _showAbout() async {
-    Get.dialog(AlertDialog(
-      title: Text("关于"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'title'.tr,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            '常规地图审图号\n${spc.mapContentApprovalNumber.value}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-          ),
-          Text(
-            '卫星地图审图号\n${spc.satelliteImageApprovalNumber.value}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
-          ),
-          Text(
-            packageInfo.version +
-                '+' +
-                packageInfo.buildNumber +
-                ' ' +
-                (isRelease ? 'Release' : 'Debug'),
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-          ),
-          Text(
-            '@notsabers 2021',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
-          ),
-        ],
-      ),
-      actions: <Widget>[
-        TextButton(
-          child: Text("许可"),
-          onPressed: () => showLicensePage(
-            context: Get.context!,
-            applicationName: 'title'.tr,
-            applicationVersion:
-                packageInfo.version + '+' + packageInfo.buildNumber,
-          ),
-        ),
-        TextButton(
-          child: Text('ok'.tr),
-          onPressed: () => Get.back(),
-        ),
-      ],
-    ));
-  }*/
+  ///展示高德地图审图号信息界面
   void _showAmapAbout() async {
     Get.dialog(AlertDialog(
-      title: Text('高德地图审图号'),
+      title: Text('amapmapapprovalnumber'.tr),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            '常规地图审图号',
+            'mapcontentapprovalnumber'.tr,
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
           Text(
@@ -548,7 +498,7 @@ class SettingPage extends StatelessWidget {
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
           Text(
-            '卫星地图审图号',
+            'satelliteimageapprovalnumber'.tr,
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
           Text(
@@ -571,14 +521,14 @@ class SettingPage extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         title: Text(
-          '地图类型',
+          'maptype'.tr,
         ),
         content: SingleChildScrollView(
           child: Obx(() => Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   RadioListTile(
-                    title: Text('卫星地图（默认）'),
+                    title: Text('satellite'.tr),
                     value: MapType.satellite,
                     groupValue: spc.preferMapType.value,
                     onChanged: (MapType? value) {
@@ -587,7 +537,7 @@ class SettingPage extends StatelessWidget {
                     },
                   ),
                   RadioListTile(
-                    title: Text('普通地图'),
+                    title: Text('normal'.tr),
                     value: MapType.normal,
                     groupValue: spc.preferMapType.value,
                     onChanged: (MapType? value) {
@@ -596,7 +546,7 @@ class SettingPage extends StatelessWidget {
                     },
                   ),
                   RadioListTile(
-                    title: Text('夜间地图'),
+                    title: Text('night'.tr),
                     value: MapType.night,
                     groupValue: spc.preferMapType.value,
                     onChanged: (MapType? value) {
@@ -617,115 +567,13 @@ class SettingPage extends StatelessWidget {
     );
   }
 
-  ///选择应用主题
-/*  void _selectTheme() {
-    Get.dialog(Obx(
-      () => AlertDialog(
-        title: Text('主题'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              RadioListTile(
-                title: Text('跟随系统'),
-                value: ThemeMode.system,
-                groupValue: spc.preferThemeMode.value,
-                onChanged: (ThemeMode? value) {
-                  spc.preferThemeMode.value = value!;
-                  Get.changeThemeMode(value);
-                  prefs.write('preferThemeMode', 'system');
-                },
-              ),
-              RadioListTile(
-                title: Text('亮色主题'),
-                value: ThemeMode.light,
-                groupValue: spc.preferThemeMode.value,
-                onChanged: (ThemeMode? value) {
-                  spc.preferThemeMode.value = value!;
-                  Get.changeThemeMode(value);
-                  prefs.write('preferThemeMode', 'light');
-                },
-              ),
-              RadioListTile(
-                title: Text('暗色主题'),
-                value: ThemeMode.dark,
-                groupValue: spc.preferThemeMode.value,
-                onChanged: (ThemeMode? value) {
-                  spc.preferThemeMode.value = value!;
-                  Get.changeThemeMode(value);
-                  prefs.write('preferThemeMode', 'dark');
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            child: Text('ok'.tr),
-            onPressed: () => Get.back(),
-          ),
-        ],
-      ),
-    ));
-  }
-  void _selectTheme() {
-    Get.defaultDialog(
-      title: 'theme'.tr,
-      content: Obx(
-        () => SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              RadioListTile(
-                title: Text('跟随系统'),
-                value: ThemeMode.system,
-                groupValue: spc.preferThemeMode.value,
-                onChanged: (ThemeMode? value) {
-                  spc.preferThemeMode.value = value!;
-                  Get.changeThemeMode(value);
-                  prefs.write('preferThemeMode', 'system');
-                },
-              ),
-              RadioListTile(
-                title: Text('亮色主题'),
-                value: ThemeMode.light,
-                groupValue: spc.preferThemeMode.value,
-                onChanged: (ThemeMode? value) {
-                  spc.preferThemeMode.value = value!;
-                  Get.changeThemeMode(value);
-                  prefs.write('preferThemeMode', 'light');
-                },
-              ),
-              RadioListTile(
-                title: Text('暗色主题'),
-                value: ThemeMode.dark,
-                groupValue: spc.preferThemeMode.value,
-                onChanged: (ThemeMode? value) {
-                  spc.preferThemeMode.value = value!;
-                  Get.changeThemeMode(value);
-                  prefs.write('preferThemeMode', 'dark');
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          child: Text('ok'.tr),
-          onPressed: () => Get.back(),
-        ),
-      ],
-    );
-  }*/
-
   ///选择应用语言
   void _selectLanguage() {
     Get.dialog(
       StatefulBuilder(builder: (context, _setState) {
         List<Widget> widgets = <Widget>[
           RadioListTile(
-            title: Text('跟随系统'),
+            title: Text('followsystem'.tr),
             value: Get.deviceLocale!,
             groupValue: Get.locale,
             onChanged: (Locale? value) {
@@ -787,13 +635,13 @@ class SettingPage extends StatelessWidget {
             children: [
               ListTile(
                 subtitle: Text(
-                  '定位与地图',
+                  'locatingandmap'.tr,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
               SwitchListTile(
-                title: Text('定位开关'),
-                subtitle: Text('大多数功能需要开启定位'),
+                title: Text('locateswitch'.tr),
+                subtitle: Text('needlocate'.tr),
                 value: spc.locateEnabled.value,
                 onChanged: (value) {
                   spc.locateEnabled.value = value;
@@ -801,8 +649,8 @@ class SettingPage extends StatelessWidget {
                 },
               ),
               SwitchListTile(
-                title: Text('指南针开关'),
-                subtitle: Text('开启或关闭地图左上角的指南针'),
+                title: Text('compassswitch'.tr),
+                subtitle: Text('compassswitchdes'.tr),
                 value: spc.compassEnabled.value,
                 onChanged: (value) {
                   spc.compassEnabled.value = value;
@@ -811,61 +659,61 @@ class SettingPage extends StatelessWidget {
               ),
               ListTile(
                 title: Text(
-                  '地图类型',
+                  'maptype'.tr,
                 ),
-                subtitle: Text('选择使用的地图类型'),
+                subtitle: Text('choosemaptype'.tr),
                 onTap: _selectMapType,
               ),
               ListTile(
                 subtitle: Text(
-                  '地图数据',
+                  'mapdata'.tr,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
               ListTile(
                 title: Text(
-                  '导入数据',
+                  'importdata'.tr,
                 ),
-                subtitle: Text('从文件导入地图数据'),
+                subtitle: Text('importdatafromfile'.tr),
                 onTap: _pickMapData,
               ),
               ListTile(
                 title: Text(
-                  '管理数据',
+                  'managedata'.tr,
                 ),
-                subtitle: Text('管理已导入地图数据'),
+                subtitle: Text('manageimporteddata'.tr),
                 onTap: _manageMapData,
               ),
               ListTile(
                 subtitle: Text(
-                  '逻辑位置',
+                  'logicloc'.tr,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
               ListTile(
                 title: Text(
-                  '导入数据',
+                  'importdata'.tr,
                 ),
-                subtitle: Text('从文件导入逻辑位置数据'),
+                subtitle: Text('importdatafromfile'.tr),
                 onTap: _pickLogicData,
               ),
               ListTile(
                 title: Text(
-                  '管理数据',
+                  'managedata'.tr,
                 ),
-                subtitle: Text('管理已导入逻辑位置数据'),
+                subtitle: Text('manageimporteddata'.tr),
                 onTap: _manageLogicData,
               ),
               ListTile(
                 subtitle: Text(
-                  '日志',
+                  'log'.tr,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
               SwitchListTile(
                   value: spc.logEnabled.value,
                   title: Text(
-                    '日志开关',
+                    'logswitch'.tr,
                   ),
                   onChanged: (value) {
                     spc.logEnabled.value = value;
@@ -877,9 +725,11 @@ class SettingPage extends StatelessWidget {
                   }),
               ListTile(
                 title: Text(
-                  '查看日志',
+                  'viewlogs'.tr,
                 ),
-                subtitle: spc.logExisted.value ? Text('查看存储的日志') : Text('没有日志'),
+                subtitle: spc.logExisted.value
+                    ? Text('viewstoredlogs'.tr)
+                    : Text('nolog'.tr),
                 onTap: spc.logExisted.value
                     ? () => Navigator.push(context,
                         MaterialPageRoute(builder: (context) => _MyLogPage()))
@@ -887,22 +737,25 @@ class SettingPage extends StatelessWidget {
               ),
               ListTile(
                 title: Text(
-                  '导出日志',
+                  'exportlogs'.tr,
                 ),
-                subtitle:
-                    spc.logExisted.value ? Text('导出日志到内部存储空间') : Text('没有日志'),
+                subtitle: spc.logExisted.value
+                    ? Text('exportlogstostorge'.tr)
+                    : Text('nolog'.tr),
                 onTap: spc.logExisted.value ? _outputLogFile : null,
               ),
               ListTile(
                 title: Text(
-                  '清除日志',
+                  'clearlogs'.tr,
                 ),
-                subtitle: spc.logExisted.value ? Text('清除存储的日志') : Text('没有日志'),
+                subtitle: spc.logExisted.value
+                    ? Text('clearstoredlogs'.tr)
+                    : Text('nolog'.tr),
                 onTap: spc.logExisted.value ? _cleanLogFile : null,
               ),
               ListTile(
                 subtitle: Text(
-                  '主题与语言',
+                  'themeandlanguage'.tr,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -944,23 +797,23 @@ class SettingPage extends StatelessWidget {
                 title: Text(
                   'language'.tr,
                 ),
-                subtitle: Text('选择语言'),
+                subtitle: Text('selectlanguage'.tr),
                 onTap: _selectLanguage,
               ),
               ListTile(
                 subtitle: Text(
-                  '其他',
+                  'others'.tr,
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ),
               ListTile(
                 title: Text(
-                  '申请定位权限',
+                  'requestlocationpermission'.tr,
                 ),
                 subtitle: Text(
                   spc.locatePermissionStatus.value.isGranted
-                      ? '已获取定位权限'
-                      : '定位与导航功能依赖定位权限工作',
+                      ? 'locationpermissiongranted'.tr
+                      : 'locationpermissionneeded'.tr,
                 ),
                 onTap: spc.locatePermissionStatus.value.isGranted
                     ? null
@@ -968,20 +821,13 @@ class SettingPage extends StatelessWidget {
               ),
               ListTile(
                 title: Text(
-                  '清除缓存',
+                  'clearmapcache'.tr,
                 ),
-                subtitle: Text('清除地图缓存'),
                 onTap: _cleanMapCache,
               ),
-              /*ListTile(
-                title: Text(
-                  '关于',
-                ),
-                onTap: _showAbout,
-              ),*/
               ListTile(
                 title: Text(
-                  '高德审图号',
+                  'amapmapapprovalnumber'.tr,
                 ),
                 onTap: _showAmapAbout,
               ),

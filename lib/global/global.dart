@@ -16,6 +16,9 @@ const double DEFAULT_ZOOM = 18;
 ///食堂名称
 const String CANTEEN_NAME = '食堂';
 
+///默认搜索半径
+const int DEFAULT_RADIX = 100;
+
 ///用户设置
 late GetStorage prefs;
 
