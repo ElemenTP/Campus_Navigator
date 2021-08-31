@@ -203,9 +203,9 @@ class SearchPage extends StatelessWidget {
     if (NaviUtil.stateLocationReqiurement(spc, hpc)) {
       int campusNum = mapData.locationInCampus(hpc.userLocation.value.latLng);
       if (campusNum >= 0) {
-        int circleRad = DEFAULT_RADIX;
+        double circleRad = DEFAULT_RADIX;
         if (await Get.dialog(StatefulBuilder(builder: (context, _setState) {
-              int inputRadix = -1;
+              double inputRadix = -1;
               void onInputEnd() {
                 circleRad = inputRadix;
                 Get.back<bool>(result: false);
@@ -223,11 +223,13 @@ class SearchPage extends StatelessWidget {
                   autofocus: true,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   keyboardType: TextInputType.number,
-                  validator: (value) => (int.tryParse(value ?? '-1') ?? -1) > 0
-                      ? null
-                      : 'inputvalidate'.tr,
-                  onChanged: (value) =>
-                      _setState(() => inputRadix = int.tryParse(value) ?? -1),
+                  validator: (value) {
+                    _setState(() =>
+                        inputRadix = double.tryParse(value ?? '-1') ?? -1);
+                    return inputRadix > 0 ? null : 'inputvalidate'.tr;
+                  },
+                  /*onChanged: (value) => _setState(
+                      () => inputRadix = double.tryParse(value) ?? -1),*/
                   onEditingComplete: inputRadix > 0 ? onInputEnd : null,
                 ),
                 actions: <Widget>[

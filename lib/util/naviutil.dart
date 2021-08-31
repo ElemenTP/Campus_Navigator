@@ -50,7 +50,7 @@ class NaviUtil {
   }
 
   ///生成一个以某点为中心的近似圆
-  static List<LatLng> circleAround(LatLng center, int rad) {
+  static List<LatLng> circleAround(LatLng center, double rad) {
     ///近似圆的顶点数量
     const int times = 36;
 

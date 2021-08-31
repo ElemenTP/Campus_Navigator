@@ -85,7 +85,7 @@ class Translation extends Translations {
           'wantdeleteend': 'Delete the ending point?',
           'searchradius': 'Search radius',
           'inputlabel': 'Enter the search radius in meters',
-          'inputhint': 'Positive integer only, 100 meters by default',
+          'inputhint': '100 meters by default',
           'inputvalidate': 'Please enter a positive integer',
           'default': 'Default',
         },
@@ -158,7 +158,7 @@ class Translation extends Translations {
           'wantdeleteend': '删除终点吗？',
           'searchradius': '搜索半径',
           'inputlabel': '输入搜索半径，单位为米',
-          'inputhint': '仅限正整数，默认100米',
+          'inputhint': '默认100米',
           'inputvalidate': '请输入正整数',
           'default': '默认',
         }
