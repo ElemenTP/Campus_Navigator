@@ -74,7 +74,7 @@ class NaviUtil {
     ///用户关闭了定位开关
     if (!spc.locateEnabled.value) {
       Get.dialog(AlertDialog(
-        title: Text('提示'),
+        title: Text('tip'.tr),
         content: Text('使用本功能需要打开定位开关。'),
         actions: <Widget>[
           TextButton(
@@ -97,7 +97,7 @@ class NaviUtil {
     ///没有定位权限，提示用户授予权限
     if (!spc.locatePermissionStatus.value.isGranted) {
       Get.dialog(AlertDialog(
-        title: Text('提示'),
+        title: Text('tip'.tr),
         content: Text('欲使用此功能，请授予定位权限。'),
         actions: <Widget>[
           TextButton(
@@ -120,7 +120,7 @@ class NaviUtil {
     ///定位不正常（时间time为0），提示用户打开定位开关
     else if (hpc.userLocation.value.time == 0) {
       Get.dialog(AlertDialog(
-        title: Text('提示'),
+        title: Text('tip'.tr),
         content: Text('未开启系统定位开关，或者系统定位出错。'),
         actions: <Widget>[
           TextButton(

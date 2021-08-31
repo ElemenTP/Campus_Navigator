@@ -33,8 +33,8 @@ class HomePage extends StatelessWidget {
           Marker(position: taplocation, onTap: _onTapMarkerTapped);
     } else {
       Get.dialog(AlertDialog(
-        title: Text('提示'),
-        content: Text('该点不在任何校区内。'),
+        title: Text('tip'.tr),
+        content: Text('cnotincampus'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('cancel'.tr),
@@ -48,15 +48,15 @@ class HomePage extends StatelessWidget {
   ///点击创建的标志的点击回调函数，展示将坐标设为起点或终点的对话框。
   void _onTapMarkerTapped(String markerid) async {
     await Get.dialog(AlertDialog(
-      title: Text('坐标'),
-      content: Text('将坐标设为'),
+      title: Text('cordi'.tr),
+      content: Text('wantsetcordi'.tr),
       actions: <Widget>[
         TextButton(
           child: Text('cancel'.tr),
           onPressed: () => Get.back(),
         ),
         TextButton(
-          child: Text('起点'),
+          child: Text('startpoint'.tr),
           onPressed: hpc.startOnUserLoc.value
               ? null
               : () {
@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
                 },
         ),
         TextButton(
-          child: Text('终点'),
+          child: Text('endpoint'.tr),
           onPressed: () {
             _addEndLocation(hpc.mapMarkers['onTap']!.position);
             hpc.mapMarkers.remove('onTap');
@@ -102,8 +102,8 @@ class HomePage extends StatelessWidget {
   ///出发地Marker点击回调，询问用户收否删除该起点。
   void _onStartMarkerTapped() async {
     await Get.dialog(AlertDialog(
-      title: Text('删除起点'),
-      content: Text('删除起点吗？'),
+      title: Text('deletestart'.tr),
+      content: Text('wantdeletestart'.tr),
       actions: <Widget>[
         TextButton(
           child: Text('cancel'.tr),
@@ -124,8 +124,8 @@ class HomePage extends StatelessWidget {
   ///目的地Marker点击回调，询问用户收否删除该终点。
   void _onEndMarkerTapped(String markerid) async {
     await Get.dialog(AlertDialog(
-      title: Text('删除终点'),
-      content: Text('删除终点吗？'),
+      title: Text('deleteend'.tr),
+      content: Text('wantdeleteend'.tr),
       actions: <Widget>[
         TextButton(
           child: Text('cancel'.tr),
@@ -167,8 +167,8 @@ class HomePage extends StatelessWidget {
       //导航路线列表空了，说明已到达目的地。
       if (hpc.mapPolylines.isEmpty) {
         Get.dialog(AlertDialog(
-          title: Text('提示'),
-          content: Text('已到达全部终点，实时导航结束。'),
+          title: Text('tip'.tr),
+          content: Text('arrive'.tr),
           actions: <Widget>[
             TextButton(
               child: Text('ok'.tr),
@@ -211,8 +211,8 @@ class HomePage extends StatelessWidget {
           if (mapData.locationInCampus(hpc.userLocation.value.latLng) ==
               mapData.locationInCampus(destLatLng)) {
             Get.dialog(AlertDialog(
-              title: Text('提示'),
-              content: Text('重新规划路线。'),
+              title: Text('tip'.tr),
+              content: Text('rr'.tr),
               actions: <Widget>[
                 TextButton(
                   child: Text('ok'.tr),
@@ -248,7 +248,7 @@ class HomePage extends StatelessWidget {
     List<Widget> listWidget = <Widget>[
       Card(
         child: ListTile(
-          title: Text('当前位置'),
+          title: Text('curlocation'.tr),
           onTap: () {
             if (NaviUtil.stateLocationReqiurement(spc, hpc)) {
               newLocation = hpc.userLocation.value.latLng;
@@ -270,7 +270,7 @@ class HomePage extends StatelessWidget {
       ));
     }
     if (await Get.dialog(AlertDialog(
-          title: Text('选择目标视角'),
+          title: Text('scp'.tr),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -311,7 +311,7 @@ class HomePage extends StatelessWidget {
     //用户拒绝则弹窗提示
     if (!spc.locatePermissionStatus.value.isGranted) {
       Get.dialog(AlertDialog(
-        title: Text('提示'),
+        title: Text('tip'.tr),
         content: Text('校园导航的大部分功能需要定位权限才能正常工作，请授予定位权限。'),
         actions: <Widget>[
           TextButton(
@@ -344,13 +344,13 @@ class HomePage extends StatelessWidget {
                 if (hpc.startOnUserLoc.value) {
                   startWidget = Card(
                     child: ListTile(
-                      title: Text('当前位置。'),
+                      title: Text('curlocation'.tr),
                     ),
                   );
                 } else if (hpc.start.isEmpty) {
                   startWidget = Card(
                     child: ListTile(
-                      title: Text('未设置出发点。'),
+                      title: Text('未设置出发点'),
                     ),
                   );
                 } else if (hpc.start.first.runtimeType == LatLng) {
@@ -404,7 +404,7 @@ class HomePage extends StatelessWidget {
                 if (inColumn.isEmpty)
                   inColumn.add(Card(
                     child: ListTile(
-                      title: Text('未设置目的地。'),
+                      title: Text('未设置目的地'),
                     ),
                   ));
                 endWidget = Column(
@@ -552,8 +552,8 @@ class HomePage extends StatelessWidget {
               logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
           } else {
             Get.dialog(AlertDialog(
-              title: Text('提示'),
-              content: Text('您不在任何校区内。'),
+              title: Text('tip'.tr),
+              content: Text('notincampus'.tr),
               actions: <Widget>[
                 TextButton(
                   child: Text('cancel'.tr),
@@ -617,10 +617,10 @@ class HomePage extends StatelessWidget {
         //将排好序的列表中的元素一一绘制虚线，使用狄杰斯特拉算法得到路径，绘制实线
         for (int i = 0; i < naviOrder.length; ++i) {
           int campusNum = 0;
-          LatLng realLatLng = LatLng(0, 0);
-          LatLng juncLatLng = LatLng(0, 0);
-          double juncLength = 114514;
-          NaviLoc curNaviLoc = NaviLoc(campusNum, 0, realLatLng);
+          late LatLng realLatLng;
+          late LatLng juncLatLng;
+          late double juncLength;
+          late NaviLoc curNaviLoc;
           if (naviOrder[i].runtimeType == LatLng) {
             realLatLng = naviOrder[i];
             campusNum = mapData.locationInCampus(realLatLng);
@@ -803,7 +803,7 @@ class HomePage extends StatelessWidget {
                 }
               }
               await Get.dialog(AlertDialog(
-                title: Text('提示'),
+                title: Text('tip'.tr),
                 content: Text(
                     '从$startCampusName移动到$endCampusName，请乘坐' + toPrint + '。'),
                 actions: <Widget>[
@@ -831,8 +831,8 @@ class HomePage extends StatelessWidget {
               .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
       } catch (_) {
         Get.dialog(AlertDialog(
-          title: Text('提示'),
-          content: Text('未找到路线。请检查地图数据。'),
+          title: Text('tip'.tr),
+          content: Text('mapdataerr'.tr),
           actions: <Widget>[
             TextButton(
               child: Text('cancel'.tr),
@@ -912,15 +912,15 @@ class HomePage extends StatelessWidget {
                     left: 18.0,
                     child: Chip(
                         label: Text(hpc.minTime.value
-                            ? '约' +
+                            ? 'about'.tr +
                                 (hpc.routeLength.value / 60)
                                     .toStringAsFixed(0) +
-                                '分钟'
-                            : '约' +
+                                'min'.tr
+                            : 'about'.tr +
                                 (hpc.routeLength.value /
                                         (hpc.onbike.value ? BIKESPEED : 1))
                                     .toStringAsFixed(0) +
-                                '米')),
+                                'm'.tr)),
                   ),
                 ),
               ),
@@ -930,7 +930,7 @@ class HomePage extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           heroTag: UniqueKey(),
           onPressed: _setCameraPosition,
-          tooltip: '切换地图视角' /*'Locate'*/,
+          tooltip: 'scp'.tr,
           child: Icon(Icons.location_searching),
           mini: true,
         ),

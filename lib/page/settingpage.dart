@@ -21,9 +21,6 @@ class SettingPage extends StatelessWidget {
 
   static HomePageController hpc = Get.find();
 
-  ///检查软件是否为发行版
-  static bool get isRelease => bool.fromEnvironment('dart.vm.product');
-
   ///获取审图号函数，遵守高德地图Open Api的要求
   void _getApprovalNumber() async {
     //按要求获取常规地图审图号
@@ -43,7 +40,7 @@ class SettingPage extends StatelessWidget {
     await hpc.mapController?.value.clearDisk();
     Get.dialog(AlertDialog(
       title: Text('tip'.tr),
-      content: Text("地图缓存已清除。"),
+      content: Text('cachecleaned'.tr),
       actions: <Widget>[
         TextButton(
           child: Text('ok'.tr),
@@ -63,7 +60,7 @@ class SettingPage extends StatelessWidget {
     }
     Get.dialog(AlertDialog(
       title: Text('tip'.tr),
-      content: Text("日志文件已清除。"),
+      content: Text('logcleared'.tr),
       actions: <Widget>[
         TextButton(
           child: Text('ok'.tr),
@@ -83,7 +80,7 @@ class SettingPage extends StatelessWidget {
       await optData.writeAsString(await logFile.readAsString());
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text("导出成功，文件路径$optFilePath。"),
+        content: Text('logexportsuccess'.tr + '$optFilePath'),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -94,7 +91,7 @@ class SettingPage extends StatelessWidget {
     } else {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text("导出失败，无法访问路径。"),
+        content: Text('logexportfail'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -117,7 +114,7 @@ class SettingPage extends StatelessWidget {
     } catch (_) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text("导入地图数据文件功能需要存储权限。"),
+        content: Text('导入地图数据文件功能需要存储权限。'),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -127,7 +124,7 @@ class SettingPage extends StatelessWidget {
       ));
     }
     if (pickedFile != null) {
-      File iptFile = File(pickedFile.files.single.path!);
+      File iptFile = File(pickedFile.files.single.path);
       late MapData newData;
       try {
         newData = MapData.fromJson(jsonDecode(await iptFile.readAsString()));
@@ -135,7 +132,7 @@ class SettingPage extends StatelessWidget {
       } catch (_) {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
-          content: Text("地图数据格式不正确，请检查地图数据。"),
+          content: Text('地图数据格式不正确，请检查地图数据。'),
           actions: <Widget>[
             TextButton(
               child: Text('ok'.tr),
@@ -157,7 +154,7 @@ class SettingPage extends StatelessWidget {
       prefs.write('dataFileDir', customMapDataPath);
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text("地图数据已成功应用，重启软件生效。"),
+        content: Text('地图数据已成功应用，重启软件生效。'),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -198,7 +195,7 @@ class SettingPage extends StatelessWidget {
               onTap: () => showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                        title: Text('提示'),
+                        title: Text('tip'.tr),
                         content: Text('将地图数据设为默认吗？重启软件生效。'),
                         actions: <Widget>[
                           TextButton(
@@ -227,7 +224,7 @@ class SettingPage extends StatelessWidget {
                   onTap: () => showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                            title: Text('提示'),
+                            title: Text('tip'.tr),
                             content: Text('如何处理该地图数据？重启软件生效。'),
                             actions: <Widget>[
                               TextButton(
@@ -298,7 +295,7 @@ class SettingPage extends StatelessWidget {
     } catch (_) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text("导入地图数据文件功能需要存储权限。"),
+        content: Text('导入地图数据文件功能需要存储权限。'),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -308,7 +305,7 @@ class SettingPage extends StatelessWidget {
       ));
     }
     if (pickedFile != null) {
-      File iptFile = File(pickedFile.files.single.path!);
+      File iptFile = File(pickedFile.files.single.path);
       late LogicLoc newLogicLoc;
       try {
         newLogicLoc =
@@ -317,7 +314,7 @@ class SettingPage extends StatelessWidget {
       } catch (_) {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
-          content: Text("逻辑位置数据格式不正确，请检查逻辑位置数据。"),
+          content: Text('逻辑位置数据格式不正确，请检查逻辑位置数据。'),
           actions: <Widget>[
             TextButton(
               child: Text('ok'.tr),
@@ -340,7 +337,7 @@ class SettingPage extends StatelessWidget {
       mapLogicLoc = newLogicLoc;
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text("逻辑位置数据已成功应用。"),
+        content: Text('逻辑位置数据已成功应用。'),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -380,7 +377,7 @@ class SettingPage extends StatelessWidget {
               onTap: () => showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                        title: Text('提示'),
+                        title: Text('tip'.tr),
                         content: Text('不使用逻辑位置功能吗？立即生效。'),
                         actions: <Widget>[
                           TextButton(
@@ -411,7 +408,7 @@ class SettingPage extends StatelessWidget {
                   onTap: () => showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                            title: Text('提示'),
+                            title: Text('tip'.tr),
                             content: Text('如何处理该逻辑位置数据？立即生效。'),
                             actions: <Widget>[
                               TextButton(
@@ -493,17 +490,21 @@ class SettingPage extends StatelessWidget {
             'mapcontentapprovalnumber'.tr,
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
-          Text(
-            '${spc.mapContentApprovalNumber.value}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+          Obx(
+            () => Text(
+              '${spc.mapContentApprovalNumber.value}',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+            ),
           ),
           Text(
             'satelliteimageapprovalnumber'.tr,
             style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
           ),
-          Text(
-            '${spc.satelliteImageApprovalNumber.value}',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+          Obx(
+            () => Text(
+              '${spc.satelliteImageApprovalNumber.value}',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
+            ),
           ),
         ],
       ),
@@ -717,8 +718,8 @@ class SettingPage extends StatelessWidget {
                   ),
                   onChanged: (value) {
                     spc.logEnabled.value = value;
-                    prefs.write('logEnabled', spc.logEnabled.value);
-                    if ((spc.logEnabled.value) && (!spc.logExisted.value)) {
+                    prefs.write('logEnabled', value);
+                    if ((value) && (!spc.logExisted.value)) {
                       logSink = logFile.openWrite(mode: FileMode.append);
                       spc.logExisted.value = true;
                     }
@@ -837,7 +838,7 @@ class SettingPage extends StatelessWidget {
                     '+' +
                     packageInfo.buildNumber +
                     ' ' +
-                    (isRelease ? 'Release' : 'Debug'),
+                    appType,
                 applicationLegalese: '@notsabers 2021',
               )
             ],
@@ -854,10 +855,10 @@ class _MyLogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    listLogString = logFile.readAsLinesSync() + ['没有更多了。'];
+    listLogString = logFile.readAsLinesSync() + ['lognomore'.tr];
     return Scaffold(
       appBar: AppBar(
-        title: Text('日志'),
+        title: Text('log'.tr),
       ),
       body: Column(
         children: [

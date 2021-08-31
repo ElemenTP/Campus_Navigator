@@ -77,6 +77,7 @@ class ShortPath {
       route.clear();
       //清空
       relativeLen = double.infinity;
+      throw 'noroute';
     }
     //发现如何都到不了终点。
     else {

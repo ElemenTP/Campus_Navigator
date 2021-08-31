@@ -30,7 +30,7 @@ class SearchPage extends StatelessWidget {
     shc.searchResult.clear();
     String toSearch = shc.textController.text;
     if (spc.logEnabled.value)
-      logSink.write(DateTime.now().toString() + ': 搜索开始，关键字"$toSearch"。\n');
+      logSink.write(DateTime.now().toString() + ': 搜索开始，关键字：$toSearch。\n');
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
       String curCampusName = mapData[i].name;
       if (shc.campusFilter[i]) {
@@ -204,10 +204,10 @@ class SearchPage extends StatelessWidget {
       int campusNum = mapData.locationInCampus(hpc.userLocation.value.latLng);
       if (campusNum >= 0) {
         double circleRad = DEFAULT_RADIX;
-        if (await Get.dialog(StatefulBuilder(builder: (context, _setState) {
-              double inputRadix = -1;
+        shc.inputRadix.value = -1;
+        if (await Get.dialog(Obx(() {
               void onInputEnd() {
-                circleRad = inputRadix;
+                circleRad = shc.inputRadix.value;
                 Get.back<bool>(result: false);
               }
 
@@ -223,14 +223,12 @@ class SearchPage extends StatelessWidget {
                   autofocus: true,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   keyboardType: TextInputType.number,
-                  validator: (value) {
-                    _setState(() =>
-                        inputRadix = double.tryParse(value ?? '-1') ?? -1);
-                    return inputRadix > 0 ? null : 'inputvalidate'.tr;
-                  },
-                  /*onChanged: (value) => _setState(
-                      () => inputRadix = double.tryParse(value) ?? -1),*/
-                  onEditingComplete: inputRadix > 0 ? onInputEnd : null,
+                  validator: (_) =>
+                      shc.inputRadix.value > 0 ? null : 'inputvalidate'.tr,
+                  onChanged: (value) =>
+                      shc.inputRadix.value = double.tryParse(value) ?? -1,
+                  onEditingComplete:
+                      shc.inputRadix.value > 0 ? onInputEnd : null,
                 ),
                 actions: <Widget>[
                   TextButton(
@@ -245,7 +243,7 @@ class SearchPage extends StatelessWidget {
                   ),
                   TextButton(
                     child: Text('ok'.tr),
-                    onPressed: inputRadix > 0 ? onInputEnd : null,
+                    onPressed: shc.inputRadix.value > 0 ? onInputEnd : null,
                   ),
                 ],
               );
@@ -276,7 +274,7 @@ class SearchPage extends StatelessWidget {
           if (nearBuilding.isEmpty) {
             Get.dialog(AlertDialog(
               title: Text('tip'.tr),
-              content: Text('未搜索到任何建筑。'),
+              content: Text('nobuildingfound'.tr),
               actions: <Widget>[
                 TextButton(
                   child: Text('cancel'.tr),
@@ -312,13 +310,13 @@ class SearchPage extends StatelessWidget {
                 distance += path.getRelativeLen();
               }
               shc.searchResult.add(SearchResult(
-                  element, '约' + distance.toStringAsFixed(0) + '米'));
+                  element, 'about'.tr + distance.toStringAsFixed(0) + 'm'.tr));
             });
           }
         } catch (_) {
           Get.dialog(AlertDialog(
             title: Text('tip'.tr),
-            content: Text('未找到路线。请检查地图数据。'),
+            content: Text('mapdataerr'.tr),
             actions: <Widget>[
               TextButton(
                 child: Text('cancel'.tr),
@@ -335,7 +333,7 @@ class SearchPage extends StatelessWidget {
       } else {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
-          content: Text('您不在任何校区内。'),
+          content: Text('notincampus'.tr),
           actions: <Widget>[
             TextButton(
               child: Text('cancel'.tr),
@@ -381,7 +379,7 @@ class SearchPage extends StatelessWidget {
           if (canteens.isEmpty) {
             Get.dialog(AlertDialog(
               title: Text('tip'.tr),
-              content: Text('未搜索到符合条件的食堂。'),
+              content: Text('nocanteenfoun'.tr),
               actions: <Widget>[
                 TextButton(
                   child: Text('cancel'.tr),
@@ -419,19 +417,21 @@ class SearchPage extends StatelessWidget {
               CanteenArrange arrangeObject = CanteenArrange(distance);
               shc.searchResult.add(SearchResult(
                   element,
-                  '约' +
+                  'about'.tr +
                       distance.toStringAsFixed(0) +
-                      '米，预计到达时负载' +
+                      'm'.tr +
+                      'canteen1'.tr +
                       arrangeObject.getPayload().toStringAsFixed(0) +
-                      '%，用餐耗时' +
+                      '%' +
+                      'canteen2'.tr +
                       (arrangeObject.getTime() / 60).toStringAsFixed(0) +
-                      '分钟。'));
+                      'min'.tr));
             });
           }
         } catch (_) {
           Get.dialog(AlertDialog(
             title: Text('tip'.tr),
-            content: Text('未找到路线。请检查地图数据。'),
+            content: Text('mapdataerr'.tr),
             actions: <Widget>[
               TextButton(
                 child: Text('cancel'.tr),
@@ -448,7 +448,7 @@ class SearchPage extends StatelessWidget {
       } else {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
-          content: Text('您不在任何校区内。'),
+          content: Text('notincampus'.tr),
           actions: <Widget>[
             TextButton(
               child: Text('cancel'.tr),
@@ -469,7 +469,7 @@ class SearchPage extends StatelessWidget {
   void _campusFilter() async {
     shc.textFocusNode.unfocus();
     await Get.dialog(AlertDialog(
-      title: Text('校区'),
+      title: Text('campus'.tr),
       content: SingleChildScrollView(
         child: Obx(() {
           List<Widget> listCampusCheckBox = [];

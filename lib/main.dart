@@ -15,17 +15,33 @@ import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/translation/translation.dart';
 
 void main() async {
+  //获取持久化设置内容
+  await GetStorage.init();
+  prefs = GetStorage();
   //初始化Flutter环境
   WidgetsFlutterBinding.ensureInitialized();
-  //获取软件信息
-  packageInfo = await PackageInfo.fromPlatform();
-  //获取持久化设置内容
-  prefs = GetStorage();
   //初始化日志功能
   bool logEnabled = prefs.read<bool>('logEnabled') ?? false;
   Directory logFileDir = await getApplicationDocumentsDirectory();
   logFile = File(logFileDir.path + '/NaviLog.txt');
   if (logEnabled) logSink = logFile.openWrite(mode: FileMode.append);
+  //获取软件信息
+  packageInfo = await PackageInfo.fromPlatform();
+  //检查软件版本
+  appType = (bool.fromEnvironment('dart.vm.product', defaultValue: false))
+      ? 'Release'
+      : (bool.fromEnvironment('dart.vm.profile', defaultValue: false))
+          ? 'Profile'
+          : 'Debug';
+  if (logEnabled)
+    logSink.write(DateTime.now().toString() +
+        ': 版本：' +
+        packageInfo.version +
+        '+' +
+        packageInfo.buildNumber +
+        ' ' +
+        appType +
+        '\n');
   //初始化地图数据
   String? dataFileDir = prefs.read<String>('dataFileDir');
   if (dataFileDir == null) {

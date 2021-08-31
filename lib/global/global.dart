@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+//import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/model/logicloc.dart';
@@ -37,11 +37,14 @@ late IOSink logSink;
 ///软件信息
 late PackageInfo packageInfo;
 
-const Map<String, ThemeMode> str2ThemeMode = <String, ThemeMode>{
+///版本信息
+late String appType;
+
+/*const Map<String, ThemeMode> str2ThemeMode = <String, ThemeMode>{
   'system': ThemeMode.system,
   'light': ThemeMode.light,
   'dark': ThemeMode.dark,
-};
+};*/
 
 const Map<String, MapType> str2MapType = <String, MapType>{
   'satellite': MapType.satellite,
