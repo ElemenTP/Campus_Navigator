@@ -154,7 +154,7 @@ class SettingPage extends StatelessWidget {
       prefs.write('dataFileDir', customMapDataPath);
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text('地图数据已成功应用，重启软件生效。'),
+        content: Text('地图数据已成功应用。'),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -179,11 +179,8 @@ class SettingPage extends StatelessWidget {
     if (!await customMapDataDir.exists())
       await customMapDataDir.create(recursive: true);
     int prefixLength = customMapDataPath.length + 1;
-    /*Navigator.push(
-        context, MaterialPageRoute(builder: (context) => _MapDataManagePage()));*/
-    await showDialog(
-      context: Get.context!,
-      builder: (context) => StatefulBuilder(
+    await Get.dialog(
+      StatefulBuilder(
         builder: (context, _setState) {
           String? dataFileDir = prefs.read<String>('dataFileDir');
           List<FileSystemEntity> listMapDataFiles = customMapDataDir.listSync();
@@ -192,75 +189,71 @@ class SettingPage extends StatelessWidget {
             child: ListTile(
               title: Text('默认地图数据: 北京邮电大学沙河校区和海淀校区'),
               selected: dataFileDir == null,
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        title: Text('tip'.tr),
-                        content: Text('将地图数据设为默认吗？重启软件生效。'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('cancel'.tr),
-                            onPressed: () => Get.back(),
-                          ),
-                          TextButton(
-                            child: Text('ok'.tr),
-                            onPressed: () async {
-                              await prefs.remove('dataFileDir');
-                              _setState(() {});
-                              Get.back();
-                              if (spc.logEnabled.value)
-                                logSink.write(DateTime.now().toString() +
-                                    ': 应用默认地图数据。\n');
-                            },
-                          ),
-                        ],
-                      )),
+              onTap: () => Get.dialog(AlertDialog(
+                title: Text('tip'.tr),
+                content: Text('将地图数据设为默认吗？'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('cancel'.tr),
+                    onPressed: () => Get.back(),
+                  ),
+                  TextButton(
+                    child: Text('ok'.tr),
+                    onPressed: () async {
+                      await prefs.remove('dataFileDir');
+                      _setState(() {});
+                      Get.back();
+                      if (spc.logEnabled.value)
+                        logSink
+                            .write(DateTime.now().toString() + ': 应用默认地图数据。\n');
+                    },
+                  ),
+                ],
+              )),
             ),
           ));
           listMapDataFiles.forEach((element) => listMapDataFileChoose.add(Card(
                 child: ListTile(
                   title: Text(element.path.substring(prefixLength)),
                   selected: (dataFileDir ?? '') == element.path,
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text('tip'.tr),
-                            content: Text('如何处理该地图数据？重启软件生效。'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text('cancel'.tr),
-                                onPressed: () => Get.back(),
-                              ),
-                              TextButton(
-                                child: Text('删除'),
-                                onPressed: () async {
-                                  if ((dataFileDir ?? '') == element.path)
-                                    await prefs.remove('dataFileDir');
-                                  await element.delete();
-                                  _setState(() {});
-                                  Get.back();
-                                  if (spc.logEnabled.value)
-                                    logSink.write(DateTime.now().toString() +
-                                        ': 删除地图数据，' +
-                                        element.path.substring(prefixLength) +
-                                        '。\n');
-                                },
-                              ),
-                              TextButton(
-                                child: Text('使用'),
-                                onPressed: () async {
-                                  prefs.write('dataFileDir', element.path);
-                                  _setState(() {});
-                                  Get.back();
-                                  if (spc.logEnabled.value)
-                                    logSink.write(DateTime.now().toString() +
-                                        ': 应用地图数据，' +
-                                        element.path.substring(prefixLength) +
-                                        '。\n');
-                                },
-                              ),
-                            ],
-                          )),
+                  onTap: () => Get.dialog(AlertDialog(
+                    title: Text('tip'.tr),
+                    content: Text('如何处理该地图数据？'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('cancel'.tr),
+                        onPressed: () => Get.back(),
+                      ),
+                      TextButton(
+                        child: Text('删除'),
+                        onPressed: () async {
+                          if ((dataFileDir ?? '') == element.path)
+                            await prefs.remove('dataFileDir');
+                          await element.delete();
+                          _setState(() {});
+                          Get.back();
+                          if (spc.logEnabled.value)
+                            logSink.write(DateTime.now().toString() +
+                                ': 删除地图数据，' +
+                                element.path.substring(prefixLength) +
+                                '。\n');
+                        },
+                      ),
+                      TextButton(
+                        child: Text('使用'),
+                        onPressed: () async {
+                          prefs.write('dataFileDir', element.path);
+                          _setState(() {});
+                          Get.back();
+                          if (spc.logEnabled.value)
+                            logSink.write(DateTime.now().toString() +
+                                ': 应用地图数据，' +
+                                element.path.substring(prefixLength) +
+                                '。\n');
+                        },
+                      ),
+                    ],
+                  )),
                 ),
               )));
           return AlertDialog(
@@ -362,9 +355,8 @@ class SettingPage extends StatelessWidget {
     if (!await customLogicLocDir.exists())
       await customLogicLocDir.create(recursive: true);
     int prefixLength = customLogicLocPath.length + 1;
-    await showDialog(
-      context: Get.context!,
-      builder: (context) => StatefulBuilder(
+    await Get.dialog(
+      StatefulBuilder(
         builder: (context, _setState) {
           String? logicLocFileDir = prefs.read<String>('logicLocFileDir');
           List<FileSystemEntity> listLogicLocFiles =
@@ -374,30 +366,28 @@ class SettingPage extends StatelessWidget {
             child: ListTile(
               title: Text('不使用逻辑位置功能'),
               selected: logicLocFileDir == null,
-              onTap: () => showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        title: Text('tip'.tr),
-                        content: Text('不使用逻辑位置功能吗？立即生效。'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: Text('cancel'.tr),
-                            onPressed: () => Get.back(),
-                          ),
-                          TextButton(
-                            child: Text('ok'.tr),
-                            onPressed: () async {
-                              await prefs.remove('logicLocFileDir');
-                              mapLogicLoc = LogicLoc();
-                              _setState(() {});
-                              Get.back();
-                              if (spc.logEnabled.value)
-                                logSink.write(
-                                    DateTime.now().toString() + ': 不使用逻辑位置。\n');
-                            },
-                          ),
-                        ],
-                      )),
+              onTap: () => Get.dialog(AlertDialog(
+                title: Text('tip'.tr),
+                content: Text('不使用逻辑位置功能吗？'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('cancel'.tr),
+                    onPressed: () => Get.back(),
+                  ),
+                  TextButton(
+                    child: Text('ok'.tr),
+                    onPressed: () async {
+                      await prefs.remove('logicLocFileDir');
+                      mapLogicLoc = LogicLoc();
+                      _setState(() {});
+                      Get.back();
+                      if (spc.logEnabled.value)
+                        logSink
+                            .write(DateTime.now().toString() + ': 不使用逻辑位置。\n');
+                    },
+                  ),
+                ],
+              )),
             ),
           ));
           listLogicLocFiles.forEach((element) =>
@@ -405,51 +395,49 @@ class SettingPage extends StatelessWidget {
                 child: ListTile(
                   title: Text(element.path.substring(prefixLength)),
                   selected: (logicLocFileDir ?? '') == element.path,
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text('tip'.tr),
-                            content: Text('如何处理该逻辑位置数据？立即生效。'),
-                            actions: <Widget>[
-                              TextButton(
-                                child: Text('cancel'.tr),
-                                onPressed: () => Get.back(),
-                              ),
-                              TextButton(
-                                child: Text('删除'),
-                                onPressed: () async {
-                                  if ((logicLocFileDir ?? '') == element.path) {
-                                    await prefs.remove('logicLocFileDir');
-                                    mapLogicLoc = LogicLoc();
-                                  }
-                                  await element.delete();
-                                  _setState(() {});
-                                  Get.back();
-                                  if (spc.logEnabled.value)
-                                    logSink.write(DateTime.now().toString() +
-                                        ': 删除逻辑位置，' +
-                                        element.path.substring(prefixLength) +
-                                        '。\n');
-                                },
-                              ),
-                              TextButton(
-                                child: Text('使用'),
-                                onPressed: () async {
-                                  prefs.write('logicLocFileDir', element.path);
-                                  File logicLocFile = File(element.path);
-                                  mapLogicLoc = LogicLoc.fromJson(jsonDecode(
-                                      await logicLocFile.readAsString()));
-                                  _setState(() {});
-                                  Get.back();
-                                  if (spc.logEnabled.value)
-                                    logSink.write(DateTime.now().toString() +
-                                        ': 应用逻辑位置，' +
-                                        element.path.substring(prefixLength) +
-                                        '。\n');
-                                },
-                              ),
-                            ],
-                          )),
+                  onTap: () => Get.dialog(AlertDialog(
+                    title: Text('tip'.tr),
+                    content: Text('如何处理该逻辑位置数据？'),
+                    actions: <Widget>[
+                      TextButton(
+                        child: Text('cancel'.tr),
+                        onPressed: () => Get.back(),
+                      ),
+                      TextButton(
+                        child: Text('删除'),
+                        onPressed: () async {
+                          if ((logicLocFileDir ?? '') == element.path) {
+                            await prefs.remove('logicLocFileDir');
+                            mapLogicLoc = LogicLoc();
+                          }
+                          await element.delete();
+                          _setState(() {});
+                          Get.back();
+                          if (spc.logEnabled.value)
+                            logSink.write(DateTime.now().toString() +
+                                ': 删除逻辑位置，' +
+                                element.path.substring(prefixLength) +
+                                '。\n');
+                        },
+                      ),
+                      TextButton(
+                        child: Text('使用'),
+                        onPressed: () async {
+                          prefs.write('logicLocFileDir', element.path);
+                          File logicLocFile = File(element.path);
+                          mapLogicLoc = LogicLoc.fromJson(
+                              jsonDecode(await logicLocFile.readAsString()));
+                          _setState(() {});
+                          Get.back();
+                          if (spc.logEnabled.value)
+                            logSink.write(DateTime.now().toString() +
+                                ': 应用逻辑位置，' +
+                                element.path.substring(prefixLength) +
+                                '。\n');
+                        },
+                      ),
+                    ],
+                  )),
                 ),
               )));
           return AlertDialog(
@@ -878,7 +866,7 @@ class _MyLogPage extends StatelessWidget {
 }
 
 ///地图数据管理界面
-class MapDataManagePage extends StatelessWidget {
+/*class MapDataManagePage extends StatelessWidget {
   MapDataManagePage({Key key = const Key('mapdata')}) : super(key: key);
 
   @override
@@ -895,4 +883,4 @@ class LogicDataManagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold();
   }
-}
+}*/

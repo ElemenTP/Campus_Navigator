@@ -210,7 +210,7 @@ class HomePage extends StatelessWidget {
         if (distancetoLine > 40 || (distanceDest > polylineLength + 25)) {
           if (mapData.locationInCampus(hpc.userLocation.value.latLng) ==
               mapData.locationInCampus(destLatLng)) {
-            Get.dialog(AlertDialog(
+            /*Get.dialog(AlertDialog(
               title: Text('tip'.tr),
               content: Text('rr'.tr),
               actions: <Widget>[
@@ -219,7 +219,8 @@ class HomePage extends StatelessWidget {
                   onPressed: () => Get.back(),
                 ),
               ],
-            ));
+            ));*/
+            Get.snackbar('tip'.tr, 'rr'.tr);
             if (spc.logEnabled.value)
               logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
             await _showRoute();
@@ -312,7 +313,7 @@ class HomePage extends StatelessWidget {
     if (!spc.locatePermissionStatus.value.isGranted) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text('校园导航的大部分功能需要定位权限才能正常工作，请授予定位权限。'),
+        content: Text('needlocationpermission'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('cancel'.tr),
@@ -350,14 +351,14 @@ class HomePage extends StatelessWidget {
                 } else if (hpc.start.isEmpty) {
                   startWidget = Card(
                     child: ListTile(
-                      title: Text('未设置出发点'),
+                      title: Text('nostartset'.tr),
                     ),
                   );
                 } else if (hpc.start.first.runtimeType == LatLng) {
                   startWidget = Card(
                     child: ListTile(
-                      title: Text(
-                          '坐标：${hpc.start.first!.longitude}，${hpc.start.first!.latitude}。'),
+                      title: Text('cordi'.tr +
+                          '${hpc.start.first!.longitude}\n${hpc.start.first!.latitude}'),
                       onTap: () {
                         hpc.start.clear();
                         hpc.mapMarkers.remove('start');
@@ -367,7 +368,8 @@ class HomePage extends StatelessWidget {
                 } else if (hpc.start.first.runtimeType == Building) {
                   startWidget = Card(
                     child: ListTile(
-                      title: Text('建筑：${hpc.start.first!.description.first}。'),
+                      title: Text(
+                          'bu'.tr + '${hpc.start.first!.description.first}'),
                       onTap: () {
                         hpc.start.clear();
                         hpc.mapMarkers.remove('start');
@@ -381,8 +383,8 @@ class HomePage extends StatelessWidget {
                   inColumn.add(element.runtimeType == LatLng
                       ? Card(
                           child: ListTile(
-                            title: Text(
-                                '坐标：${element.longitude}，${element.latitude}。'),
+                            title: Text('cordi'.tr +
+                                '${element.longitude}\n${element.latitude}'),
                             onTap: () {
                               hpc.end.remove(element);
                               hpc.mapMarkers
@@ -392,7 +394,8 @@ class HomePage extends StatelessWidget {
                         )
                       : Card(
                           child: ListTile(
-                            title: Text('建筑：${element.description.first}。'),
+                            title:
+                                Text('bu'.tr + '${element.description.first}'),
                             onTap: () {
                               hpc.end.remove(element);
                               hpc.mapMarkers
@@ -404,7 +407,7 @@ class HomePage extends StatelessWidget {
                 if (inColumn.isEmpty)
                   inColumn.add(Card(
                     child: ListTile(
-                      title: Text('未设置目的地'),
+                      title: Text('noendset'.tr),
                     ),
                   ));
                 endWidget = Column(
@@ -416,7 +419,7 @@ class HomePage extends StatelessWidget {
                     startWidget,
                     SwitchListTile(
                         value: hpc.startOnUserLoc.value,
-                        title: Text('从当前位置开始'),
+                        title: Text('startcur'.tr),
                         onChanged: (state) {
                           hpc.startOnUserLoc.value = state;
                           if (!state) hpc.realTime.value = state;
@@ -425,7 +428,7 @@ class HomePage extends StatelessWidget {
                         }),
                     SwitchListTile(
                       value: hpc.realTime.value,
-                      title: Text('实时导航'),
+                      title: Text('nirt'.tr),
                       onChanged: hpc.startOnUserLoc.value
                           ? (state) => hpc.realTime.value = state
                           : null,
@@ -438,7 +441,7 @@ class HomePage extends StatelessWidget {
                     ),
                     TextButton.icon(
                       icon: Icon(Icons.delete),
-                      label: Text('清除全部地点'),
+                      label: Text('clearall'.tr),
                       onPressed: () {
                         hpc.start.clear();
                         hpc.end.clear();
@@ -448,12 +451,12 @@ class HomePage extends StatelessWidget {
                     ),
                     SwitchListTile(
                       value: hpc.onbike.value,
-                      title: Text('允许骑车'),
+                      title: Text('bikeallow'.tr),
                       onChanged: (state) => hpc.onbike.value = state,
                     ),
                     SwitchListTile(
                       value: hpc.minTime.value,
-                      title: Text('最短时间'),
+                      title: Text('shortesttime'.tr),
                       onChanged: (state) {
                         hpc.minTime.value = state;
                         if (!state) hpc.crowding.value = state;
@@ -461,13 +464,13 @@ class HomePage extends StatelessWidget {
                     ),
                     SwitchListTile(
                       value: hpc.crowding.value,
-                      title: Text('拥挤'),
+                      title: Text('crowding'.tr),
                       onChanged: hpc.minTime.value
                           ? (state) => hpc.crowding.value = state
                           : null,
                     ),
                     Text(
-                      '提示：点击可删除起点/终点',
+                      'navitip'.tr,
                       style: TextStyle(
                           fontSize: 12, fontWeight: FontWeight.normal),
                     ),
@@ -530,14 +533,14 @@ class HomePage extends StatelessWidget {
             ': ' +
             '实时导航' +
             (hpc.realTime.value ? '开启' : '关闭') +
-            '，骑车' +
+            '\t骑车' +
             (hpc.onbike.value ? '开启' : '关闭') +
             '。\n');
         logSink.write(DateTime.now().toString() +
             ': ' +
             '最短时间' +
             (hpc.minTime.value ? '开启' : '关闭') +
-            '，拥挤度' +
+            '\t拥挤度' +
             (hpc.crowding.value ? '开启' : '关闭') +
             '。\n');
       }
@@ -804,8 +807,13 @@ class HomePage extends StatelessWidget {
               }
               await Get.dialog(AlertDialog(
                 title: Text('tip'.tr),
-                content: Text(
-                    '从$startCampusName移动到$endCampusName，请乘坐' + toPrint + '。'),
+                content: Text('from'.tr +
+                    startCampusName +
+                    'to'.tr +
+                    endCampusName +
+                    '\n' +
+                    'by'.tr +
+                    toPrint),
                 actions: <Widget>[
                   TextButton(
                     child: Text('cancel'.tr),
@@ -957,9 +965,9 @@ class HomePage extends StatelessWidget {
       floatingActionButton: Obx(() => FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: _setNavigation,
-            tooltip: hpc.naviStatus.value
-                ? '停止导航'
-                : '开始导航' /*'Stop Navigation' : 'Start Navigation'*/,
+            tooltip: 'navi'.tr +
+                ' ' +
+                (hpc.naviStatus.value ? 'start'.tr : 'stop'.tr),
             child: hpc.naviStatus.value
                 ? Icon(Icons.stop)
                 : Icon(Icons.play_arrow),

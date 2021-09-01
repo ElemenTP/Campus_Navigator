@@ -11,6 +11,7 @@ import 'package:campnavi/model/searchresult.dart';
 import 'package:campnavi/controller/searchpagecontroller.dart';
 import 'package:campnavi/controller/settingpagecontroller.dart';
 import 'package:campnavi/controller/homepagecontroller.dart';
+import 'package:campnavi/controller/nearbuildingcontroller.dart';
 
 ///搜索界面，用于搜索功能，逻辑位置功能，提供附近建筑和食堂负载均衡的按钮
 class SearchPage extends StatelessWidget {
@@ -204,10 +205,11 @@ class SearchPage extends StatelessWidget {
       int campusNum = mapData.locationInCampus(hpc.userLocation.value.latLng);
       if (campusNum >= 0) {
         double circleRad = DEFAULT_RADIX;
-        shc.inputRadix.value = -1;
-        if (await Get.dialog(Obx(() {
+        NearBuildingController nbc = Get.put(NearBuildingController());
+        nbc.inputRadix.value = -1;
+        if (await Get.dialog<bool>(Obx(() {
               void onInputEnd() {
-                circleRad = shc.inputRadix.value;
+                circleRad = nbc.inputRadix.value;
                 Get.back<bool>(result: false);
               }
 
@@ -224,11 +226,11 @@ class SearchPage extends StatelessWidget {
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   keyboardType: TextInputType.number,
                   validator: (_) =>
-                      shc.inputRadix.value > 0 ? null : 'inputvalidate'.tr,
+                      nbc.inputRadix.value > 0 ? null : 'inputvalidate'.tr,
                   onChanged: (value) =>
-                      shc.inputRadix.value = double.tryParse(value) ?? -1,
+                      nbc.inputRadix.value = double.tryParse(value) ?? -1,
                   onEditingComplete:
-                      shc.inputRadix.value > 0 ? onInputEnd : null,
+                      nbc.inputRadix.value > 0 ? onInputEnd : null,
                 ),
                 actions: <Widget>[
                   TextButton(
@@ -243,7 +245,7 @@ class SearchPage extends StatelessWidget {
                   ),
                   TextButton(
                     child: Text('ok'.tr),
-                    onPressed: shc.inputRadix.value > 0 ? onInputEnd : null,
+                    onPressed: nbc.inputRadix.value > 0 ? onInputEnd : null,
                   ),
                 ],
               );

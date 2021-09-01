@@ -16,7 +16,4 @@ class SearchPageController extends GetxController {
 
   ///输入框焦点控制器
   FocusNode textFocusNode = FocusNode();
-
-  ///距离范围输入值
-  RxDouble inputRadix = (-1.0).obs;
 }
