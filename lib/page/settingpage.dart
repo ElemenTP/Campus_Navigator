@@ -1,44 +1,43 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:campnavi/global/global.dart';
 import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/model/logicloc.dart';
-import 'package:campnavi/controller/settingpagecontroller.dart';
-import 'package:campnavi/controller/homepagecontroller.dart';
 import 'package:campnavi/translation/translation.dart';
+import 'package:campnavi/controller/maincontroller.dart';
 
 ///设置界面
 class SettingPage extends StatelessWidget {
   SettingPage({Key key = const Key('setting')}) : super(key: key);
 
-  static SettingPageController spc = Get.find();
-
-  static HomePageController hpc = Get.find();
+  static MainController c = Get.find();
 
   ///获取审图号函数，遵守高德地图Open Api的要求
   void _getApprovalNumber() async {
     //按要求获取常规地图审图号
-    await hpc.mapController?.value.getMapContentApprovalNumber().then((value) {
-      if (value != null) spc.mapContentApprovalNumber = value.obs;
+    await c.mapController?.value.getMapContentApprovalNumber().then((value) {
+      if (value != null) c.mapContentApprovalNumber = value.obs;
     });
     //按要求获取卫星地图审图号
-    await hpc.mapController?.value
+    await c.mapController?.value
         .getSatelliteImageApprovalNumber()
         .then((value) {
-      if (value != null) spc.satelliteImageApprovalNumber = value.obs;
+      if (value != null) c.satelliteImageApprovalNumber = value.obs;
     });
   }
 
   ///清除地图缓存函数
   void _cleanMapCache() async {
-    await hpc.mapController?.value.clearDisk();
-    Get.dialog(AlertDialog(
+    await c.mapController?.value.clearDisk();
+    /*Get.dialog(AlertDialog(
       title: Text('tip'.tr),
       content: Text('cachecleaned'.tr),
       actions: <Widget>[
@@ -47,18 +46,20 @@ class SettingPage extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
       ],
-    ));
+    ));*/
+    Get.snackbar('tip'.tr, 'cachecleaned'.tr,
+        snackPosition: SnackPosition.BOTTOM);
   }
 
   ///清除日志文件函数
   void _cleanLogFile() async {
-    if (spc.logEnabled.value)
+    if (c.logEnabled.value)
       await logFile.writeAsString('');
     else {
       await logFile.delete();
-      spc.logExisted.value = false;
+      c.logExisted.value = false;
     }
-    Get.dialog(AlertDialog(
+    /*Get.dialog(AlertDialog(
       title: Text('tip'.tr),
       content: Text('logcleared'.tr),
       actions: <Widget>[
@@ -67,7 +68,9 @@ class SettingPage extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
       ],
-    ));
+    ));*/
+    Get.snackbar('tip'.tr, 'logcleared'.tr,
+        snackPosition: SnackPosition.BOTTOM);
   }
 
   ///导出日志文件函数
@@ -112,7 +115,7 @@ class SettingPage extends StatelessWidget {
           allowMultiple: false,
           allowedExtensions: ['json']);
     } catch (_) {
-      Get.dialog(AlertDialog(
+      /*Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('导入地图数据文件功能需要存储权限。'),
         actions: <Widget>[
@@ -121,7 +124,9 @@ class SettingPage extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ],
-      ));
+      ));*/
+      Get.snackbar('tip'.tr, '导入地图数据文件功能需要存储权限。',
+          snackPosition: SnackPosition.BOTTOM);
     }
     if (pickedFile != null) {
       File iptFile = File(pickedFile.files.single.path);
@@ -130,7 +135,7 @@ class SettingPage extends StatelessWidget {
         newData = MapData.fromJson(jsonDecode(await iptFile.readAsString()));
         if (newData.mapCampus.length == 0) throw '!';
       } catch (_) {
-        Get.dialog(AlertDialog(
+        /*Get.dialog(AlertDialog(
           title: Text('tip'.tr),
           content: Text('地图数据格式不正确，请检查地图数据。'),
           actions: <Widget>[
@@ -139,7 +144,9 @@ class SettingPage extends StatelessWidget {
               onPressed: () => Get.back(),
             ),
           ],
-        ));
+        ));*/
+        Get.snackbar('tip'.tr, '地图数据格式不正确，请检查地图数据。',
+            snackPosition: SnackPosition.BOTTOM);
         return;
       }
       Directory applicationDataDir = await getApplicationDocumentsDirectory();
@@ -152,7 +159,9 @@ class SettingPage extends StatelessWidget {
       }
       await customMapDataFile.writeAsString(jsonEncode(newData));
       prefs.write('dataFileDir', customMapDataPath);
-      Get.dialog(AlertDialog(
+      mapData = newData;
+      _setNewMapData();
+      /*Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('地图数据已成功应用。'),
         actions: <Widget>[
@@ -161,8 +170,9 @@ class SettingPage extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ],
-      ));
-      if (spc.logEnabled.value)
+      ));*/
+      Get.snackbar('tip'.tr, '地图数据已成功应用。', snackPosition: SnackPosition.BOTTOM);
+      if (c.logEnabled.value)
         logSink.write(DateTime.now().toString() +
             ': 导入新地图数据，' +
             pickedFile.files.single.name +
@@ -200,10 +210,13 @@ class SettingPage extends StatelessWidget {
                   TextButton(
                     child: Text('ok'.tr),
                     onPressed: () async {
+                      Get.back();
                       await prefs.remove('dataFileDir');
                       _setState(() {});
-                      Get.back();
-                      if (spc.logEnabled.value)
+                      mapData = MapData.fromJson(jsonDecode(
+                          await rootBundle.loadString('mapdata/default.json')));
+                      _setNewMapData();
+                      if (c.logEnabled.value)
                         logSink
                             .write(DateTime.now().toString() + ': 应用默认地图数据。\n');
                     },
@@ -227,14 +240,19 @@ class SettingPage extends StatelessWidget {
                       TextButton(
                         child: Text('删除'),
                         onPressed: () async {
-                          if ((dataFileDir ?? '') == element.path)
+                          Get.back();
+                          if ((dataFileDir ?? '') == element.path) {
                             await prefs.remove('dataFileDir');
+                            mapData = MapData.fromJson(jsonDecode(
+                                await rootBundle
+                                    .loadString('mapdata/default.json')));
+                            _setNewMapData();
+                          }
                           await element.delete();
                           _setState(() {});
-                          Get.back();
-                          if (spc.logEnabled.value)
+                          if (c.logEnabled.value)
                             logSink.write(DateTime.now().toString() +
-                                ': 删除地图数据，' +
+                                ': 删除地图数据' +
                                 element.path.substring(prefixLength) +
                                 '。\n');
                         },
@@ -242,10 +260,14 @@ class SettingPage extends StatelessWidget {
                       TextButton(
                         child: Text('使用'),
                         onPressed: () async {
+                          Get.back();
                           prefs.write('dataFileDir', element.path);
                           _setState(() {});
-                          Get.back();
-                          if (spc.logEnabled.value)
+                          File mapDataFile = File(element.path);
+                          mapData = MapData.fromJson(
+                              jsonDecode(await mapDataFile.readAsString()));
+                          _setNewMapData();
+                          if (c.logEnabled.value)
                             logSink.write(DateTime.now().toString() +
                                 ': 应用地图数据，' +
                                 element.path.substring(prefixLength) +
@@ -276,6 +298,17 @@ class SettingPage extends StatelessWidget {
     );
   }
 
+  void _setNewMapData() {
+    c.naviStatus.value = false;
+    c.start.clear();
+    c.end.clear();
+    c.routeLength.value = 0;
+    c.mapMarkers.clear();
+    c.mapPolylines.clear();
+    c.searchResult.clear();
+    c.campusFilter = List<bool>.filled(mapData.mapCampus.length, true).obs;
+  }
+
   ///导入逻辑位置文件函数。调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行
   ///测试，不可用则提示用户，可用则存储在软件私有存储空间中并设为默认逻辑位置数据，立即应用。
   void _pickLogicData() async {
@@ -286,7 +319,7 @@ class SettingPage extends StatelessWidget {
           allowMultiple: false,
           allowedExtensions: ['json']);
     } catch (_) {
-      Get.dialog(AlertDialog(
+      /*Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('导入地图数据文件功能需要存储权限。'),
         actions: <Widget>[
@@ -295,7 +328,9 @@ class SettingPage extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ],
-      ));
+      ));*/
+      Get.snackbar('tip'.tr, '导入地图数据文件功能需要存储权限。',
+          snackPosition: SnackPosition.BOTTOM);
     }
     if (pickedFile != null) {
       File iptFile = File(pickedFile.files.single.path);
@@ -305,7 +340,7 @@ class SettingPage extends StatelessWidget {
             LogicLoc.fromJson(jsonDecode(await iptFile.readAsString()));
         if (newLogicLoc.logicLoc.isEmpty) throw '!';
       } catch (_) {
-        Get.dialog(AlertDialog(
+        /*Get.dialog(AlertDialog(
           title: Text('tip'.tr),
           content: Text('逻辑位置数据格式不正确，请检查逻辑位置数据。'),
           actions: <Widget>[
@@ -314,7 +349,9 @@ class SettingPage extends StatelessWidget {
               onPressed: () => Get.back(),
             ),
           ],
-        ));
+        ));*/
+        Get.snackbar('tip'.tr, '逻辑位置数据格式不正确，请检查逻辑位置数据。',
+            snackPosition: SnackPosition.BOTTOM);
         return;
       }
       Directory applicationDataDir = await getApplicationDocumentsDirectory();
@@ -328,7 +365,7 @@ class SettingPage extends StatelessWidget {
       await customLogicLocFile.writeAsString(jsonEncode(newLogicLoc));
       prefs.write('logicLocFileDir', customLogicLocPath);
       mapLogicLoc = newLogicLoc;
-      Get.dialog(AlertDialog(
+      /*Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('逻辑位置数据已成功应用。'),
         actions: <Widget>[
@@ -337,8 +374,10 @@ class SettingPage extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ],
-      ));
-      if (spc.logEnabled.value)
+      ));*/
+      Get.snackbar('tip'.tr, '逻辑位置数据已成功应用。',
+          snackPosition: SnackPosition.BOTTOM);
+      if (c.logEnabled.value)
         logSink.write(DateTime.now().toString() +
             ': 导入并应用新逻辑位置，' +
             pickedFile.files.single.name +
@@ -377,11 +416,11 @@ class SettingPage extends StatelessWidget {
                   TextButton(
                     child: Text('ok'.tr),
                     onPressed: () async {
+                      Get.back();
                       await prefs.remove('logicLocFileDir');
                       mapLogicLoc = LogicLoc();
                       _setState(() {});
-                      Get.back();
-                      if (spc.logEnabled.value)
+                      if (c.logEnabled.value)
                         logSink
                             .write(DateTime.now().toString() + ': 不使用逻辑位置。\n');
                     },
@@ -406,14 +445,14 @@ class SettingPage extends StatelessWidget {
                       TextButton(
                         child: Text('删除'),
                         onPressed: () async {
+                          Get.back();
                           if ((logicLocFileDir ?? '') == element.path) {
                             await prefs.remove('logicLocFileDir');
                             mapLogicLoc = LogicLoc();
                           }
                           await element.delete();
                           _setState(() {});
-                          Get.back();
-                          if (spc.logEnabled.value)
+                          if (c.logEnabled.value)
                             logSink.write(DateTime.now().toString() +
                                 ': 删除逻辑位置，' +
                                 element.path.substring(prefixLength) +
@@ -423,15 +462,15 @@ class SettingPage extends StatelessWidget {
                       TextButton(
                         child: Text('使用'),
                         onPressed: () async {
+                          Get.back();
                           prefs.write('logicLocFileDir', element.path);
+                          _setState(() {});
                           File logicLocFile = File(element.path);
                           mapLogicLoc = LogicLoc.fromJson(
                               jsonDecode(await logicLocFile.readAsString()));
-                          _setState(() {});
-                          Get.back();
-                          if (spc.logEnabled.value)
+                          if (c.logEnabled.value)
                             logSink.write(DateTime.now().toString() +
-                                ': 应用逻辑位置，' +
+                                ': 应用逻辑位置' +
                                 element.path.substring(prefixLength) +
                                 '。\n');
                         },
@@ -463,7 +502,7 @@ class SettingPage extends StatelessWidget {
   ///申请定位权限函数
   void _requestLocationPermission() async {
     // 申请位置权限
-    spc.locatePermissionStatus.value = await Permission.location.request();
+    c.locatePermissionStatus.value = await Permission.location.request();
   }
 
   ///展示高德地图审图号信息界面
@@ -480,7 +519,7 @@ class SettingPage extends StatelessWidget {
           ),
           Obx(
             () => Text(
-              '${spc.mapContentApprovalNumber.value}',
+              '${c.mapContentApprovalNumber.value}',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
           ),
@@ -490,7 +529,7 @@ class SettingPage extends StatelessWidget {
           ),
           Obx(
             () => Text(
-              '${spc.satelliteImageApprovalNumber.value}',
+              '${c.satelliteImageApprovalNumber.value}',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
           ),
@@ -519,27 +558,27 @@ class SettingPage extends StatelessWidget {
                   RadioListTile(
                     title: Text('satellite'.tr),
                     value: MapType.satellite,
-                    groupValue: spc.preferMapType.value,
+                    groupValue: c.preferMapType.value,
                     onChanged: (MapType? value) {
-                      spc.preferMapType.value = value!;
+                      c.preferMapType.value = value!;
                       prefs.write('preferMapType', 'satellite');
                     },
                   ),
                   RadioListTile(
                     title: Text('normal'.tr),
                     value: MapType.normal,
-                    groupValue: spc.preferMapType.value,
+                    groupValue: c.preferMapType.value,
                     onChanged: (MapType? value) {
-                      spc.preferMapType.value = value!;
+                      c.preferMapType.value = value!;
                       prefs.write('preferMapType', 'normal');
                     },
                   ),
                   RadioListTile(
                     title: Text('night'.tr),
                     value: MapType.night,
-                    groupValue: spc.preferMapType.value,
+                    groupValue: c.preferMapType.value,
                     onChanged: (MapType? value) {
-                      spc.preferMapType.value = value!;
+                      c.preferMapType.value = value!;
                       prefs.write('preferMapType', 'night');
                     },
                   ),
@@ -609,7 +648,7 @@ class SettingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    spc.logExisted.value = logFile.existsSync();
+    c.logExisted.value = logFile.existsSync();
     _getApprovalNumber();
     return Scaffold(
       //顶栏
@@ -631,18 +670,18 @@ class SettingPage extends StatelessWidget {
               SwitchListTile(
                 title: Text('locateswitch'.tr),
                 subtitle: Text('needlocate'.tr),
-                value: spc.locateEnabled.value,
+                value: c.locateEnabled.value,
                 onChanged: (value) {
-                  spc.locateEnabled.value = value;
+                  c.locateEnabled.value = value;
                   prefs.write('locateEnabled', value);
                 },
               ),
               SwitchListTile(
                 title: Text('compassswitch'.tr),
                 subtitle: Text('compassswitchdes'.tr),
-                value: spc.compassEnabled.value,
+                value: c.compassEnabled.value,
                 onChanged: (value) {
-                  spc.compassEnabled.value = value;
+                  c.compassEnabled.value = value;
                   prefs.write('compassEnabled', value);
                 },
               ),
@@ -700,26 +739,26 @@ class SettingPage extends StatelessWidget {
                 ),
               ),
               SwitchListTile(
-                  value: spc.logEnabled.value,
+                  value: c.logEnabled.value,
                   title: Text(
                     'logswitch'.tr,
                   ),
                   onChanged: (value) {
-                    spc.logEnabled.value = value;
+                    c.logEnabled.value = value;
                     prefs.write('logEnabled', value);
-                    if ((value) && (!spc.logExisted.value)) {
+                    if ((value) && (!c.logExisted.value)) {
                       logSink = logFile.openWrite(mode: FileMode.append);
-                      spc.logExisted.value = true;
+                      c.logExisted.value = true;
                     }
                   }),
               ListTile(
                 title: Text(
                   'viewlogs'.tr,
                 ),
-                subtitle: spc.logExisted.value
+                subtitle: c.logExisted.value
                     ? Text('viewstoredlogs'.tr)
                     : Text('nolog'.tr),
-                onTap: spc.logExisted.value
+                onTap: c.logExisted.value
                     ? () => Navigator.push(context,
                         MaterialPageRoute(builder: (context) => _MyLogPage()))
                     : null,
@@ -728,19 +767,19 @@ class SettingPage extends StatelessWidget {
                 title: Text(
                   'exportlogs'.tr,
                 ),
-                subtitle: spc.logExisted.value
+                subtitle: c.logExisted.value
                     ? Text('exportlogstostorge'.tr)
                     : Text('nolog'.tr),
-                onTap: spc.logExisted.value ? _outputLogFile : null,
+                onTap: c.logExisted.value ? _outputLogFile : null,
               ),
               ListTile(
                 title: Text(
                   'clearlogs'.tr,
                 ),
-                subtitle: spc.logExisted.value
+                subtitle: c.logExisted.value
                     ? Text('clearstoredlogs'.tr)
                     : Text('nolog'.tr),
-                onTap: spc.logExisted.value ? _cleanLogFile : null,
+                onTap: c.logExisted.value ? _cleanLogFile : null,
               ),
               ListTile(
                 subtitle: Text(
@@ -752,17 +791,17 @@ class SettingPage extends StatelessWidget {
                 title: Text(
                   'themefollowsystem'.tr,
                 ),
-                value: spc.themeFollowSystem.value,
+                value: c.themeFollowSystem.value,
                 onChanged: (bool? value) {
                   if (value!)
                     Get.changeThemeMode(ThemeMode.system);
                   else {
-                    if (spc.useDarkTheme.value)
+                    if (c.useDarkTheme.value)
                       Get.changeThemeMode(ThemeMode.dark);
                     else
                       Get.changeThemeMode(ThemeMode.light);
                   }
-                  spc.themeFollowSystem.value = value;
+                  c.themeFollowSystem.value = value;
                   prefs.write('themeFollowSystem', value);
                 },
               ),
@@ -770,15 +809,15 @@ class SettingPage extends StatelessWidget {
                 title: Text(
                   'usedarktheme'.tr,
                 ),
-                value: spc.useDarkTheme.value,
-                onChanged: spc.themeFollowSystem.value
+                value: c.useDarkTheme.value,
+                onChanged: c.themeFollowSystem.value
                     ? null
                     : (bool? value) {
                         if (value!)
                           Get.changeThemeMode(ThemeMode.dark);
                         else
                           Get.changeThemeMode(ThemeMode.light);
-                        spc.useDarkTheme.value = value;
+                        c.useDarkTheme.value = value;
                         prefs.write('useDarkTheme', value);
                       },
               ),
@@ -800,11 +839,11 @@ class SettingPage extends StatelessWidget {
                   'requestlocationpermission'.tr,
                 ),
                 subtitle: Text(
-                  spc.locatePermissionStatus.value.isGranted
+                  c.locatePermissionStatus.value.isGranted
                       ? 'locationpermissiongranted'.tr
                       : 'locationpermissionneeded'.tr,
                 ),
-                onTap: spc.locatePermissionStatus.value.isGranted
+                onTap: c.locatePermissionStatus.value.isGranted
                     ? null
                     : _requestLocationPermission,
               ),

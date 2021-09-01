@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:campnavi/controller/maincontroller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart';
@@ -8,8 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:campnavi/global/global.dart';
 import 'package:campnavi/model/edge.dart';
 import 'package:campnavi/model/building.dart';
-import 'package:campnavi/controller/settingpagecontroller.dart';
-import 'package:campnavi/controller/homepagecontroller.dart';
 
 ///导航工具类
 class NaviUtil {
@@ -22,8 +21,7 @@ class NaviUtil {
   };
 
   ///导航道路，传入dijstra得到的route和某校区点集，返回直线
-  static void displayRoute(
-      List<int> path, int campusNum, HomePageController hpc) {
+  static void displayRoute(List<int> path, int campusNum, MainController c) {
     List<List<Edge>> edgevertex = mapData.getAdjacentMatrix(campusNum);
     List<LatLng> listvertex = mapData[campusNum].listVertex;
     for (int i = 0; i < path.length - 1; ++i) {
@@ -34,19 +32,19 @@ class NaviUtil {
         capType: CapType.arrow,
         joinType: JoinType.round,
       );
-      hpc.mapPolylines.add(polyline);
+      c.mapPolylines.add(polyline);
     }
   }
 
   ///传入两点（建筑点和路径点），返回虚线
-  static void entryRoute(LatLng from, LatLng to, HomePageController hpc) {
+  static void entryRoute(LatLng from, LatLng to, MainController c) {
     Polyline polyline = Polyline(
       points: <LatLng>[from, to],
       dashLineType: DashLineType.square,
       capType: CapType.arrow,
       joinType: JoinType.round,
     );
-    hpc.mapPolylines.add(polyline);
+    c.mapPolylines.add(polyline);
   }
 
   ///生成一个以某点为中心的近似圆
@@ -69,10 +67,9 @@ class NaviUtil {
   }
 
   ///检查定位是否正常，检查定位权限和用户坐标，如果没有定位权限或者用户位置时间戳为0则提示
-  static bool stateLocationReqiurement(
-      SettingPageController spc, HomePageController hpc) {
+  static bool stateLocationReqiurement(MainController c) {
     ///用户关闭了定位开关
-    if (!spc.locateEnabled.value) {
+    if (!c.locateEnabled.value) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('使用本功能需要打开定位开关。'),
@@ -80,7 +77,7 @@ class NaviUtil {
           TextButton(
             child: Text('ok'.tr),
             onPressed: () {
-              spc.locateEnabled.value = true;
+              c.locateEnabled.value = true;
               prefs.write('locateEnabled', true);
               Get.back();
             },
@@ -95,7 +92,7 @@ class NaviUtil {
     }
 
     ///没有定位权限，提示用户授予权限
-    if (!spc.locatePermissionStatus.value.isGranted) {
+    if (!c.locatePermissionStatus.value.isGranted) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('欲使用此功能，请授予定位权限。'),
@@ -107,7 +104,7 @@ class NaviUtil {
           TextButton(
             child: Text('ok'.tr),
             onPressed: () async {
-              spc.locatePermissionStatus.value =
+              c.locatePermissionStatus.value =
                   await Permission.location.request();
               Get.back();
             },
@@ -118,7 +115,7 @@ class NaviUtil {
     }
 
     ///定位不正常（时间time为0），提示用户打开定位开关
-    else if (hpc.userLocation.value.time == 0) {
+    else if (c.userLocation.value.time == 0) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('未开启系统定位开关，或者系统定位出错。'),

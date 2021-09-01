@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:campnavi/controller/maincontroller.dart';
 import 'package:campnavi/page/searchpage.dart';
 import 'package:campnavi/page/settingpage.dart';
 import 'package:get/get.dart';
@@ -14,25 +15,20 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:campnavi/model/building.dart';
 import 'package:campnavi/model/naviloc.dart';
 import 'package:campnavi/model/bustimetable.dart';
-import 'package:campnavi/controller/homepagecontroller.dart';
-import 'package:campnavi/controller/settingpagecontroller.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({Key key = const Key('main')}) : super(key: key);
 
-  static HomePageController hpc =
-      Get.put<HomePageController>(HomePageController(), permanent: true);
-
-  static SettingPageController spc =
-      Get.put<SettingPageController>(SettingPageController(), permanent: true);
+  static MainController c =
+      Get.put<MainController>(MainController(), permanent: true);
 
   ///地图点击回调函数，检测被点击处是否在任何校区内，在则显示一个标志，不在则弹窗提示
   void _onMapTapped(LatLng taplocation) async {
     if (mapData.locationInCampus(taplocation) >= 0) {
-      hpc.mapMarkers['onTap'] =
+      c.mapMarkers['onTap'] =
           Marker(position: taplocation, onTap: _onTapMarkerTapped);
     } else {
-      Get.dialog(AlertDialog(
+      /*Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('cnotincampus'.tr),
         actions: <Widget>[
@@ -41,7 +37,9 @@ class HomePage extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
         ],
-      ));
+      ));*/
+      Get.snackbar('tip'.tr, 'cnotincampus'.tr,
+          snackPosition: SnackPosition.BOTTOM);
     }
   }
 
@@ -57,19 +55,19 @@ class HomePage extends StatelessWidget {
         ),
         TextButton(
           child: Text('startpoint'.tr),
-          onPressed: hpc.startOnUserLoc.value
+          onPressed: c.startOnUserLoc.value
               ? null
               : () {
-                  _addStartLocation(hpc.mapMarkers['onTap']!.position);
-                  hpc.mapMarkers.remove('onTap');
+                  _addStartLocation(c.mapMarkers['onTap']!.position);
+                  c.mapMarkers.remove('onTap');
                   Get.back(result: true);
                 },
         ),
         TextButton(
           child: Text('endpoint'.tr),
           onPressed: () {
-            _addEndLocation(hpc.mapMarkers['onTap']!.position);
-            hpc.mapMarkers.remove('onTap');
+            _addEndLocation(c.mapMarkers['onTap']!.position);
+            c.mapMarkers.remove('onTap');
             Get.back(result: true);
           },
         ),
@@ -79,9 +77,9 @@ class HomePage extends StatelessWidget {
 
   ///从地图上添加坐标形式的起点
   void _addStartLocation(LatLng location) {
-    hpc.start.clear();
-    hpc.start.add(location);
-    hpc.mapMarkers['start'] = Marker(
+    c.start.clear();
+    c.start.add(location);
+    c.mapMarkers['start'] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
       onTap: (_) => _onStartMarkerTapped(),
@@ -90,9 +88,9 @@ class HomePage extends StatelessWidget {
 
   ///从地图上添加坐标形式的终点
   void _addEndLocation(LatLng location) {
-    hpc.end.add(location);
+    c.end.add(location);
     String tmpid = 'end' + location.hashCode.toString();
-    hpc.mapMarkers[tmpid] = Marker(
+    c.mapMarkers[tmpid] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
       onTap: (_) => _onEndMarkerTapped(tmpid),
@@ -112,8 +110,8 @@ class HomePage extends StatelessWidget {
         TextButton(
           child: Text('ok'.tr),
           onPressed: () {
-            hpc.start.clear();
-            hpc.mapMarkers.remove('start');
+            c.start.clear();
+            c.mapMarkers.remove('start');
             Get.back();
           },
         ),
@@ -134,8 +132,8 @@ class HomePage extends StatelessWidget {
         TextButton(
           child: Text('ok'.tr),
           onPressed: () {
-            hpc.end.remove(hpc.mapMarkers[markerid]!.position);
-            hpc.mapMarkers.remove(markerid);
+            c.end.remove(c.mapMarkers[markerid]!.position);
+            c.mapMarkers.remove(markerid);
             Get.back();
           },
         ),
@@ -159,13 +157,13 @@ class HomePage extends StatelessWidget {
   ///如果没有下一条路线，或者下一条路线是当前路线的折返时最后一个判断条件不生效。
   void _onLocationChanged(AMapLocation aMapLocation) async {
     //记录用户位置。
-    hpc.userLocation.value = aMapLocation;
+    c.userLocation.value = aMapLocation;
     //判断是否在进行实时导航，位置信息是否正确
-    if (hpc.naviStatus.value &&
-        hpc.realTime.value &&
-        hpc.userLocation.value.time != 0) {
+    if (c.naviStatus.value &&
+        c.realTime.value &&
+        c.userLocation.value.time != 0) {
       //导航路线列表空了，说明已到达目的地。
-      if (hpc.mapPolylines.isEmpty) {
+      if (c.mapPolylines.isEmpty) {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
           content: Text('arrive'.tr),
@@ -176,39 +174,39 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ));
-        if (spc.logEnabled.value)
+        if (c.logEnabled.value)
           logSink.write(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。\n');
-        hpc.naviStatus.value = false;
-        hpc.routeLength.value = 0;
+        c.naviStatus.value = false;
+        c.routeLength.value = 0;
       } else {
         //判断是否偏移路线，是否已经走过一条路线
-        LatLng depaLatLng = hpc.mapPolylines.first.points.first;
-        LatLng destLatLng = hpc.mapPolylines.first.points.last;
+        LatLng depaLatLng = c.mapPolylines.first.points.first;
+        LatLng destLatLng = c.mapPolylines.first.points.last;
         double polylineLength =
             AMapTools.distanceBetween(depaLatLng, destLatLng);
-        double distanceDepa = AMapTools.distanceBetween(
-            hpc.userLocation.value.latLng, depaLatLng);
-        double distanceDest = AMapTools.distanceBetween(
-            hpc.userLocation.value.latLng, destLatLng);
+        double distanceDepa =
+            AMapTools.distanceBetween(c.userLocation.value.latLng, depaLatLng);
+        double distanceDest =
+            AMapTools.distanceBetween(c.userLocation.value.latLng, destLatLng);
         double distancetoLine = (2 *
                 AMapTools.calculateArea(<LatLng>[
-                  hpc.userLocation.value.latLng,
+                  c.userLocation.value.latLng,
                   depaLatLng,
                   destLatLng
                 ])) /
             polylineLength;
         double nextLength = 114514;
         double distanceNextDest = 1919810;
-        if (hpc.mapPolylines.length > 1) {
-          LatLng destNextLatLng = hpc.mapPolylines[1].points.last;
+        if (c.mapPolylines.length > 1) {
+          LatLng destNextLatLng = c.mapPolylines[1].points.last;
           if (depaLatLng != destNextLatLng) {
             nextLength = AMapTools.distanceBetween(destLatLng, destNextLatLng);
             distanceNextDest = AMapTools.distanceBetween(
-                hpc.userLocation.value.latLng, destNextLatLng);
+                c.userLocation.value.latLng, destNextLatLng);
           }
         }
         if (distancetoLine > 40 || (distanceDest > polylineLength + 25)) {
-          if (mapData.locationInCampus(hpc.userLocation.value.latLng) ==
+          if (mapData.locationInCampus(c.userLocation.value.latLng) ==
               mapData.locationInCampus(destLatLng)) {
             /*Get.dialog(AlertDialog(
               title: Text('tip'.tr),
@@ -220,17 +218,18 @@ class HomePage extends StatelessWidget {
                 ),
               ],
             ));*/
-            Get.snackbar('tip'.tr, 'rr'.tr);
-            if (spc.logEnabled.value)
+            Get.snackbar('tip'.tr, 'rr'.tr,
+                snackPosition: SnackPosition.BOTTOM);
+            if (c.logEnabled.value)
               logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
             await _showRoute();
           }
         } else if (distanceDest < 5 ||
             (distanceDepa > polylineLength + 5) ||
             distanceNextDest < nextLength) {
-          if (spc.logEnabled.value)
+          if (c.logEnabled.value)
             logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
-          hpc.mapPolylines.removeAt(0);
+          c.mapPolylines.removeAt(0);
         }
       }
     }
@@ -251,8 +250,8 @@ class HomePage extends StatelessWidget {
         child: ListTile(
           title: Text('curlocation'.tr),
           onTap: () {
-            if (NaviUtil.stateLocationReqiurement(spc, hpc)) {
-              newLocation = hpc.userLocation.value.latLng;
+            if (NaviUtil.stateLocationReqiurement(c)) {
+              newLocation = c.userLocation.value.latLng;
               Get.back(result: true);
             }
           },
@@ -286,7 +285,7 @@ class HomePage extends StatelessWidget {
           ],
         )) ??
         false) {
-      await hpc.mapController?.value.moveCamera(
+      await c.mapController?.value.moveCamera(
           CameraUpdate.newLatLngZoom(newLocation, DEFAULT_ZOOM),
           duration: 500);
     }
@@ -307,10 +306,10 @@ class HomePage extends StatelessWidget {
   ///定位权限申请函数
   void _requestLocationPermission() async {
     //申请位置权限
-    spc.locatePermissionStatus.value = await Permission.location.status;
-    if (!spc.locateEnabled.value) return;
+    c.locatePermissionStatus.value = await Permission.location.status;
+    if (!c.locateEnabled.value) return;
     //用户拒绝则弹窗提示
-    if (!spc.locatePermissionStatus.value.isGranted) {
+    if (!c.locatePermissionStatus.value.isGranted) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('needlocationpermission'.tr),
@@ -323,7 +322,7 @@ class HomePage extends StatelessWidget {
             child: Text('ok'.tr),
             onPressed: () async {
               Get.back();
-              spc.locatePermissionStatus.value =
+              c.locatePermissionStatus.value =
                   await Permission.location.request();
             },
           ),
@@ -338,67 +337,67 @@ class HomePage extends StatelessWidget {
   Future<bool> _managehpc() async {
     return await Get.dialog(
           AlertDialog(
-            title: Text('导航'),
+            title: Text('navi'.tr),
             content: SingleChildScrollView(
               child: Obx(() {
                 late Card startWidget;
-                if (hpc.startOnUserLoc.value) {
+                if (c.startOnUserLoc.value) {
                   startWidget = Card(
                     child: ListTile(
                       title: Text('curlocation'.tr),
                     ),
                   );
-                } else if (hpc.start.isEmpty) {
+                } else if (c.start.isEmpty) {
                   startWidget = Card(
                     child: ListTile(
                       title: Text('nostartset'.tr),
                     ),
                   );
-                } else if (hpc.start.first.runtimeType == LatLng) {
+                } else if (c.start.first.runtimeType == LatLng) {
                   startWidget = Card(
                     child: ListTile(
                       title: Text('cordi'.tr +
-                          '${hpc.start.first!.longitude}\n${hpc.start.first!.latitude}'),
+                          '\n${c.start.first!.longitude}\n${c.start.first!.latitude}'),
                       onTap: () {
-                        hpc.start.clear();
-                        hpc.mapMarkers.remove('start');
+                        c.start.clear();
+                        c.mapMarkers.remove('start');
                       },
                     ),
                   );
-                } else if (hpc.start.first.runtimeType == Building) {
+                } else if (c.start.first.runtimeType == Building) {
                   startWidget = Card(
                     child: ListTile(
                       title: Text(
-                          'bu'.tr + '${hpc.start.first!.description.first}'),
+                          'bu'.tr + '\n${c.start.first!.description.first}'),
                       onTap: () {
-                        hpc.start.clear();
-                        hpc.mapMarkers.remove('start');
+                        c.start.clear();
+                        c.mapMarkers.remove('start');
                       },
                     ),
                   );
                 }
                 late Widget endWidget;
                 List<Widget> inColumn = [];
-                hpc.end.forEach((element) {
+                c.end.forEach((element) {
                   inColumn.add(element.runtimeType == LatLng
                       ? Card(
                           child: ListTile(
                             title: Text('cordi'.tr +
-                                '${element.longitude}\n${element.latitude}'),
+                                '\n${element.longitude}\n${element.latitude}'),
                             onTap: () {
-                              hpc.end.remove(element);
-                              hpc.mapMarkers
+                              c.end.remove(element);
+                              c.mapMarkers
                                   .remove('end' + element.hashCode.toString());
                             },
                           ),
                         )
                       : Card(
                           child: ListTile(
-                            title:
-                                Text('bu'.tr + '${element.description.first}'),
+                            title: Text(
+                                'bu'.tr + '\n${element.description.first}'),
                             onTap: () {
-                              hpc.end.remove(element);
-                              hpc.mapMarkers
+                              c.end.remove(element);
+                              c.mapMarkers
                                   .remove('end' + element.hashCode.toString());
                             },
                           ),
@@ -418,19 +417,19 @@ class HomePage extends StatelessWidget {
                   children: <Widget>[
                     startWidget,
                     SwitchListTile(
-                        value: hpc.startOnUserLoc.value,
+                        value: c.startOnUserLoc.value,
                         title: Text('startcur'.tr),
                         onChanged: (state) {
-                          hpc.startOnUserLoc.value = state;
-                          if (!state) hpc.realTime.value = state;
-                          hpc.start.clear();
-                          hpc.mapMarkers.remove('start');
+                          c.startOnUserLoc.value = state;
+                          if (!state) c.realTime.value = state;
+                          c.start.clear();
+                          c.mapMarkers.remove('start');
                         }),
                     SwitchListTile(
-                      value: hpc.realTime.value,
+                      value: c.realTime.value,
                       title: Text('nirt'.tr),
-                      onChanged: hpc.startOnUserLoc.value
-                          ? (state) => hpc.realTime.value = state
+                      onChanged: c.startOnUserLoc.value
+                          ? (state) => c.realTime.value = state
                           : null,
                     ),
                     LimitedBox(
@@ -443,30 +442,30 @@ class HomePage extends StatelessWidget {
                       icon: Icon(Icons.delete),
                       label: Text('clearall'.tr),
                       onPressed: () {
-                        hpc.start.clear();
-                        hpc.end.clear();
-                        hpc.mapMarkers
+                        c.start.clear();
+                        c.end.clear();
+                        c.mapMarkers
                             .removeWhere((key, value) => key != ('onTap'));
                       },
                     ),
                     SwitchListTile(
-                      value: hpc.onbike.value,
+                      value: c.onbike.value,
                       title: Text('bikeallow'.tr),
-                      onChanged: (state) => hpc.onbike.value = state,
+                      onChanged: (state) => c.onbike.value = state,
                     ),
                     SwitchListTile(
-                      value: hpc.minTime.value,
+                      value: c.minTime.value,
                       title: Text('shortesttime'.tr),
                       onChanged: (state) {
-                        hpc.minTime.value = state;
-                        if (!state) hpc.crowding.value = state;
+                        c.minTime.value = state;
+                        if (!state) c.crowding.value = state;
                       },
                     ),
                     SwitchListTile(
-                      value: hpc.crowding.value,
+                      value: c.crowding.value,
                       title: Text('crowding'.tr),
-                      onChanged: hpc.minTime.value
-                          ? (state) => hpc.crowding.value = state
+                      onChanged: c.minTime.value
+                          ? (state) => c.crowding.value = state
                           : null,
                     ),
                     Text(
@@ -486,9 +485,9 @@ class HomePage extends StatelessWidget {
               Obx(
                 () => TextButton(
                   child: Text('stop'.tr),
-                  onPressed: hpc.naviStatus.value
+                  onPressed: c.naviStatus.value
                       ? () {
-                          hpc.naviStatus.value = false;
+                          c.naviStatus.value = false;
                           Get.back(result: true);
                         }
                       : null,
@@ -497,14 +496,13 @@ class HomePage extends StatelessWidget {
               Obx(
                 () => TextButton(
                   child: Text('start'.tr),
-                  onPressed:
-                      (hpc.startOnUserLoc.value || hpc.start.isNotEmpty) &&
-                              hpc.end.isNotEmpty
-                          ? () {
-                              hpc.naviStatus.value = true;
-                              Get.back(result: true);
-                            }
-                          : null,
+                  onPressed: (c.startOnUserLoc.value || c.start.isNotEmpty) &&
+                          c.end.isNotEmpty
+                      ? () {
+                          c.naviStatus.value = true;
+                          Get.back(result: true);
+                        }
+                      : null,
                 ),
               ),
             ],
@@ -521,40 +519,40 @@ class HomePage extends StatelessWidget {
   ///短时间策略则确保交通耗时最短。
   Future<void> _showRoute() async {
     //清空线列表和路线长度
-    hpc.mapPolylines.clear();
-    hpc.routeLength.value = 0;
+    c.mapPolylines.clear();
+    c.routeLength.value = 0;
     //检查导航状态，为开始时绘制路线
-    if (hpc.naviStatus.value) {
+    if (c.naviStatus.value) {
       //导航开始时的日期时间，用于智能选择校区间导航方法
       DateTime routeBeginTime = DateTime.now();
-      if (spc.logEnabled.value) {
+      if (c.logEnabled.value) {
         logSink.write(routeBeginTime.toString() + ': 开始导航，开始计算路线。\n');
         logSink.write(DateTime.now().toString() +
             ': ' +
             '实时导航' +
-            (hpc.realTime.value ? '开启' : '关闭') +
+            (c.realTime.value ? '开启' : '关闭') +
             '\t骑车' +
-            (hpc.onbike.value ? '开启' : '关闭') +
+            (c.onbike.value ? '开启' : '关闭') +
             '。\n');
         logSink.write(DateTime.now().toString() +
             ': ' +
             '最短时间' +
-            (hpc.minTime.value ? '开启' : '关闭') +
+            (c.minTime.value ? '开启' : '关闭') +
             '\t拥挤度' +
-            (hpc.crowding.value ? '开启' : '关闭') +
+            (c.crowding.value ? '开启' : '关闭') +
             '。\n');
       }
       //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
-      if (hpc.startOnUserLoc.value) {
-        if (NaviUtil.stateLocationReqiurement(spc, hpc)) {
+      if (c.startOnUserLoc.value) {
+        if (NaviUtil.stateLocationReqiurement(c)) {
           int startCampus =
-              mapData.locationInCampus(hpc.userLocation.value.latLng);
+              mapData.locationInCampus(c.userLocation.value.latLng);
           if (startCampus >= 0) {
-            hpc.start.add(hpc.userLocation.value.latLng);
-            if (spc.logEnabled.value)
+            c.start.add(c.userLocation.value.latLng);
+            if (c.logEnabled.value)
               logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
           } else {
-            Get.dialog(AlertDialog(
+            /*Get.dialog(AlertDialog(
               title: Text('tip'.tr),
               content: Text('notincampus'.tr),
               actions: <Widget>[
@@ -563,25 +561,27 @@ class HomePage extends StatelessWidget {
                   onPressed: () => Get.back(),
                 ),
               ],
-            ));
-            if (spc.logEnabled.value)
+            ));*/
+            Get.snackbar('tip'.tr, 'notincampus'.tr,
+                snackPosition: SnackPosition.BOTTOM);
+            if (c.logEnabled.value)
               logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止导航。\n');
-            hpc.naviStatus.value = false;
+            c.naviStatus.value = false;
             return;
           }
         } else {
-          if (spc.logEnabled.value)
+          if (c.logEnabled.value)
             logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。\n');
-          hpc.naviStatus.value = false;
+          c.naviStatus.value = false;
           return;
         }
       }
-      if (spc.logEnabled.value)
+      if (c.logEnabled.value)
         logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
       try {
         //排序所用新列表
-        List naviOrder = [hpc.start.first];
-        naviOrder.addAll(hpc.end);
+        List naviOrder = [c.start.first];
+        naviOrder.addAll(c.end);
         //终点集合中，坐标以其本身，建筑以特征坐标，按直线距离顺序排序
         for (int i = 0; i < naviOrder.length - 2; ++i) {
           int nextEnd = i + 1;
@@ -601,11 +601,9 @@ class HomePage extends StatelessWidget {
             naviOrder[nextEnd] = tmp;
           }
         }
-        int transmethod = hpc.onbike.value ? 1 : 0;
-        hpc.crowding.value
-            ? mapData.randomCrowding()
-            : mapData.disableCrowding();
-        if (spc.logEnabled.value) {
+        int transmethod = c.onbike.value ? 1 : 0;
+        c.crowding.value ? mapData.randomCrowding() : mapData.disableCrowding();
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 完成目的地排序。\n');
           naviOrder.forEach((element) {
             logSink.write(DateTime.now().toString() +
@@ -630,8 +628,8 @@ class HomePage extends StatelessWidget {
             int nearVertex = mapData.nearestVertex(campusNum, realLatLng);
             juncLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
             juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
-                    (hpc.onbike.value ? BIKESPEED : 1)) /
-                (hpc.crowding.value ? 1 - Random().nextDouble() : 1);
+                    (c.onbike.value ? BIKESPEED : 1)) /
+                (c.crowding.value ? 1 - Random().nextDouble() : 1);
             curNaviLoc = NaviLoc(campusNum, nearVertex, naviOrder[i]);
           } else if (naviOrder[i].runtimeType == Building) {
             Building curBuilding = naviOrder[i] as Building;
@@ -655,8 +653,8 @@ class HomePage extends StatelessWidget {
             int juncVertex = curBuilding.juncpoint[choosedDoor];
             juncLatLng = mapData.getVertexLatLng(campusNum, juncVertex);
             juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
-                    (hpc.onbike.value ? BIKESPEED : 1)) /
-                (hpc.crowding.value ? 1 - Random().nextDouble() : 1);
+                    (c.onbike.value ? BIKESPEED : 1)) /
+                (c.crowding.value ? 1 - Random().nextDouble() : 1);
             curNaviLoc = NaviLoc(campusNum, juncVertex, realLatLng);
           }
           naviOrder[i] = curNaviLoc;
@@ -672,9 +670,9 @@ class HomePage extends StatelessWidget {
                     startVertex.vertexNum,
                     endVertex.vertexNum,
                     transmethod);
-                hpc.routeLength.value += path.getRelativeLen();
+                c.routeLength.value += path.getRelativeLen();
                 NaviUtil.displayRoute(
-                    path.getRoute(), startVertex.campusNum, hpc);
+                    path.getRoute(), startVertex.campusNum, c);
               }
             } //跨校区
             else {
@@ -727,10 +725,10 @@ class HomePage extends StatelessWidget {
                 routePublicTransEnd = endGatePath.getRoute();
               }
               DateTime timeAtGetOnPubTrans = routeBeginTime.add(Duration(
-                seconds: (hpc.routeLength + lengthPublicTransStart).toInt(),
+                seconds: (c.routeLength + lengthPublicTransStart).toInt(),
               ));
               DateTime timeAtGetOnSchoolBus = routeBeginTime.add(Duration(
-                  seconds: (hpc.routeLength + lengthSchoolBusStart).toInt()));
+                  seconds: (c.routeLength + lengthSchoolBusStart).toInt()));
               List bestPubTrans = mapData.getBestTimeTable(
                   startVertex.campusNum,
                   endVertex.campusNum,
@@ -746,62 +744,58 @@ class HomePage extends StatelessWidget {
               String startCampusName = mapData[startVertex.campusNum].name;
               String endCampusName = mapData[endVertex.campusNum].name;
               if (bestPubTrans.isEmpty && bestSchoolBus.isNotEmpty) {
-                hpc.routeLength.value += (lengthSchoolBusStart +
+                c.routeLength.value += (lengthSchoolBusStart +
                     lengthSchoolBusEnd +
-                    (hpc.minTime.value ? (bestSchoolBus.last as int) * 60 : 0));
+                    (c.minTime.value ? (bestSchoolBus.last as int) * 60 : 0));
                 if (routeSchoolBusStart.isNotEmpty)
                   NaviUtil.displayRoute(
-                      routeSchoolBusStart, startVertex.campusNum, hpc);
+                      routeSchoolBusStart, startVertex.campusNum, c);
                 if (routeSchoolBusEnd.isNotEmpty)
                   NaviUtil.displayRoute(
-                      routeSchoolBusEnd, endVertex.campusNum, hpc);
+                      routeSchoolBusEnd, endVertex.campusNum, c);
                 toPrint = (bestSchoolBus.first as BusTimeTable).description;
               } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
-                hpc.routeLength.value += (lengthPublicTransStart +
+                c.routeLength.value += (lengthPublicTransStart +
                     lengthPublicTransEnd +
-                    (hpc.minTime.value ? (bestPubTrans.last as int) * 60 : 0));
+                    (c.minTime.value ? (bestPubTrans.last as int) * 60 : 0));
                 if (routePublicTransStart.isNotEmpty)
                   NaviUtil.displayRoute(
-                      routePublicTransStart, startVertex.campusNum, hpc);
+                      routePublicTransStart, startVertex.campusNum, c);
                 if (routePublicTransEnd.isNotEmpty)
                   NaviUtil.displayRoute(
-                      routePublicTransEnd, endVertex.campusNum, hpc);
+                      routePublicTransEnd, endVertex.campusNum, c);
                 toPrint = (bestPubTrans.first as BusTimeTable).description;
               } else {
                 if ((lengthSchoolBusStart +
                         lengthSchoolBusEnd +
-                        (hpc.minTime.value
+                        (c.minTime.value
                             ? (bestSchoolBus.last as int) * 60
                             : 0)) >
                     (lengthPublicTransStart +
                         lengthPublicTransEnd +
-                        (hpc.minTime.value
+                        (c.minTime.value
                             ? (bestPubTrans.last as int) * 60
                             : 0))) {
-                  hpc.routeLength.value += (lengthPublicTransStart +
+                  c.routeLength.value += (lengthPublicTransStart +
                       lengthPublicTransEnd +
-                      (hpc.minTime.value
-                          ? (bestPubTrans.last as int) * 60
-                          : 0));
+                      (c.minTime.value ? (bestPubTrans.last as int) * 60 : 0));
                   if (routePublicTransStart.isNotEmpty)
                     NaviUtil.displayRoute(
-                        routePublicTransStart, startVertex.campusNum, hpc);
+                        routePublicTransStart, startVertex.campusNum, c);
                   if (routePublicTransEnd.isNotEmpty)
                     NaviUtil.displayRoute(
-                        routePublicTransEnd, endVertex.campusNum, hpc);
+                        routePublicTransEnd, endVertex.campusNum, c);
                   toPrint = (bestPubTrans.first as BusTimeTable).description;
                 } else {
-                  hpc.routeLength.value += (lengthSchoolBusStart +
+                  c.routeLength.value += (lengthSchoolBusStart +
                       lengthSchoolBusEnd +
-                      (hpc.minTime.value
-                          ? (bestSchoolBus.last as int) * 60
-                          : 0));
+                      (c.minTime.value ? (bestSchoolBus.last as int) * 60 : 0));
                   if (routeSchoolBusStart.isNotEmpty)
                     NaviUtil.displayRoute(
-                        routeSchoolBusStart, startVertex.campusNum, hpc);
+                        routeSchoolBusStart, startVertex.campusNum, c);
                   if (routeSchoolBusEnd.isNotEmpty)
                     NaviUtil.displayRoute(
-                        routeSchoolBusEnd, endVertex.campusNum, hpc);
+                        routeSchoolBusEnd, endVertex.campusNum, c);
                   toPrint = (bestSchoolBus.first as BusTimeTable).description;
                 }
               }
@@ -825,20 +819,20 @@ class HomePage extends StatelessWidget {
           }
           //该点不是终点，绘制其与连接点间的虚线
           if (i != naviOrder.length - 1) {
-            NaviUtil.entryRoute(realLatLng, juncLatLng, hpc);
-            hpc.routeLength.value += juncLength;
+            NaviUtil.entryRoute(realLatLng, juncLatLng, c);
+            c.routeLength.value += juncLength;
           }
           //该点不是起点，绘制连接点与其之间的虚线
           if (i != 0) {
-            NaviUtil.entryRoute(juncLatLng, realLatLng, hpc);
-            hpc.routeLength.value += juncLength;
+            NaviUtil.entryRoute(juncLatLng, realLatLng, c);
+            c.routeLength.value += juncLength;
           }
         }
-        if (spc.logEnabled.value)
+        if (c.logEnabled.value)
           logSink
               .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
       } catch (_) {
-        Get.dialog(AlertDialog(
+        /*Get.dialog(AlertDialog(
           title: Text('tip'.tr),
           content: Text('mapdataerr'.tr),
           actions: <Widget>[
@@ -847,16 +841,18 @@ class HomePage extends StatelessWidget {
               onPressed: () => Get.back(),
             ),
           ],
-        ));
-        if (spc.logEnabled.value)
+        ));*/
+        Get.snackbar('tip'.tr, 'mapdataerr'.tr,
+            snackPosition: SnackPosition.BOTTOM);
+        if (c.logEnabled.value)
           logSink.write(DateTime.now().toString() + ': 未找到路线。停止导航。\n');
         //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
-        hpc.naviStatus.value = false;
-        hpc.mapPolylines.clear();
-        hpc.routeLength.value = 0;
+        c.naviStatus.value = false;
+        c.mapPolylines.clear();
+        c.routeLength.value = 0;
       }
     } else {
-      if (spc.logEnabled.value)
+      if (c.logEnabled.value)
         logSink.write(DateTime.now().toString() + ': 停止导航。\n');
     }
   }
@@ -882,7 +878,7 @@ class HomePage extends StatelessWidget {
                   apiKey: amapApiKeys,
                   //创建地图回调函数，获得controller。
                   onMapCreated: (controller) =>
-                      hpc.mapController = controller.obs,
+                      c.mapController = controller.obs,
                   //地图初始视角
                   initialCameraPosition: CameraPosition(
                     bearing: prefs.read<double>('lastCamPositionbearing') ?? 0,
@@ -895,38 +891,37 @@ class HomePage extends StatelessWidget {
                   //地图点击回调函数
                   onTap: _onMapTapped,
                   //地图视角移动回调函数，移除点击添加的标志。
-                  onCameraMove: (_) => hpc.mapMarkers.remove('onTap'),
+                  onCameraMove: (_) => c.mapMarkers.remove('onTap'),
                   //地图视角移动结束回调函数
                   onCameraMoveEnd: _onCameraMoveEnd,
                   //用户位置移动回调函数
                   onLocationChanged: _onLocationChanged,
                   //开启指南针
-                  compassEnabled: spc.compassEnabled.value,
+                  compassEnabled: c.compassEnabled.value,
                   //开启显示用户位置功能
                   myLocationStyleOptions:
-                      MyLocationStyleOptions(spc.locateEnabled.value),
+                      MyLocationStyleOptions(c.locateEnabled.value),
                   //地图类型，使用卫星地图
-                  mapType: spc.preferMapType.value,
+                  mapType: c.preferMapType.value,
                   //地图上的标志
-                  markers: Set<Marker>.of(hpc.mapMarkers.values),
+                  markers: Set<Marker>.of(c.mapMarkers.values),
                   //地图上的线
-                  polylines: Set<Polyline>.of(hpc.mapPolylines),
+                  polylines: Set<Polyline>.of(c.mapPolylines),
                 ),
               ),
               Obx(
                 () => Visibility(
-                  visible: hpc.naviStatus.value,
+                  visible: c.naviStatus.value,
                   child: Positioned(
                     left: 18.0,
                     child: Chip(
-                        label: Text(hpc.minTime.value
+                        label: Text(c.minTime.value
                             ? 'about'.tr +
-                                (hpc.routeLength.value / 60)
-                                    .toStringAsFixed(0) +
+                                (c.routeLength.value / 60).toStringAsFixed(0) +
                                 'min'.tr
                             : 'about'.tr +
-                                (hpc.routeLength.value /
-                                        (hpc.onbike.value ? BIKESPEED : 1))
+                                (c.routeLength.value /
+                                        (c.onbike.value ? BIKESPEED : 1))
                                     .toStringAsFixed(0) +
                                 'm'.tr)),
                   ),
@@ -965,12 +960,10 @@ class HomePage extends StatelessWidget {
       floatingActionButton: Obx(() => FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: _setNavigation,
-            tooltip: 'navi'.tr +
-                ' ' +
-                (hpc.naviStatus.value ? 'start'.tr : 'stop'.tr),
-            child: hpc.naviStatus.value
-                ? Icon(Icons.stop)
-                : Icon(Icons.play_arrow),
+            tooltip:
+                'navi'.tr + ' ' + (c.naviStatus.value ? 'stop'.tr : 'start'.tr),
+            child:
+                c.naviStatus.value ? Icon(Icons.stop) : Icon(Icons.play_arrow),
           )),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
