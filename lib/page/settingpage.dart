@@ -16,7 +16,7 @@ import 'package:campnavi/controller/maincontroller.dart';
 
 ///设置界面
 class SettingPage extends StatelessWidget {
-  SettingPage({Key key = const Key('setting')}) : super(key: key);
+  const SettingPage({Key key = const Key('setting')}) : super(key: key);
 
   static MainController c = Get.find();
 
@@ -53,9 +53,9 @@ class SettingPage extends StatelessWidget {
 
   ///清除日志文件函数
   void _cleanLogFile() async {
-    if (c.logEnabled.value)
+    if (c.logEnabled.value) {
       await logFile.writeAsString('');
-    else {
+    } else {
       await logFile.delete();
       c.logExisted.value = false;
     }
@@ -83,7 +83,7 @@ class SettingPage extends StatelessWidget {
       await optData.writeAsString(await logFile.readAsString());
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text('logexportsuccess'.tr + '$optFilePath'),
+        content: Text('logexportsuccess'.tr + optFilePath),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -133,7 +133,7 @@ class SettingPage extends StatelessWidget {
       late MapData newData;
       try {
         newData = MapData.fromJson(jsonDecode(await iptFile.readAsString()));
-        if (newData.mapCampus.length == 0) throw '!';
+        if (newData.mapCampus.isEmpty) throw '!';
       } catch (_) {
         /*Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -172,11 +172,12 @@ class SettingPage extends StatelessWidget {
         ],
       ));*/
       Get.snackbar('tip'.tr, '地图数据已成功应用。', snackPosition: SnackPosition.BOTTOM);
-      if (c.logEnabled.value)
+      if (c.logEnabled.value) {
         logSink.write(DateTime.now().toString() +
             ': 导入新地图数据，' +
             pickedFile.files.single.name +
             '。\n');
+      }
     }
   }
 
@@ -186,8 +187,9 @@ class SettingPage extends StatelessWidget {
     Directory applicationDataDir = await getApplicationDocumentsDirectory();
     String customMapDataPath = applicationDataDir.path + '/CustomMapData';
     Directory customMapDataDir = Directory(customMapDataPath);
-    if (!await customMapDataDir.exists())
+    if (!await customMapDataDir.exists()) {
       await customMapDataDir.create(recursive: true);
+    }
     int prefixLength = customMapDataPath.length + 1;
     await Get.dialog(
       StatefulBuilder(
@@ -216,68 +218,72 @@ class SettingPage extends StatelessWidget {
                       mapData = MapData.fromJson(jsonDecode(
                           await rootBundle.loadString('mapdata/default.json')));
                       _setNewMapData();
-                      if (c.logEnabled.value)
+                      if (c.logEnabled.value) {
                         logSink
                             .write(DateTime.now().toString() + ': 应用默认地图数据。\n');
+                      }
                     },
                   ),
                 ],
               )),
             ),
           ));
-          listMapDataFiles.forEach((element) => listMapDataFileChoose.add(Card(
-                child: ListTile(
-                  title: Text(element.path.substring(prefixLength)),
-                  selected: (dataFileDir ?? '') == element.path,
-                  onTap: () => Get.dialog(AlertDialog(
-                    title: Text('tip'.tr),
-                    content: Text('如何处理该地图数据？'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('cancel'.tr),
-                        onPressed: () => Get.back(),
-                      ),
-                      TextButton(
-                        child: Text('删除'),
-                        onPressed: () async {
-                          Get.back();
-                          if ((dataFileDir ?? '') == element.path) {
-                            await prefs.remove('dataFileDir');
-                            mapData = MapData.fromJson(jsonDecode(
-                                await rootBundle
-                                    .loadString('mapdata/default.json')));
-                            _setNewMapData();
-                          }
-                          await element.delete();
-                          _setState(() {});
-                          if (c.logEnabled.value)
-                            logSink.write(DateTime.now().toString() +
-                                ': 删除地图数据' +
-                                element.path.substring(prefixLength) +
-                                '。\n');
-                        },
-                      ),
-                      TextButton(
-                        child: Text('使用'),
-                        onPressed: () async {
-                          Get.back();
-                          prefs.write('dataFileDir', element.path);
-                          _setState(() {});
-                          File mapDataFile = File(element.path);
-                          mapData = MapData.fromJson(
-                              jsonDecode(await mapDataFile.readAsString()));
+          for (FileSystemEntity element in listMapDataFiles) {
+            listMapDataFileChoose.add(Card(
+              child: ListTile(
+                title: Text(element.path.substring(prefixLength)),
+                selected: (dataFileDir ?? '') == element.path,
+                onTap: () => Get.dialog(AlertDialog(
+                  title: Text('tip'.tr),
+                  content: Text('如何处理该地图数据？'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('cancel'.tr),
+                      onPressed: () => Get.back(),
+                    ),
+                    TextButton(
+                      child: Text('删除'),
+                      onPressed: () async {
+                        Get.back();
+                        if ((dataFileDir ?? '') == element.path) {
+                          await prefs.remove('dataFileDir');
+                          mapData = MapData.fromJson(jsonDecode(await rootBundle
+                              .loadString('mapdata/default.json')));
                           _setNewMapData();
-                          if (c.logEnabled.value)
-                            logSink.write(DateTime.now().toString() +
-                                ': 应用地图数据，' +
-                                element.path.substring(prefixLength) +
-                                '。\n');
-                        },
-                      ),
-                    ],
-                  )),
-                ),
-              )));
+                        }
+                        await element.delete();
+                        _setState(() {});
+                        if (c.logEnabled.value) {
+                          logSink.write(DateTime.now().toString() +
+                              ': 删除地图数据' +
+                              element.path.substring(prefixLength) +
+                              '。\n');
+                        }
+                      },
+                    ),
+                    TextButton(
+                      child: Text('使用'),
+                      onPressed: () async {
+                        Get.back();
+                        prefs.write('dataFileDir', element.path);
+                        _setState(() {});
+                        File mapDataFile = File(element.path);
+                        mapData = MapData.fromJson(
+                            jsonDecode(await mapDataFile.readAsString()));
+                        _setNewMapData();
+                        if (c.logEnabled.value) {
+                          logSink.write(DateTime.now().toString() +
+                              ': 应用地图数据，' +
+                              element.path.substring(prefixLength) +
+                              '。\n');
+                        }
+                      },
+                    ),
+                  ],
+                )),
+              ),
+            ));
+          }
           return AlertDialog(
             title: Text('地图数据'),
             content: SingleChildScrollView(
@@ -377,11 +383,12 @@ class SettingPage extends StatelessWidget {
       ));*/
       Get.snackbar('tip'.tr, '逻辑位置数据已成功应用。',
           snackPosition: SnackPosition.BOTTOM);
-      if (c.logEnabled.value)
+      if (c.logEnabled.value) {
         logSink.write(DateTime.now().toString() +
             ': 导入并应用新逻辑位置，' +
             pickedFile.files.single.name +
             '。\n');
+      }
     }
   }
 
@@ -391,8 +398,9 @@ class SettingPage extends StatelessWidget {
     Directory applicationDataDir = await getApplicationDocumentsDirectory();
     String customLogicLocPath = applicationDataDir.path + '/CustomLogicLoc';
     Directory customLogicLocDir = Directory(customLogicLocPath);
-    if (!await customLogicLocDir.exists())
+    if (!await customLogicLocDir.exists()) {
       await customLogicLocDir.create(recursive: true);
+    }
     int prefixLength = customLogicLocPath.length + 1;
     await Get.dialog(
       StatefulBuilder(
@@ -420,65 +428,69 @@ class SettingPage extends StatelessWidget {
                       await prefs.remove('logicLocFileDir');
                       mapLogicLoc = LogicLoc();
                       _setState(() {});
-                      if (c.logEnabled.value)
+                      if (c.logEnabled.value) {
                         logSink
                             .write(DateTime.now().toString() + ': 不使用逻辑位置。\n');
+                      }
                     },
                   ),
                 ],
               )),
             ),
           ));
-          listLogicLocFiles.forEach((element) =>
-              listLogicLocFileChoose.add(Card(
-                child: ListTile(
-                  title: Text(element.path.substring(prefixLength)),
-                  selected: (logicLocFileDir ?? '') == element.path,
-                  onTap: () => Get.dialog(AlertDialog(
-                    title: Text('tip'.tr),
-                    content: Text('如何处理该逻辑位置数据？'),
-                    actions: <Widget>[
-                      TextButton(
-                        child: Text('cancel'.tr),
-                        onPressed: () => Get.back(),
-                      ),
-                      TextButton(
-                        child: Text('删除'),
-                        onPressed: () async {
-                          Get.back();
-                          if ((logicLocFileDir ?? '') == element.path) {
-                            await prefs.remove('logicLocFileDir');
-                            mapLogicLoc = LogicLoc();
-                          }
-                          await element.delete();
-                          _setState(() {});
-                          if (c.logEnabled.value)
-                            logSink.write(DateTime.now().toString() +
-                                ': 删除逻辑位置，' +
-                                element.path.substring(prefixLength) +
-                                '。\n');
-                        },
-                      ),
-                      TextButton(
-                        child: Text('使用'),
-                        onPressed: () async {
-                          Get.back();
-                          prefs.write('logicLocFileDir', element.path);
-                          _setState(() {});
-                          File logicLocFile = File(element.path);
-                          mapLogicLoc = LogicLoc.fromJson(
-                              jsonDecode(await logicLocFile.readAsString()));
-                          if (c.logEnabled.value)
-                            logSink.write(DateTime.now().toString() +
-                                ': 应用逻辑位置' +
-                                element.path.substring(prefixLength) +
-                                '。\n');
-                        },
-                      ),
-                    ],
-                  )),
-                ),
-              )));
+          for (FileSystemEntity element in listLogicLocFiles) {
+            listLogicLocFileChoose.add(Card(
+              child: ListTile(
+                title: Text(element.path.substring(prefixLength)),
+                selected: (logicLocFileDir ?? '') == element.path,
+                onTap: () => Get.dialog(AlertDialog(
+                  title: Text('tip'.tr),
+                  content: Text('如何处理该逻辑位置数据？'),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text('cancel'.tr),
+                      onPressed: () => Get.back(),
+                    ),
+                    TextButton(
+                      child: Text('删除'),
+                      onPressed: () async {
+                        Get.back();
+                        if ((logicLocFileDir ?? '') == element.path) {
+                          await prefs.remove('logicLocFileDir');
+                          mapLogicLoc = LogicLoc();
+                        }
+                        await element.delete();
+                        _setState(() {});
+                        if (c.logEnabled.value) {
+                          logSink.write(DateTime.now().toString() +
+                              ': 删除逻辑位置，' +
+                              element.path.substring(prefixLength) +
+                              '。\n');
+                        }
+                      },
+                    ),
+                    TextButton(
+                      child: Text('使用'),
+                      onPressed: () async {
+                        Get.back();
+                        prefs.write('logicLocFileDir', element.path);
+                        _setState(() {});
+                        File logicLocFile = File(element.path);
+                        mapLogicLoc = LogicLoc.fromJson(
+                            jsonDecode(await logicLocFile.readAsString()));
+                        if (c.logEnabled.value) {
+                          logSink.write(DateTime.now().toString() +
+                              ': 应用逻辑位置' +
+                              element.path.substring(prefixLength) +
+                              '。\n');
+                        }
+                      },
+                    ),
+                  ],
+                )),
+              ),
+            ));
+          }
           return AlertDialog(
             title: Text('逻辑位置数据'),
             content: SingleChildScrollView(
@@ -519,7 +531,7 @@ class SettingPage extends StatelessWidget {
           ),
           Obx(
             () => Text(
-              '${c.mapContentApprovalNumber.value}',
+              c.mapContentApprovalNumber.value,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
           ),
@@ -529,7 +541,7 @@ class SettingPage extends StatelessWidget {
           ),
           Obx(
             () => Text(
-              '${c.satelliteImageApprovalNumber.value}',
+              c.satelliteImageApprovalNumber.value,
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.normal),
             ),
           ),
@@ -612,7 +624,7 @@ class SettingPage extends StatelessWidget {
             },
           ),
         ];
-        supporedLocales.forEach((element) {
+        for (Locale element in supporedLocales) {
           widgets.add(
             RadioListTile(
               title: Text(languagecode2Str[element.languageCode] ?? 'err!'),
@@ -626,7 +638,7 @@ class SettingPage extends StatelessWidget {
               },
             ),
           );
-        });
+        }
         return AlertDialog(
           title: Text('language'.tr),
           content: SingleChildScrollView(
@@ -793,13 +805,14 @@ class SettingPage extends StatelessWidget {
                 ),
                 value: c.themeFollowSystem.value,
                 onChanged: (bool? value) {
-                  if (value!)
+                  if (value!) {
                     Get.changeThemeMode(ThemeMode.system);
-                  else {
-                    if (c.useDarkTheme.value)
+                  } else {
+                    if (c.useDarkTheme.value) {
                       Get.changeThemeMode(ThemeMode.dark);
-                    else
+                    } else {
                       Get.changeThemeMode(ThemeMode.light);
+                    }
                   }
                   c.themeFollowSystem.value = value;
                   prefs.write('themeFollowSystem', value);
@@ -813,10 +826,11 @@ class SettingPage extends StatelessWidget {
                 onChanged: c.themeFollowSystem.value
                     ? null
                     : (bool? value) {
-                        if (value!)
+                        if (value!) {
                           Get.changeThemeMode(ThemeMode.dark);
-                        else
+                        } else {
                           Get.changeThemeMode(ThemeMode.light);
+                        }
                         c.useDarkTheme.value = value;
                         prefs.write('useDarkTheme', value);
                       },

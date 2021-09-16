@@ -37,42 +37,42 @@ class MapCampus {
   ///通过json构建对象
   MapCampus.fromJson(Map<String, dynamic> json) {
     List campusShapeJson = json['campusShape'] as List;
-    campusShapeJson.forEach((element) {
+    for (var element in campusShapeJson) {
       campusShape.add(latLngfromJson(element));
-    });
+    }
     gate = json['gate'] as int? ?? 0;
     busstop = json['busstop'] as int? ?? 0;
     name = json['name'] as String? ?? '校区';
     List listBuildingJson = json['listBuilding'] as List;
-    listBuildingJson.forEach((element) {
+    for (var element in listBuildingJson) {
       listBuilding.add(Building.fromJson(element));
-    });
+    }
     List listVertexJson = json['listVertex'] as List;
-    listVertexJson.forEach((element) {
+    for (var element in listVertexJson) {
       listVertex.add(latLngfromJson(element));
-    });
+    }
     List listEdgeJson = json['listEdge'] as List;
-    listEdgeJson.forEach((element) {
+    for (var element in listEdgeJson) {
       listEdge.add(Edge.fromJson(element));
-    });
-    listEdge.forEach((curEdge) {
+    }
+    for (Edge curEdge in listEdge) {
       if (curEdge.availmthod >= 0 && curEdge.length == double.infinity) {
         curEdge.length = AMapTools.distanceBetween(
             listVertex[curEdge.pointa], listVertex[curEdge.pointb]);
       }
-    });
+    }
   }
 
   ///通过对象创建json
   Map<String, dynamic> toJson() {
     List campusShapeJson = [];
-    campusShape.forEach((element) {
+    for (LatLng element in campusShape) {
       campusShapeJson.add(latLngtoJson(element));
-    });
+    }
     List listVertexJson = [];
-    listVertex.forEach((element) {
+    for (LatLng element in listVertex) {
       listVertexJson.add(latLngtoJson(element));
-    });
+    }
     return <String, dynamic>{
       'campusShape': campusShapeJson,
       'gate': gate,
@@ -87,9 +87,9 @@ class MapCampus {
   ///随机拥挤度函数
   void randomCrowding() {
     if (!crowded) {
-      listEdge.forEach((element) {
+      for (Edge element in listEdge) {
         element.crowding = 1.0 - Random().nextDouble();
-      });
+      }
       crowded = true;
     }
   }
@@ -97,9 +97,9 @@ class MapCampus {
   ///关闭拥挤度
   void disableCrowding() {
     if (crowded) {
-      listEdge.forEach((element) {
+      for (Edge element in listEdge) {
         element.crowding = 1;
-      });
+      }
       crowded = false;
     }
   }

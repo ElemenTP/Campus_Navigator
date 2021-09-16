@@ -8,16 +8,16 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 
 ///自行车速度
-const double BIKESPEED = 0.5;
+const double bikeSpeed = 0.5;
 
 ///默认地图缩放比例
-const double DEFAULT_ZOOM = 18;
+const double defaultZoom = 18;
 
 ///食堂名称
-const String CANTEEN_NAME = '食堂';
+const String canteenName = '食堂';
 
 ///默认搜索半径
-const double DEFAULT_RADIX = 100;
+const double defaultRadix = 100;
 
 ///用户设置
 late GetStorage prefs;

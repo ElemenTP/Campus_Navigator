@@ -24,13 +24,13 @@ class MapData {
   ///从json对象中读取
   MapData.fromJson(Map<String, dynamic> json) {
     List mapCampusJson = json['mapCampus'] as List;
-    mapCampusJson.forEach((element) {
+    for (var element in mapCampusJson) {
       mapCampus.add(MapCampus.fromJson(element));
-    });
+    }
     List busTimeTableJson = json['busTimeTable'] as List;
-    busTimeTableJson.forEach((element) {
+    for (var element in busTimeTableJson) {
       busTimeTable.add(BusTimeTable.fromJson(element));
-    });
+    }
   }
 
   ///生成json对象
@@ -44,8 +44,9 @@ class MapData {
   ///判断某点location所属校区
   int locationInCampus(LatLng location) {
     for (int i = 0; i < mapCampus.length; ++i) {
-      if (AMapTools.latLngIsInPolygon(location, mapCampus[i].campusShape))
+      if (AMapTools.latLngIsInPolygon(location, mapCampus[i].campusShape)) {
         return i;
+      }
     }
     return -1;
   }
@@ -64,10 +65,10 @@ class MapData {
     int squareSize = mapCampus[campusNum].listVertex.length;
     List<List<Edge>> tmp = List.generate(
         squareSize, (_) => List.generate(squareSize, (_) => Edge()));
-    listEdge.forEach((element) {
+    for (Edge element in listEdge) {
       tmp[element.pointa][element.pointb] = element;
       tmp[element.pointb][element.pointa] = element;
-    });
+    }
     return tmp;
   }
 
@@ -93,26 +94,26 @@ class MapData {
 
   ///随机拥挤度函数
   void randomCrowding() {
-    mapCampus.forEach((element) {
+    for (MapCampus element in mapCampus) {
       if (!element.crowded) {
-        element.listEdge.forEach((element1) {
+        for (Edge element1 in element.listEdge) {
           element1.crowding = 1.0 - Random().nextDouble();
-        });
+        }
         element.crowded = true;
       }
-    });
+    }
   }
 
   ///关闭拥挤度
   void disableCrowding() {
-    mapCampus.forEach((element) {
+    for (MapCampus element in mapCampus) {
       if (element.crowded) {
-        element.listEdge.forEach((element2) {
+        for (Edge element2 in element.listEdge) {
           element2.crowding = 1;
-        });
+        }
         element.crowded = false;
       }
-    });
+    }
   }
 
   ///当跨校区导航时，获取距离当前时间最近的交通工具时间表
@@ -120,36 +121,43 @@ class MapData {
       {bool? onlySchoolBus}) {
     BusTimeTable? target;
     int takenTime = 114514;
-    busTimeTable.forEach((element) {
-      if (onlySchoolBus != null) if (onlySchoolBus ^ element.isSchoolBus)
-        return;
-      if (element.campusFrom != campusFrom || element.campusTo != campusTo)
-        return;
+    for (BusTimeTable element in busTimeTable) {
+      if (onlySchoolBus != null && onlySchoolBus ^ element.isSchoolBus) {
+        break;
+      }
+      if (element.campusFrom != campusFrom || element.campusTo != campusTo) {
+        break;
+      }
       if (element.dayOfWeek > 0 &&
           element.dayOfWeek < 8 &&
-          element.dayOfWeek != timeAtGetOn.weekday) return;
+          element.dayOfWeek != timeAtGetOn.weekday) {
+        break;
+      }
       int thisTakenTime = 0;
       if (element.setOutHour >= 0 && element.setOutHour < 24) {
-        if (element.setOutHour < timeAtGetOn.hour)
-          return;
-        else
+        if (element.setOutHour < timeAtGetOn.hour) {
+          break;
+        } else {
           thisTakenTime += (element.setOutHour - timeAtGetOn.hour) * 60;
+        }
       }
       if (element.setOutMinute >= 0 && element.setOutMinute < 60) {
-        if (element.setOutMinute < timeAtGetOn.minute)
-          return;
-        else
+        if (element.setOutMinute < timeAtGetOn.minute) {
+          break;
+        } else {
           thisTakenTime += element.setOutMinute - timeAtGetOn.minute;
+        }
       }
       thisTakenTime += element.takeTime;
       if (thisTakenTime < takenTime) {
         target = element;
         takenTime = thisTakenTime;
       }
-    });
-    if (target == null)
+    }
+    if (target == null) {
       return [];
-    else
+    } else {
       return [target, takenTime];
+    }
   }
 }

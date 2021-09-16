@@ -45,7 +45,7 @@ class MainController extends GetxController {
 
   ///用户位置
   Rx<AMapLocation> userLocation =
-      AMapLocation(latLng: LatLng(39.909187, 116.397451)).obs;
+      const AMapLocation(latLng: LatLng(39.909187, 116.397451)).obs;
 
   ///输入框控制器
   TextEditingController textController = TextEditingController();

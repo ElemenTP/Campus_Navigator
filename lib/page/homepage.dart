@@ -17,7 +17,7 @@ import 'package:campnavi/model/naviloc.dart';
 import 'package:campnavi/model/bustimetable.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key key = const Key('main')}) : super(key: key);
+  const HomePage({Key key = const Key('main')}) : super(key: key);
 
   static MainController c =
       Get.put<MainController>(MainController(), permanent: true);
@@ -174,8 +174,9 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ));
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。\n');
+        }
         c.naviStatus.value = false;
         c.routeLength.value = 0;
       } else {
@@ -220,15 +221,17 @@ class HomePage extends StatelessWidget {
             ));*/
             Get.snackbar('tip'.tr, 'rr'.tr,
                 snackPosition: SnackPosition.BOTTOM);
-            if (c.logEnabled.value)
+            if (c.logEnabled.value) {
               logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
+            }
             await _showRoute();
           }
         } else if (distanceDest < 5 ||
             (distanceDepa > polylineLength + 5) ||
             distanceNextDest < nextLength) {
-          if (c.logEnabled.value)
+          if (c.logEnabled.value) {
             logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
+          }
           c.mapPolylines.removeAt(0);
         }
       }
@@ -286,7 +289,7 @@ class HomePage extends StatelessWidget {
         )) ??
         false) {
       await c.mapController?.value.moveCamera(
-          CameraUpdate.newLatLngZoom(newLocation, DEFAULT_ZOOM),
+          CameraUpdate.newLatLngZoom(newLocation, defaultZoom),
           duration: 500);
     }
   }
@@ -295,10 +298,10 @@ class HomePage extends StatelessWidget {
   void _onBarItemTapped(int index) async {
     switch (index) {
       case 0:
-        await Get.to(() => SearchPage());
+        await Get.to(() => const SearchPage());
         break;
       case 1:
-        await Get.to(() => SettingPage());
+        await Get.to(() => const SettingPage());
         break;
     }
   }
@@ -378,7 +381,7 @@ class HomePage extends StatelessWidget {
                 }
                 late Widget endWidget;
                 List<Widget> inColumn = [];
-                c.end.forEach((element) {
+                for (var element in c.end) {
                   inColumn.add(element.runtimeType == LatLng
                       ? Card(
                           child: ListTile(
@@ -402,13 +405,14 @@ class HomePage extends StatelessWidget {
                             },
                           ),
                         ));
-                });
-                if (inColumn.isEmpty)
+                }
+                if (inColumn.isEmpty) {
                   inColumn.add(Card(
                     child: ListTile(
                       title: Text('noendset'.tr),
                     ),
                   ));
+                }
                 endWidget = Column(
                   children: inColumn,
                 );
@@ -439,7 +443,7 @@ class HomePage extends StatelessWidget {
                       ),
                     ),
                     TextButton.icon(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       label: Text('clearall'.tr),
                       onPressed: () {
                         c.start.clear();
@@ -470,7 +474,7 @@ class HomePage extends StatelessWidget {
                     ),
                     Text(
                       'navitip'.tr,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 12, fontWeight: FontWeight.normal),
                     ),
                   ],
@@ -549,8 +553,9 @@ class HomePage extends StatelessWidget {
               mapData.locationInCampus(c.userLocation.value.latLng);
           if (startCampus >= 0) {
             c.start.add(c.userLocation.value.latLng);
-            if (c.logEnabled.value)
+            if (c.logEnabled.value) {
               logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
+            }
           } else {
             /*Get.dialog(AlertDialog(
               title: Text('tip'.tr),
@@ -564,20 +569,23 @@ class HomePage extends StatelessWidget {
             ));*/
             Get.snackbar('tip'.tr, 'notincampus'.tr,
                 snackPosition: SnackPosition.BOTTOM);
-            if (c.logEnabled.value)
+            if (c.logEnabled.value) {
               logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止导航。\n');
+            }
             c.naviStatus.value = false;
             return;
           }
         } else {
-          if (c.logEnabled.value)
+          if (c.logEnabled.value) {
             logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。\n');
+          }
           c.naviStatus.value = false;
           return;
         }
       }
-      if (c.logEnabled.value)
+      if (c.logEnabled.value) {
         logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
+      }
       try {
         //排序所用新列表
         List naviOrder = [c.start.first];
@@ -605,14 +613,14 @@ class HomePage extends StatelessWidget {
         c.crowding.value ? mapData.randomCrowding() : mapData.disableCrowding();
         if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 完成目的地排序。\n');
-          naviOrder.forEach((element) {
+          for (var element in naviOrder) {
             logSink.write(DateTime.now().toString() +
                 ': ' +
                 (element.runtimeType == LatLng
                     ? '坐标: ' + element.toJson().toString()
                     : '建筑: ' + (element as Building).description.first) +
                 '\n');
-          });
+          }
           logSink.write(DateTime.now().toString() + ': 开始狄杰斯特拉算法。\n');
         }
         //将排好序的列表中的元素一一绘制虚线，使用狄杰斯特拉算法得到路径，绘制实线
@@ -628,7 +636,7 @@ class HomePage extends StatelessWidget {
             int nearVertex = mapData.nearestVertex(campusNum, realLatLng);
             juncLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
             juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
-                    (c.onbike.value ? BIKESPEED : 1)) /
+                    (c.onbike.value ? bikeSpeed : 1)) /
                 (c.crowding.value ? 1 - Random().nextDouble() : 1);
             curNaviLoc = NaviLoc(campusNum, nearVertex, naviOrder[i]);
           } else if (naviOrder[i].runtimeType == Building) {
@@ -653,7 +661,7 @@ class HomePage extends StatelessWidget {
             int juncVertex = curBuilding.juncpoint[choosedDoor];
             juncLatLng = mapData.getVertexLatLng(campusNum, juncVertex);
             juncLength = (AMapTools.distanceBetween(juncLatLng, realLatLng) *
-                    (c.onbike.value ? BIKESPEED : 1)) /
+                    (c.onbike.value ? bikeSpeed : 1)) /
                 (c.crowding.value ? 1 - Random().nextDouble() : 1);
             curNaviLoc = NaviLoc(campusNum, juncVertex, realLatLng);
           }
@@ -747,23 +755,27 @@ class HomePage extends StatelessWidget {
                 c.routeLength.value += (lengthSchoolBusStart +
                     lengthSchoolBusEnd +
                     (c.minTime.value ? (bestSchoolBus.last as int) * 60 : 0));
-                if (routeSchoolBusStart.isNotEmpty)
+                if (routeSchoolBusStart.isNotEmpty) {
                   NaviUtil.displayRoute(
                       routeSchoolBusStart, startVertex.campusNum, c);
-                if (routeSchoolBusEnd.isNotEmpty)
+                }
+                if (routeSchoolBusEnd.isNotEmpty) {
                   NaviUtil.displayRoute(
                       routeSchoolBusEnd, endVertex.campusNum, c);
+                }
                 toPrint = (bestSchoolBus.first as BusTimeTable).description;
               } else if (bestPubTrans.isNotEmpty && bestSchoolBus.isEmpty) {
                 c.routeLength.value += (lengthPublicTransStart +
                     lengthPublicTransEnd +
                     (c.minTime.value ? (bestPubTrans.last as int) * 60 : 0));
-                if (routePublicTransStart.isNotEmpty)
+                if (routePublicTransStart.isNotEmpty) {
                   NaviUtil.displayRoute(
                       routePublicTransStart, startVertex.campusNum, c);
-                if (routePublicTransEnd.isNotEmpty)
+                }
+                if (routePublicTransEnd.isNotEmpty) {
                   NaviUtil.displayRoute(
                       routePublicTransEnd, endVertex.campusNum, c);
+                }
                 toPrint = (bestPubTrans.first as BusTimeTable).description;
               } else {
                 if ((lengthSchoolBusStart +
@@ -779,23 +791,27 @@ class HomePage extends StatelessWidget {
                   c.routeLength.value += (lengthPublicTransStart +
                       lengthPublicTransEnd +
                       (c.minTime.value ? (bestPubTrans.last as int) * 60 : 0));
-                  if (routePublicTransStart.isNotEmpty)
+                  if (routePublicTransStart.isNotEmpty) {
                     NaviUtil.displayRoute(
                         routePublicTransStart, startVertex.campusNum, c);
-                  if (routePublicTransEnd.isNotEmpty)
+                  }
+                  if (routePublicTransEnd.isNotEmpty) {
                     NaviUtil.displayRoute(
                         routePublicTransEnd, endVertex.campusNum, c);
+                  }
                   toPrint = (bestPubTrans.first as BusTimeTable).description;
                 } else {
                   c.routeLength.value += (lengthSchoolBusStart +
                       lengthSchoolBusEnd +
                       (c.minTime.value ? (bestSchoolBus.last as int) * 60 : 0));
-                  if (routeSchoolBusStart.isNotEmpty)
+                  if (routeSchoolBusStart.isNotEmpty) {
                     NaviUtil.displayRoute(
                         routeSchoolBusStart, startVertex.campusNum, c);
-                  if (routeSchoolBusEnd.isNotEmpty)
+                  }
+                  if (routeSchoolBusEnd.isNotEmpty) {
                     NaviUtil.displayRoute(
                         routeSchoolBusEnd, endVertex.campusNum, c);
+                  }
                   toPrint = (bestSchoolBus.first as BusTimeTable).description;
                 }
               }
@@ -828,9 +844,10 @@ class HomePage extends StatelessWidget {
             c.routeLength.value += juncLength;
           }
         }
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink
               .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
+        }
       } catch (_) {
         /*Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -844,16 +861,17 @@ class HomePage extends StatelessWidget {
         ));*/
         Get.snackbar('tip'.tr, 'mapdataerr'.tr,
             snackPosition: SnackPosition.BOTTOM);
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 未找到路线。停止导航。\n');
-        //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
+        } //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
         c.naviStatus.value = false;
         c.mapPolylines.clear();
         c.routeLength.value = 0;
       }
     } else {
-      if (c.logEnabled.value)
+      if (c.logEnabled.value) {
         logSink.write(DateTime.now().toString() + ': 停止导航。\n');
+      }
     }
   }
 
@@ -868,7 +886,7 @@ class HomePage extends StatelessWidget {
       //中央内容区
       body: Scaffold(
         body: ConstrainedBox(
-          constraints: BoxConstraints.expand(),
+          constraints: const BoxConstraints.expand(),
           child: Stack(
             alignment: Alignment.center,
             children: <Widget>[
@@ -886,7 +904,7 @@ class HomePage extends StatelessWidget {
                         prefs.read<double>('lastCamPositionLat') ?? 39.909187,
                         prefs.read<double>('lastCamPositionLng') ?? 116.397451),
                     zoom: prefs.read<double>('lastCamPositionzoom') ??
-                        DEFAULT_ZOOM,
+                        defaultZoom,
                   ),
                   //地图点击回调函数
                   onTap: _onMapTapped,
@@ -921,7 +939,7 @@ class HomePage extends StatelessWidget {
                                 'min'.tr
                             : 'about'.tr +
                                 (c.routeLength.value /
-                                        (c.onbike.value ? BIKESPEED : 1))
+                                        (c.onbike.value ? bikeSpeed : 1))
                                     .toStringAsFixed(0) +
                                 'm'.tr)),
                   ),
@@ -934,7 +952,7 @@ class HomePage extends StatelessWidget {
           heroTag: UniqueKey(),
           onPressed: _setCameraPosition,
           tooltip: 'scp'.tr,
-          child: Icon(Icons.location_searching),
+          child: const Icon(Icons.location_searching),
           mini: true,
         ),
         //避免被屏幕键盘改变形状
@@ -945,12 +963,12 @@ class HomePage extends StatelessWidget {
         items: <BottomNavigationBarItem>[
           //搜索标志
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: const Icon(Icons.search),
             label: 'search'.tr /*'Search'*/,
           ),
           //设置标志
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             label: 'setting'.tr /*'Setting'*/,
           )
         ],
@@ -962,8 +980,9 @@ class HomePage extends StatelessWidget {
             onPressed: _setNavigation,
             tooltip:
                 'navi'.tr + ' ' + (c.naviStatus.value ? 'stop'.tr : 'start'.tr),
-            child:
-                c.naviStatus.value ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+            child: c.naviStatus.value
+                ? const Icon(Icons.stop)
+                : const Icon(Icons.play_arrow),
           )),
       //悬浮按键位置
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

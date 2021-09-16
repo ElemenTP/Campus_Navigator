@@ -134,9 +134,10 @@ class NaviUtil {
 
   ///从LatLng类型或者Building类型中获取标志位置
   static LatLng getLocation(dynamic element) {
-    if (element.runtimeType == LatLng)
+    if (element.runtimeType == LatLng) {
       return element;
-    else
+    } else {
       return (element as Building).getApproxLocation();
+    }
   }
 }

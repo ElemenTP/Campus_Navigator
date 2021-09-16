@@ -28,8 +28,9 @@ class CanteenArrange {
         tmp = 1;
       } else if (number / capacity <= 0.75) {
         tmp = 2;
-      } else
+      } else {
         tmp = 3;
+      }
       var fin = ntovin[tmp] ?? 0;
       flowin = fin;
       var fout = ntovout[tmp] ?? 0;
@@ -41,10 +42,11 @@ class CanteenArrange {
 
   ///获取预计用餐时间
   double getTime() {
-    if (result > capacity)
+    if (result > capacity) {
       return double.infinity;
-    else
+    } else {
       return 12 * result + pathtime;
+    }
   }
 
   ///获取到达时食堂负载百分比

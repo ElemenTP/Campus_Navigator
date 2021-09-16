@@ -13,7 +13,7 @@ import 'package:campnavi/controller/maincontroller.dart';
 
 ///搜索界面，用于搜索功能，逻辑位置功能，提供附近建筑和食堂负载均衡的按钮
 class SearchPage extends StatelessWidget {
-  SearchPage({Key key = const Key('search')}) : super(key: key);
+  const SearchPage({Key key = const Key('search')}) : super(key: key);
 
   static MainController c = Get.find();
 
@@ -23,13 +23,15 @@ class SearchPage extends StatelessWidget {
     c.textFocusNode.unfocus();
     c.searchResult.clear();
     String toSearch = c.textController.text;
-    if (c.logEnabled.value)
+    if (c.logEnabled.value) {
       logSink.write(DateTime.now().toString() + ': 搜索开始，关键字：$toSearch。\n');
+    }
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
       String curCampusName = mapData[i].name;
       if (c.campusFilter[i]) {
         //在已选的校区中搜索
-        mapData[i].listBuilding.forEach((element) {
+        List<Building> curListBuilding = mapData[i].listBuilding;
+        for (Building element in curListBuilding) {
           if (toSearch.isEmpty) {
             c.searchResult.add(SearchResult(element, curCampusName));
           } else {
@@ -49,21 +51,23 @@ class SearchPage extends StatelessWidget {
             }
             //匹配建筑描述关键字
             List<String> listMatched = [];
-            element.description.forEach((element1) {
+            for (String element1 in element.description) {
               if (element1.contains(toSearch)) listMatched.add(element1);
-            });
-            if (listMatched.isNotEmpty)
+            }
+            if (listMatched.isNotEmpty) {
               c.searchResult.add(SearchResult(
                   element,
                   curCampusName +
                       'matchbuildingdes'.tr +
                       listMatched.join(', ')));
+            }
           }
-        });
+        }
       }
     }
-    if (c.logEnabled.value)
+    if (c.logEnabled.value) {
       logSink.write(DateTime.now().toString() + ': 搜索结束。\n');
+    }
   }
 
   ///列表元素点击回调函数，弹窗询问用户将该建筑设为起点或终点
@@ -197,7 +201,7 @@ class SearchPage extends StatelessWidget {
     if (NaviUtil.stateLocationReqiurement(c)) {
       int campusNum = mapData.locationInCampus(c.userLocation.value.latLng);
       if (campusNum >= 0) {
-        double circleRad = DEFAULT_RADIX;
+        double circleRad = defaultRadix;
         NearBuildingController nbc = Get.put(NearBuildingController());
         nbc.inputRadix.value = -1;
         if (await Get.dialog<bool>(Obx(() {
@@ -247,8 +251,9 @@ class SearchPage extends StatelessWidget {
             true) {
           return;
         }
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 开始搜索附近建筑。\n');
+        }
         try {
           mapData[campusNum].disableCrowding();
           List<LatLng> circlePolygon =
@@ -259,14 +264,15 @@ class SearchPage extends StatelessWidget {
           LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
           double juncLength = AMapTools.distanceBetween(
               nearLatLng, c.userLocation.value.latLng);
-          mapData[campusNum].listBuilding.forEach((element) {
+          List<Building> curListBuilding = mapData[campusNum].listBuilding;
+          for (Building element in curListBuilding) {
             for (LatLng doors in element.doors) {
               if (AMapTools.latLngIsInPolygon(doors, circlePolygon)) {
                 nearBuilding.add(element);
                 break;
               }
             }
-          });
+          }
           if (nearBuilding.isEmpty) {
             Get.dialog(AlertDialog(
               title: Text('tip'.tr),
@@ -278,11 +284,12 @@ class SearchPage extends StatelessWidget {
                 ),
               ],
             ));
-            if (c.logEnabled.value)
+            if (c.logEnabled.value) {
               logSink.write(DateTime.now().toString() + ': 未搜索到附近建筑。\n');
+            }
           } else {
             c.searchResult.clear();
-            nearBuilding.forEach((element) {
+            for (Building element in nearBuilding) {
               double distance = juncLength;
               int choosedDoor = 0;
               if (element.doors.length > 1) {
@@ -307,7 +314,7 @@ class SearchPage extends StatelessWidget {
               }
               c.searchResult.add(SearchResult(
                   element, 'about'.tr + distance.toStringAsFixed(0) + 'm'.tr));
-            });
+            }
           }
         } catch (_) {
           /*Get.dialog(AlertDialog(
@@ -322,12 +329,14 @@ class SearchPage extends StatelessWidget {
           ));*/
           Get.snackbar('tip'.tr, 'mapdataerr'.tr,
               snackPosition: SnackPosition.BOTTOM);
-          if (c.logEnabled.value)
+          if (c.logEnabled.value) {
             logSink.write(DateTime.now().toString() + ': 未找到路线。停止搜索附近建筑。\n');
+          }
           return;
         }
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
+        }
       } else {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -339,12 +348,14 @@ class SearchPage extends StatelessWidget {
             ),
           ],
         ));
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止搜索附近建筑。\n');
+        }
       }
     } else {
-      if (c.logEnabled.value)
+      if (c.logEnabled.value) {
         logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止搜索附近建筑。\n');
+      }
     }
   }
 
@@ -356,8 +367,9 @@ class SearchPage extends StatelessWidget {
     if (NaviUtil.stateLocationReqiurement(c)) {
       int campusNum = mapData.locationInCampus(c.userLocation.value.latLng);
       if (campusNum >= 0) {
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 开始食堂负载均衡。\n');
+        }
         try {
           mapData[campusNum].disableCrowding();
           List<Building> canteens = [];
@@ -366,14 +378,15 @@ class SearchPage extends StatelessWidget {
           LatLng nearLatLng = mapData.getVertexLatLng(campusNum, nearVertex);
           double juncLength = AMapTools.distanceBetween(
               nearLatLng, c.userLocation.value.latLng);
-          mapData[campusNum].listBuilding.forEach((element) {
+          List<Building> curListBuilding = mapData[campusNum].listBuilding;
+          for (Building element in curListBuilding) {
             for (String des in element.description) {
-              if (des.contains(CANTEEN_NAME)) {
+              if (des.contains(canteenName)) {
                 canteens.add(element);
                 break;
               }
             }
-          });
+          }
           if (canteens.isEmpty) {
             Get.dialog(AlertDialog(
               title: Text('tip'.tr),
@@ -385,11 +398,12 @@ class SearchPage extends StatelessWidget {
                 ),
               ],
             ));
-            if (c.logEnabled.value)
+            if (c.logEnabled.value) {
               logSink.write(DateTime.now().toString() + ': 未搜索到符合条件的食堂。\n');
+            }
           } else {
             c.searchResult.clear();
-            canteens.forEach((element) {
+            for (Building element in canteens) {
               double distance = juncLength;
               int choosedDoor = 0;
               if (element.doors.length > 1) {
@@ -424,7 +438,7 @@ class SearchPage extends StatelessWidget {
                       'canteen2'.tr +
                       (arrangeObject.getTime() / 60).toStringAsFixed(0) +
                       'min'.tr));
-            });
+            }
           }
         } catch (_) {
           /*Get.dialog(AlertDialog(
@@ -439,12 +453,14 @@ class SearchPage extends StatelessWidget {
           ));*/
           Get.snackbar('tip'.tr, 'mapdataerr'.tr,
               snackPosition: SnackPosition.BOTTOM);
-          if (c.logEnabled.value)
+          if (c.logEnabled.value) {
             logSink.write(DateTime.now().toString() + ': 未找到路线。停止食堂负载均衡。\n');
+          }
           return;
         }
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 食堂负载均衡完毕。\n');
+        }
       } else {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -456,12 +472,14 @@ class SearchPage extends StatelessWidget {
             ),
           ],
         ));
-        if (c.logEnabled.value)
+        if (c.logEnabled.value) {
           logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止食堂负载均衡。\n');
+        }
       }
     } else {
-      if (c.logEnabled.value)
+      if (c.logEnabled.value) {
         logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止食堂负载均衡。\n');
+      }
     }
   }
 
@@ -507,7 +525,7 @@ class SearchPage extends StatelessWidget {
       //中央内容区
       body: Column(
         children: <Widget>[
-          SizedBox(
+          const SizedBox(
             width: 8,
             height: 8,
           ),
@@ -528,17 +546,17 @@ class SearchPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               TextButton.icon(
-                icon: Icon(Icons.filter_alt),
+                icon: const Icon(Icons.filter_alt),
                 label: Text('campus'.tr),
                 onPressed: _campusFilter,
               ),
               TextButton.icon(
-                icon: Icon(Icons.search),
+                icon: const Icon(Icons.search),
                 label: Text('search'.tr),
                 onPressed: _onStartSearch,
               ),
               TextButton.icon(
-                  icon: Icon(Icons.delete),
+                  icon: const Icon(Icons.delete),
                   label: Text('reset'.tr),
                   onPressed: () {
                     c.textController.clear();
@@ -570,9 +588,9 @@ class SearchPage extends StatelessWidget {
             heroTag: UniqueKey(),
             onPressed: _onCanteenArrange,
             tooltip: 'recommendcanteen'.tr,
-            child: Icon(Icons.food_bank),
+            child: const Icon(Icons.food_bank),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
             height: 8,
           ),
@@ -580,7 +598,7 @@ class SearchPage extends StatelessWidget {
             heroTag: UniqueKey(),
             onPressed: _searchNearBuilding,
             tooltip: 'searchnearby'.tr,
-            child: Icon(Icons.near_me),
+            child: const Icon(Icons.near_me),
           ),
         ],
       ),

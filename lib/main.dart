@@ -28,12 +28,12 @@ void main() async {
   //获取软件信息
   packageInfo = await PackageInfo.fromPlatform();
   //检查软件版本
-  appType = (bool.fromEnvironment('dart.vm.product', defaultValue: false))
+  appType = (const bool.fromEnvironment('dart.vm.product', defaultValue: false))
       ? 'Release'
-      : (bool.fromEnvironment('dart.vm.profile', defaultValue: false))
+      : (const bool.fromEnvironment('dart.vm.profile', defaultValue: false))
           ? 'Profile'
           : 'Debug';
-  if (logEnabled)
+  if (logEnabled) {
     logSink.write(DateTime.now().toString() +
         ': 版本：' +
         packageInfo.version +
@@ -42,7 +42,7 @@ void main() async {
         ' ' +
         appType +
         '\n');
-  //初始化地图数据
+  } //初始化地图数据
   String? dataFileDir = prefs.read<String>('dataFileDir');
   if (dataFileDir == null) {
     mapData = MapData.fromJson(
@@ -51,11 +51,12 @@ void main() async {
   } else {
     File dataFile = File(dataFileDir);
     mapData = MapData.fromJson(jsonDecode(await dataFile.readAsString()));
-    if (logEnabled)
+    if (logEnabled) {
       logSink.write(DateTime.now().toString() +
           ': 读取地图数据' +
           dataFileDir.split('/').last +
           '\n');
+    }
   }
   //初始化逻辑位置
   String? logicLocFileDir = prefs.read<String>('logicLocFileDir');
@@ -66,21 +67,19 @@ void main() async {
     File logicLocFile = File(logicLocFileDir);
     mapLogicLoc =
         LogicLoc.fromJson(jsonDecode(await logicLocFile.readAsString()));
-    if (logEnabled)
+    if (logEnabled) {
       logSink.write(DateTime.now().toString() +
           ': 读取逻辑位置数据' +
           logicLocFileDir.split('/').last +
           '\n');
+    }
   }
   //读取语言偏好
   String preferLocaleStr = prefs.read<String>('preferLocale') ?? 'device';
   //运行应用界面
   runApp(GetMaterialApp(
     key: UniqueKey(),
-    onGenerateTitle: (context) {
-      print('title'.tr);
-      return 'title'.tr;
-    },
+    onGenerateTitle: (context) => 'title'.tr,
     translations: Translation(),
     supportedLocales: supporedLocales,
     localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
@@ -98,6 +97,6 @@ void main() async {
         : (prefs.read<bool>('useDarkTheme') ?? false)
             ? ThemeMode.dark
             : ThemeMode.light,
-    home: HomePage(),
+    home: const HomePage(),
   ));
 }

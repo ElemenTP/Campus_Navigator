@@ -22,7 +22,7 @@ class ShortPath {
   ///距离等于实际距离乘上骑车加速系数的积除以拥挤度
   double pathLength(Edge edge) {
     return (edge.length *
-            (transMethod == 1 && edge.availmthod == 1 ? BIKESPEED : 1)) /
+            (transMethod == 1 && edge.availmthod == 1 ? bikeSpeed : 1)) /
         edge.crowding;
   }
 
