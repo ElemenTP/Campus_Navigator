@@ -83,7 +83,7 @@ void main() async {
     },
     translations: Translation(),
     supportedLocales: supporedLocales,
-    localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+    localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
     ],
