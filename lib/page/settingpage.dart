@@ -129,7 +129,7 @@ class SettingPage extends StatelessWidget {
           snackPosition: SnackPosition.BOTTOM);
     }
     if (pickedFile != null) {
-      File iptFile = File(pickedFile.files.single.path);
+      File iptFile = File(pickedFile.paths.first!);
       late MapData newData;
       try {
         newData = MapData.fromJson(jsonDecode(await iptFile.readAsString()));
@@ -333,7 +333,7 @@ class SettingPage extends StatelessWidget {
           snackPosition: SnackPosition.BOTTOM);
     }
     if (pickedFile != null) {
-      File iptFile = File(pickedFile.files.single.path);
+      File iptFile = File(pickedFile.paths.first!);
       late LogicLoc newLogicLoc;
       try {
         newLogicLoc =

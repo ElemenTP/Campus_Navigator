@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:get_storage/get_storage.dart';
 import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/model/logicloc.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:amap_flutter_map/amap_flutter_map.dart';
 
 ///自行车速度
