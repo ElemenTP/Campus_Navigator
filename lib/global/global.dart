@@ -40,6 +40,8 @@ late PackageInfo packageInfo;
 ///版本信息
 late String appType;
 
+late Directory applicationDataDir;
+
 /*const Map<String, ThemeMode> str2ThemeMode = <String, ThemeMode>{
   'system': ThemeMode.system,
   'light': ThemeMode.light,

@@ -22,8 +22,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //初始化日志功能
   bool logEnabled = prefs.read<bool>('logEnabled') ?? false;
-  Directory logFileDir = await getApplicationDocumentsDirectory();
-  logFile = File(logFileDir.path + '/NaviLog.txt');
+  applicationDataDir = await getApplicationDocumentsDirectory();
+  logFile = File(applicationDataDir.path + '/NaviLog.txt');
   if (logEnabled) logSink = logFile.openWrite(mode: FileMode.append);
   //获取软件信息
   packageInfo = await PackageInfo.fromPlatform();
@@ -34,44 +34,44 @@ void main() async {
           ? 'Profile'
           : 'Debug';
   if (logEnabled) {
-    logSink.write(DateTime.now().toString() +
+    logSink.writeln(DateTime.now().toString() +
         ': 版本：' +
         packageInfo.version +
         '+' +
         packageInfo.buildNumber +
         ' ' +
-        appType +
-        '\n');
+        appType);
   } //初始化地图数据
-  String? dataFileDir = prefs.read<String>('dataFileDir');
-  if (dataFileDir == null) {
+  String? dataFileName = prefs.read<String>('dataFile');
+  if (dataFileName == null) {
     mapData = MapData.fromJson(
         jsonDecode(await rootBundle.loadString('mapdata/default.json')));
-    if (logEnabled) logSink.write(DateTime.now().toString() + ': 读取默认地图数据。\n');
+    if (logEnabled) {
+      logSink.writeln(DateTime.now().toString() + ': 读取默认地图数据。');
+    }
   } else {
-    File dataFile = File(dataFileDir);
+    File dataFile =
+        File(applicationDataDir.path + '/CustomMapData/' + dataFileName);
     mapData = MapData.fromJson(jsonDecode(await dataFile.readAsString()));
     if (logEnabled) {
-      logSink.write(DateTime.now().toString() +
-          ': 读取地图数据' +
-          dataFileDir.split('/').last +
-          '\n');
+      logSink.writeln(DateTime.now().toString() + ': 读取地图数据 ' + dataFileName);
     }
   }
   //初始化逻辑位置
-  String? logicLocFileDir = prefs.read<String>('logicLocFileDir');
-  if (logicLocFileDir == null) {
+  String? logicLocFileName = prefs.read<String>('logicLocFile');
+  if (logicLocFileName == null) {
     mapLogicLoc = LogicLoc();
-    if (logEnabled) logSink.write(DateTime.now().toString() + ': 没有逻辑位置数据。\n');
+    if (logEnabled) {
+      logSink.writeln(DateTime.now().toString() + ': 没有逻辑位置数据。');
+    }
   } else {
-    File logicLocFile = File(logicLocFileDir);
+    File logicLocFile =
+        File(applicationDataDir.path + '/CustomLogicLoc/' + logicLocFileName);
     mapLogicLoc =
         LogicLoc.fromJson(jsonDecode(await logicLocFile.readAsString()));
     if (logEnabled) {
-      logSink.write(DateTime.now().toString() +
-          ': 读取逻辑位置数据' +
-          logicLocFileDir.split('/').last +
-          '\n');
+      logSink
+          .writeln(DateTime.now().toString() + ': 读取逻辑位置数据' + logicLocFileName);
     }
   }
   //读取语言偏好

@@ -156,6 +156,15 @@ class HomePage extends StatelessWidget {
   ///于路线长度加5米或距离下一条路线的终点的距离小于下一条路线的长度时认为用户已走过当前路线。
   ///如果没有下一条路线，或者下一条路线是当前路线的折返时最后一个判断条件不生效。
   void _onLocationChanged(AMapLocation aMapLocation) async {
+    if (c.logEnabled.value &&
+        aMapLocation.time != 0 &&
+        AMapTools.distanceBetween(
+                c.userLocation.value.latLng, aMapLocation.latLng) >
+            1) {
+      logSink.writeln(DateTime.now().toString() +
+          ': 用户位置改变，新位置 ' +
+          aMapLocation.latLng.toString());
+    }
     //记录用户位置。
     c.userLocation.value = aMapLocation;
     //判断是否在进行实时导航，位置信息是否正确
@@ -175,7 +184,7 @@ class HomePage extends StatelessWidget {
           ],
         ));
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。\n');
+          logSink.writeln(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。');
         }
         c.naviStatus.value = false;
         c.routeLength.value = 0;
@@ -222,7 +231,7 @@ class HomePage extends StatelessWidget {
             Get.snackbar('tip'.tr, 'rr'.tr,
                 snackPosition: SnackPosition.BOTTOM);
             if (c.logEnabled.value) {
-              logSink.write(DateTime.now().toString() + ': 重新规划路线。\n');
+              logSink.writeln(DateTime.now().toString() + ': 重新规划路线。');
             }
             await _showRoute();
           }
@@ -230,7 +239,7 @@ class HomePage extends StatelessWidget {
             (distanceDepa > polylineLength + 5) ||
             distanceNextDest < nextLength) {
           if (c.logEnabled.value) {
-            logSink.write(DateTime.now().toString() + ': 走过一条规划路线。\n');
+            logSink.writeln(DateTime.now().toString() + ': 走过一条规划路线。');
           }
           c.mapPolylines.removeAt(0);
         }
@@ -530,21 +539,19 @@ class HomePage extends StatelessWidget {
       //导航开始时的日期时间，用于智能选择校区间导航方法
       DateTime routeBeginTime = DateTime.now();
       if (c.logEnabled.value) {
-        logSink.write(routeBeginTime.toString() + ': 开始导航，开始计算路线。\n');
-        logSink.write(DateTime.now().toString() +
+        logSink.writeln(routeBeginTime.toString() + ': 开始导航，开始计算路线。');
+        logSink.writeln(DateTime.now().toString() +
             ': ' +
             '实时导航' +
             (c.realTime.value ? '开启' : '关闭') +
             '\t骑车' +
-            (c.onbike.value ? '开启' : '关闭') +
-            '。\n');
-        logSink.write(DateTime.now().toString() +
+            (c.onbike.value ? '开启' : '关闭'));
+        logSink.writeln(DateTime.now().toString() +
             ': ' +
             '最短时间' +
             (c.minTime.value ? '开启' : '关闭') +
             '\t拥挤度' +
-            (c.crowding.value ? '开启' : '关闭') +
-            '。\n');
+            (c.crowding.value ? '开启' : '关闭'));
       }
       //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
       if (c.startOnUserLoc.value) {
@@ -554,7 +561,7 @@ class HomePage extends StatelessWidget {
           if (startCampus >= 0) {
             c.start.add(c.userLocation.value.latLng);
             if (c.logEnabled.value) {
-              logSink.write(DateTime.now().toString() + ': 以用户坐标为起点。\n');
+              logSink.writeln(DateTime.now().toString() + ': 以用户坐标为起点。');
             }
           } else {
             /*Get.dialog(AlertDialog(
@@ -570,21 +577,21 @@ class HomePage extends StatelessWidget {
             Get.snackbar('tip'.tr, 'notincampus'.tr,
                 snackPosition: SnackPosition.BOTTOM);
             if (c.logEnabled.value) {
-              logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止导航。\n');
+              logSink.writeln(DateTime.now().toString() + ': 您不在任何校区内，停止导航。');
             }
             c.naviStatus.value = false;
             return;
           }
         } else {
           if (c.logEnabled.value) {
-            logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。\n');
+            logSink.writeln(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。');
           }
           c.naviStatus.value = false;
           return;
         }
       }
       if (c.logEnabled.value) {
-        logSink.write(DateTime.now().toString() + ': 开始目的地排序。\n');
+        logSink.writeln(DateTime.now().toString() + ': 开始目的地排序。');
       }
       try {
         //排序所用新列表
@@ -612,16 +619,15 @@ class HomePage extends StatelessWidget {
         int transmethod = c.onbike.value ? 1 : 0;
         c.crowding.value ? mapData.randomCrowding() : mapData.disableCrowding();
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 完成目的地排序。\n');
+          logSink.writeln(DateTime.now().toString() + ': 完成目的地排序。');
           for (var element in naviOrder) {
-            logSink.write(DateTime.now().toString() +
+            logSink.writeln(DateTime.now().toString() +
                 ': ' +
                 (element.runtimeType == LatLng
                     ? '坐标: ' + element.toJson().toString()
-                    : '建筑: ' + (element as Building).description.first) +
-                '\n');
+                    : '建筑: ' + (element as Building).description.first));
           }
-          logSink.write(DateTime.now().toString() + ': 开始狄杰斯特拉算法。\n');
+          logSink.writeln(DateTime.now().toString() + ': 开始狄杰斯特拉算法。');
         }
         //将排好序的列表中的元素一一绘制虚线，使用狄杰斯特拉算法得到路径，绘制实线
         for (int i = 0; i < naviOrder.length; ++i) {
@@ -846,7 +852,7 @@ class HomePage extends StatelessWidget {
         }
         if (c.logEnabled.value) {
           logSink
-              .write(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。\n');
+              .writeln(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。');
         }
       } catch (_) {
         /*Get.dialog(AlertDialog(
@@ -862,7 +868,7 @@ class HomePage extends StatelessWidget {
         Get.snackbar('tip'.tr, 'mapdataerr'.tr,
             snackPosition: SnackPosition.BOTTOM);
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 未找到路线。停止导航。\n');
+          logSink.writeln(DateTime.now().toString() + ': 未找到路线。停止导航。');
         } //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
         c.naviStatus.value = false;
         c.mapPolylines.clear();
@@ -870,7 +876,7 @@ class HomePage extends StatelessWidget {
       }
     } else {
       if (c.logEnabled.value) {
-        logSink.write(DateTime.now().toString() + ': 停止导航。\n');
+        logSink.writeln(DateTime.now().toString() + ': 停止导航。');
       }
     }
   }

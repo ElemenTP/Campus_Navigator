@@ -1,3 +1,4 @@
+import 'package:campnavi/model/mapcampus.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:amap_flutter_base/amap_flutter_base.dart';
@@ -24,7 +25,7 @@ class SearchPage extends StatelessWidget {
     c.searchResult.clear();
     String toSearch = c.textController.text;
     if (c.logEnabled.value) {
-      logSink.write(DateTime.now().toString() + ': 搜索开始，关键字：$toSearch。\n');
+      logSink.writeln(DateTime.now().toString() + ': 搜索开始，关键字：$toSearch。');
     }
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
       String curCampusName = mapData[i].name;
@@ -66,7 +67,7 @@ class SearchPage extends StatelessWidget {
       }
     }
     if (c.logEnabled.value) {
-      logSink.write(DateTime.now().toString() + ': 搜索结束。\n');
+      logSink.writeln(DateTime.now().toString() + ': 搜索结束。');
     }
   }
 
@@ -252,7 +253,7 @@ class SearchPage extends StatelessWidget {
           return;
         }
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 开始搜索附近建筑。\n');
+          logSink.writeln(DateTime.now().toString() + ': 开始搜索附近建筑。');
         }
         try {
           mapData[campusNum].disableCrowding();
@@ -285,7 +286,7 @@ class SearchPage extends StatelessWidget {
               ],
             ));
             if (c.logEnabled.value) {
-              logSink.write(DateTime.now().toString() + ': 未搜索到附近建筑。\n');
+              logSink.writeln(DateTime.now().toString() + ': 未搜索到附近建筑。');
             }
           } else {
             c.searchResult.clear();
@@ -330,12 +331,12 @@ class SearchPage extends StatelessWidget {
           Get.snackbar('tip'.tr, 'mapdataerr'.tr,
               snackPosition: SnackPosition.BOTTOM);
           if (c.logEnabled.value) {
-            logSink.write(DateTime.now().toString() + ': 未找到路线。停止搜索附近建筑。\n');
+            logSink.writeln(DateTime.now().toString() + ': 未找到路线。停止搜索附近建筑。');
           }
           return;
         }
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 附近建筑搜索完毕。\n');
+          logSink.writeln(DateTime.now().toString() + ': 附近建筑搜索完毕。');
         }
       } else {
         Get.dialog(AlertDialog(
@@ -349,12 +350,12 @@ class SearchPage extends StatelessWidget {
           ],
         ));
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止搜索附近建筑。\n');
+          logSink.writeln(DateTime.now().toString() + ': 您不在任何校区内，停止搜索附近建筑。');
         }
       }
     } else {
       if (c.logEnabled.value) {
-        logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止搜索附近建筑。\n');
+        logSink.writeln(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止搜索附近建筑。');
       }
     }
   }
@@ -368,7 +369,7 @@ class SearchPage extends StatelessWidget {
       int campusNum = mapData.locationInCampus(c.userLocation.value.latLng);
       if (campusNum >= 0) {
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 开始食堂负载均衡。\n');
+          logSink.writeln(DateTime.now().toString() + ': 开始食堂负载均衡。');
         }
         try {
           mapData[campusNum].disableCrowding();
@@ -399,7 +400,7 @@ class SearchPage extends StatelessWidget {
               ],
             ));
             if (c.logEnabled.value) {
-              logSink.write(DateTime.now().toString() + ': 未搜索到符合条件的食堂。\n');
+              logSink.writeln(DateTime.now().toString() + ': 未搜索到符合条件的食堂。');
             }
           } else {
             c.searchResult.clear();
@@ -454,12 +455,12 @@ class SearchPage extends StatelessWidget {
           Get.snackbar('tip'.tr, 'mapdataerr'.tr,
               snackPosition: SnackPosition.BOTTOM);
           if (c.logEnabled.value) {
-            logSink.write(DateTime.now().toString() + ': 未找到路线。停止食堂负载均衡。\n');
+            logSink.writeln(DateTime.now().toString() + ': 未找到路线。停止食堂负载均衡。');
           }
           return;
         }
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 食堂负载均衡完毕。\n');
+          logSink.writeln(DateTime.now().toString() + ': 食堂负载均衡完毕。');
         }
       } else {
         Get.dialog(AlertDialog(
@@ -473,12 +474,12 @@ class SearchPage extends StatelessWidget {
           ],
         ));
         if (c.logEnabled.value) {
-          logSink.write(DateTime.now().toString() + ': 您不在任何校区内，停止食堂负载均衡。\n');
+          logSink.writeln(DateTime.now().toString() + ': 您不在任何校区内，停止食堂负载均衡。');
         }
       }
     } else {
       if (c.logEnabled.value) {
-        logSink.write(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止食堂负载均衡。\n');
+        logSink.writeln(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止食堂负载均衡。');
       }
     }
   }
@@ -496,7 +497,10 @@ class SearchPage extends StatelessWidget {
               child: SwitchListTile(
                 value: c.campusFilter[index],
                 title: Text(mapData[index].name),
-                onChanged: (value) => c.campusFilter[index] = value,
+                onChanged: (value) {
+                  c.campusFilter[index] = value;
+                  _onStartSearch();
+                },
               ),
             ));
           }
@@ -515,8 +519,28 @@ class SearchPage extends StatelessWidget {
     ));
   }
 
+  void _fillSearchReuslt() {
+    for (int i = 0; i < mapData.mapCampus.length; ++i) {
+      if (c.campusFilter[i]) {
+        MapCampus mapCampus = mapData[i];
+        String curName = mapCampus.name;
+        List<Building> curListBuilding = mapCampus.listBuilding;
+        for (Building element in curListBuilding) {
+          c.searchResult.add(SearchResult(element, curName));
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (c.searchResult.isEmpty && c.textController.text == '') {
+      _fillSearchReuslt();
+    }
+    const SizedBox sizedBox = SizedBox(
+      width: 16,
+      height: 16,
+    );
     return Scaffold(
       //顶栏
       appBar: AppBar(
@@ -525,22 +549,27 @@ class SearchPage extends StatelessWidget {
       //中央内容区
       body: Column(
         children: <Widget>[
-          const SizedBox(
-            width: 8,
-            height: 8,
-          ),
-          TextField(
-            controller: c.textController,
-            focusNode: c.textFocusNode,
-            decoration: InputDecoration(
-              labelText: 'searchcampusbuilding'.tr,
-              hintText: 'nameorfeature'.tr,
-              border: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            ),
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.search,
-            onEditingComplete: _onStartSearch,
+          sizedBox,
+          Row(
+            children: <Widget>[
+              sizedBox,
+              Expanded(
+                child: TextField(
+                  controller: c.textController,
+                  focusNode: c.textFocusNode,
+                  decoration: InputDecoration(
+                    labelText: 'searchcampusbuilding'.tr,
+                    hintText: 'nameorfeature'.tr,
+                    border: const OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
+                  ),
+                  keyboardType: TextInputType.text,
+                  textInputAction: TextInputAction.search,
+                  onEditingComplete: _onStartSearch,
+                ),
+              ),
+              sizedBox,
+            ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -562,6 +591,7 @@ class SearchPage extends StatelessWidget {
                     c.textController.clear();
                     c.textFocusNode.unfocus();
                     c.searchResult.clear();
+                    _fillSearchReuslt();
                   }),
             ],
           ),
@@ -576,6 +606,7 @@ class SearchPage extends StatelessWidget {
                     onTap: () => _onListTileTapped(index),
                   ),
                 ),
+                controller: c.scrollController,
               ),
             ),
           )
@@ -584,6 +615,20 @@ class SearchPage extends StatelessWidget {
       floatingActionButton: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          FloatingActionButton(
+            heroTag: UniqueKey(),
+            onPressed: () => c.scrollController.animateTo(
+              0.0,
+              duration: const Duration(seconds: 1),
+              curve: Curves.ease,
+            ),
+            tooltip: 'upward'.tr,
+            child: const Icon(Icons.arrow_upward),
+          ),
+          const SizedBox(
+            width: 8,
+            height: 8,
+          ),
           FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: _onCanteenArrange,

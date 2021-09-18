@@ -72,7 +72,7 @@ class NaviUtil {
     if (!c.locateEnabled.value) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text('使用本功能需要打开定位开关。'),
+        content: Text('needswitchon'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),
@@ -95,7 +95,7 @@ class NaviUtil {
     if (!c.locatePermissionStatus.value.isGranted) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text('欲使用此功能，请授予定位权限。'),
+        content: Text('needgrantperm'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('cancel'.tr),
@@ -118,7 +118,7 @@ class NaviUtil {
     else if (c.userLocation.value.time == 0) {
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
-        content: Text('未开启系统定位开关，或者系统定位出错。'),
+        content: Text('locateerr'.tr),
         actions: <Widget>[
           TextButton(
             child: Text('ok'.tr),

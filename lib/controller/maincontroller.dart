@@ -60,6 +60,9 @@ class MainController extends GetxController {
   ///输入框焦点控制器
   FocusNode textFocusNode = FocusNode();
 
+  ///列表滚动控制器
+  ScrollController scrollController = ScrollController();
+
   ///定位权限状态
   Rx<PermissionStatus> locatePermissionStatus = PermissionStatus.denied.obs;
 
