@@ -9,7 +9,8 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
@@ -40,22 +41,26 @@
        <!-- 配置定位Service -->
        <service android:name="com.amap.api.location.APSService"/>
     </application>
-    <!--访问网络-->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!--粗略定位-->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!--精确定位-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <!--申请调用A-GPS模块-->
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <!--用于获取运营商信息，用于支持提供运营商信息相关的接口-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--用于访问wifi网络信息，wifi信息会用于进行网络定位-->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <!--用于获取wifi的获取权限，wifi信息会用来进行网络定位-->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <!--用于读取手机当前的状态-->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--用于写入缓存数据到扩展存储卡-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+<!--允许访问网络，必选权限-->
+<uses-permission android:name="android.permission.INTERNET" />
+<!--允许获取精确位置，精准定位必选-->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<!--允许获取粗略位置，粗略定位必选-->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<!--允许获取设备和运营商信息，用于问题排查和网络定位（无gps情况下的定位），若需网络定位功能则必选-->
+<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+<!--允许获取网络状态，用于网络定位（无gps情况下的定位），若需网络定位功能则必选-->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<!--允许获取wifi网络信息，用于网络定位（无gps情况下的定位），若需网络定位功能则必选-->
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<!--允许获取wifi状态改变，用于网络定位（无gps情况下的定位），若需网络定位功能则必选-->
+<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+<!--后台获取位置信息，若需后台定位则必选-->
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+<!--用于申请调用A-GPS模块,卫星定位加速-->
+<uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+<!--允许写设备缓存，用于问题排查-->
+<uses-permission android:name="android.permission.WRITE_SETTINGS" />
+<!--允许读设备等信息，用于问题排查-->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 </manifest>
