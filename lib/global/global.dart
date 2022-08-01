@@ -1,6 +1,7 @@
 import 'dart:io';
 
 //import 'package:flutter/material.dart';
+import 'package:campnavi/util/logger.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:campnavi/model/mapdata.dart';
 import 'package:campnavi/model/logicloc.dart';
@@ -28,11 +29,8 @@ late MapData mapData;
 ///逻辑位置
 late LogicLoc mapLogicLoc;
 
-///日志文件
-late File logFile;
-
-///日志写IOSink
-late IOSink logSink;
+///日志
+late Logger logger;
 
 ///软件信息
 late PackageInfo packageInfo;

@@ -50,13 +50,9 @@ class SettingPage extends StatelessWidget {
   }
 
   ///清除日志文件函数
-  void _cleanLogFile() async {
-    if (c.logEnabled.value) {
-      await logFile.writeAsString('');
-    } else {
-      await logFile.delete();
-      c.logExisted.value = false;
-    }
+  void _cleanLogFile() {
+    logger.cleanLogFile();
+    c.logExisted.value = logger.fileExists();
     /*Get.dialog(AlertDialog(
       title: Text('tip'.tr),
       content: Text('logcleared'.tr),
@@ -75,10 +71,9 @@ class SettingPage extends StatelessWidget {
   void _outputLogFile() async {
     Directory? toStore = await getExternalStorageDirectory();
     if (toStore != null) {
-      String optFilePath =
-          toStore.path + '/CampNaviLog' + DateTime.now().toString() + '.txt';
+      String optFilePath = '${toStore.path}/CampNaviLog${DateTime.now()}.txt';
       File optData = File(optFilePath);
-      await optData.writeAsString(await logFile.readAsString());
+      await optData.writeAsString(logger.getLogContentString());
       Get.dialog(AlertDialog(
         title: Text('tip'.tr),
         content: Text('logexportsuccess'.tr + optFilePath),
@@ -104,10 +99,10 @@ class SettingPage extends StatelessWidget {
   }
 
   ///管理地图文件函数，列出软件私有存储空间中所有导入的地图文件，用户可选择将任意一个设为默认，
-  ///或删除。
+  ///或删除
 
   ///管理逻辑位置文件函数，列出软件私有存储空间中所有导入的逻辑位置文件，用户可选择将任意一个
-  ///设为默认，或删除，将立刻生效。
+  ///设为默认，或删除，将立刻生效
 
   ///申请定位权限函数
   void _requestLocationPermission() async {
@@ -210,14 +205,14 @@ class SettingPage extends StatelessWidget {
   ///选择应用语言
   void _selectLanguage() {
     Get.dialog(
-      StatefulBuilder(builder: (context, _setState) {
+      StatefulBuilder(builder: (context, setState) {
         List<Widget> widgets = <Widget>[
           RadioListTile(
             title: Text('followsystem'.tr),
             value: Get.deviceLocale!,
             groupValue: Get.locale,
             onChanged: (Locale? value) {
-              _setState(() {
+              setState(() {
                 Get.updateLocale(value!);
               });
               prefs.write('preferLocale', 'device');
@@ -231,7 +226,7 @@ class SettingPage extends StatelessWidget {
               value: element,
               groupValue: Get.locale,
               onChanged: (Locale? value) {
-                _setState(() {
+                setState(() {
                   Get.updateLocale(value!);
                 });
                 prefs.write('preferLocale', element.languageCode);
@@ -262,7 +257,7 @@ class SettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     const TextStyle subtitleStyle =
         TextStyle(fontSize: 12, fontWeight: FontWeight.bold);
-    c.logExisted.value = logFile.existsSync();
+    c.logExisted.value = logger.fileExists();
     _getApprovalNumber();
     return Scaffold(
       //顶栏
@@ -345,9 +340,8 @@ class SettingPage extends StatelessWidget {
                   ),
                   onChanged: (value) {
                     c.logEnabled.value = value;
-                    prefs.write('logEnabled', value);
-                    if ((value) && (!c.logExisted.value)) {
-                      logSink = logFile.openWrite(mode: FileMode.append);
+                    logger.setLogState(value, prefs);
+                    if (value && !c.logExisted.value) {
                       c.logExisted.value = true;
                     }
                   }),
@@ -462,12 +456,9 @@ class SettingPage extends StatelessWidget {
               ),
               AboutListTile(
                 applicationName: 'title'.tr,
-                applicationVersion: packageInfo.version +
-                    '+' +
-                    packageInfo.buildNumber +
-                    ' ' +
-                    appType,
-                applicationLegalese: '@notsabers 2021',
+                applicationVersion:
+                    '${packageInfo.version}+${packageInfo.buildNumber} $appType',
+                applicationLegalese: '@notsabers 2021-2022',
               )
             ],
           ),

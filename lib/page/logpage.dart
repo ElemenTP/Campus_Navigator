@@ -34,7 +34,7 @@ class LogPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    c.listLogString = logFile.readAsLinesSync();
+    c.listLogString = logger.getLogContentLines();
     c.searchResult.clear();
     _fillSearchReuslt();
 
@@ -129,7 +129,7 @@ class LogPage extends StatelessWidget {
           FloatingActionButton(
             heroTag: UniqueKey(),
             onPressed: () {
-              c.listLogString = logFile.readAsLinesSync();
+              c.listLogString = logger.getLogContentLines();
               c.searchResult.clear();
               _onStartSearch();
             },

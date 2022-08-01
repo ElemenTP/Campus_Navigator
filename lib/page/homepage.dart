@@ -43,7 +43,7 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  ///点击创建的标志的点击回调函数，展示将坐标设为起点或终点的对话框。
+  ///点击创建的标志的点击回调函数，展示将坐标设为起点或终点的对话框
   void _onTapMarkerTapped(String markerid) async {
     await Get.dialog(AlertDialog(
       title: Text('cordi'.tr),
@@ -54,7 +54,6 @@ class HomePage extends StatelessWidget {
           onPressed: () => Get.back(),
         ),
         TextButton(
-          child: Text('startpoint'.tr),
           onPressed: c.startOnUserLoc.value
               ? null
               : () {
@@ -62,6 +61,7 @@ class HomePage extends StatelessWidget {
                   c.mapMarkers.remove('onTap');
                   Get.back(result: true);
                 },
+          child: Text('startpoint'.tr),
         ),
         TextButton(
           child: Text('endpoint'.tr),
@@ -89,7 +89,7 @@ class HomePage extends StatelessWidget {
   ///从地图上添加坐标形式的终点
   void _addEndLocation(LatLng location) {
     c.end.add(location);
-    String tmpid = 'end' + location.hashCode.toString();
+    String tmpid = 'end${location.hashCode.toString()}';
     c.mapMarkers[tmpid] = Marker(
       position: location,
       icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
@@ -97,7 +97,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  ///出发地Marker点击回调，询问用户收否删除该起点。
+  ///出发地Marker点击回调，询问用户收否删除该起点
   void _onStartMarkerTapped() async {
     await Get.dialog(AlertDialog(
       title: Text('deletestart'.tr),
@@ -119,7 +119,7 @@ class HomePage extends StatelessWidget {
     ));
   }
 
-  ///目的地Marker点击回调，询问用户收否删除该终点。
+  ///目的地Marker点击回调，询问用户收否删除该终点
   void _onEndMarkerTapped(String markerid) async {
     await Get.dialog(AlertDialog(
       title: Text('deleteend'.tr),
@@ -141,7 +141,7 @@ class HomePage extends StatelessWidget {
     ));
   }
 
-  ///地图视角改变结束回调函数，将视角信息记录在NVM中。
+  ///地图视角改变结束回调函数，将视角信息记录在NVM中
   void _onCameraMoveEnd(CameraPosition endPosition) {
     prefs.write('lastCamPositionbearing', endPosition.bearing);
     prefs.write('lastCamPositionLat', endPosition.target.latitude);
@@ -150,28 +150,25 @@ class HomePage extends StatelessWidget {
   }
 
   ///用户位置改变回调函数，记录用户位置，当选择正在导航且选择了实时导航时进行实时导航，如果用户
-  ///位置信息有问题则不执行。导航路线列表为空时提示已到目的地，不是空时则1. 判断用户是否偏离当
+  ///位置信息有问题则不执行导航路线列表为空时提示已到目的地，不是空时则1. 判断用户是否偏离当
   ///前路线，当用户距离路线的垂直距离大于40米或距离路线终点的距离大于路线长度加20米则认为用户
-  ///偏离路线。 2. 判断用户是否已走过当前路线，当用户距离路线终点距离小于5米或距离起点的距离大
-  ///于路线长度加5米或距离下一条路线的终点的距离小于下一条路线的长度时认为用户已走过当前路线。
-  ///如果没有下一条路线，或者下一条路线是当前路线的折返时最后一个判断条件不生效。
+  ///偏离路线 2. 判断用户是否已走过当前路线，当用户距离路线终点距离小于5米或距离起点的距离大
+  ///于路线长度加5米或距离下一条路线的终点的距离小于下一条路线的长度时认为用户已走过当前路线
+  ///如果没有下一条路线，或者下一条路线是当前路线的折返时最后一个判断条件不生效
   void _onLocationChanged(AMapLocation aMapLocation) async {
-    if (c.logEnabled.value &&
-        aMapLocation.time != 0 &&
+    if (aMapLocation.time != 0 &&
         AMapTools.distanceBetween(
                 c.userLocation.value.latLng, aMapLocation.latLng) >
             1) {
-      logSink.writeln(DateTime.now().toString() +
-          ': 用户位置改变，新位置 ' +
-          aMapLocation.latLng.toString());
+      logger.log('用户位置改变，新位置 ${aMapLocation.latLng.toString()}');
     }
-    //记录用户位置。
+    //记录用户位置
     c.userLocation.value = aMapLocation;
     //判断是否在进行实时导航，位置信息是否正确
     if (c.naviStatus.value &&
         c.realTime.value &&
         c.userLocation.value.time != 0) {
-      //导航路线列表空了，说明已到达目的地。
+      //导航路线列表空了，说明已到达目的地
       if (c.mapPolylines.isEmpty) {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -183,9 +180,7 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ));
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 已到达全部终点，实时导航结束。');
-        }
+        logger.log('已到达全部终点，实时导航结束');
         c.naviStatus.value = false;
         c.routeLength.value = 0;
       } else {
@@ -230,17 +225,13 @@ class HomePage extends StatelessWidget {
             ));*/
             Get.snackbar('tip'.tr, 'rr'.tr,
                 snackPosition: SnackPosition.BOTTOM);
-            if (c.logEnabled.value) {
-              logSink.writeln(DateTime.now().toString() + ': 重新规划路线。');
-            }
+            logger.log('重新规划路线');
             await _showRoute();
           }
         } else if (distanceDest < 5 ||
             (distanceDepa > polylineLength + 5) ||
             distanceNextDest < nextLength) {
-          if (c.logEnabled.value) {
-            logSink.writeln(DateTime.now().toString() + ': 走过一条规划路线。');
-          }
+          logger.log('走过一条规划路线');
           c.mapPolylines.removeAt(0);
         }
       }
@@ -254,7 +245,7 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  ///定位按钮按下回调函数，弹窗让用户选择目标视角。
+  ///定位按钮按下回调函数，弹窗让用户选择目标视角
   void _setCameraPosition() async {
     late LatLng newLocation;
     List<Widget> listWidget = <Widget>[
@@ -303,7 +294,7 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  ///底栏按钮点击回调函数，按点击的底栏项目调出对应activity。
+  ///底栏按钮点击回调函数，按点击的底栏项目调出对应activity
   void _onBarItemTapped(int index) async {
     switch (index) {
       case 0:
@@ -343,9 +334,9 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  ///管理导航状态界面，用户可1. 管理起点和各个终点。2. 选择是否以当前位置为起点。3. 当以当前
-  ///位置为起点时可以选择使用实时导航。4. 选择是否使用最短时间策略，使用则显示时间而非路程长度。
-  ///5. 是否骑车。6. 是否考略拥挤度。当存在起点和终点时可以开始导航。
+  ///管理导航状态界面，用户可1. 管理起点和各个终点2. 选择是否以当前位置为起点3. 当以当前
+  ///位置为起点时可以选择使用实时导航4. 选择是否使用最短时间策略，使用则显示时间而非路程长度
+  ///5. 是否骑车6. 是否考略拥挤度当存在起点和终点时可以开始导航
   Future<bool> _managehpc() async {
     return await Get.dialog(
           AlertDialog(
@@ -368,8 +359,8 @@ class HomePage extends StatelessWidget {
                 } else if (c.start.first.runtimeType == LatLng) {
                   startWidget = Card(
                     child: ListTile(
-                      title: Text('cordi'.tr +
-                          '\n${c.start.first!.longitude}\n${c.start.first!.latitude}'),
+                      title: Text(
+                          '${'cordi'.tr}\n${c.start.first!.longitude}\n${c.start.first!.latitude}'),
                       onTap: () {
                         c.start.clear();
                         c.mapMarkers.remove('start');
@@ -380,7 +371,7 @@ class HomePage extends StatelessWidget {
                   startWidget = Card(
                     child: ListTile(
                       title: Text(
-                          'bu'.tr + '\n${c.start.first!.description.first}'),
+                          '${'bu'.tr}\n${c.start.first!.description.first}'),
                       onTap: () {
                         c.start.clear();
                         c.mapMarkers.remove('start');
@@ -394,23 +385,21 @@ class HomePage extends StatelessWidget {
                   inColumn.add(element.runtimeType == LatLng
                       ? Card(
                           child: ListTile(
-                            title: Text('cordi'.tr +
-                                '\n${element.longitude}\n${element.latitude}'),
+                            title: Text(
+                                '${'cordi'.tr}\n${element.longitude}\n${element.latitude}'),
                             onTap: () {
                               c.end.remove(element);
-                              c.mapMarkers
-                                  .remove('end' + element.hashCode.toString());
+                              c.mapMarkers.remove('end${element.hashCode}');
                             },
                           ),
                         )
                       : Card(
                           child: ListTile(
                             title: Text(
-                                'bu'.tr + '\n${element.description.first}'),
+                                '${'bu'.tr}\n${element.description.first}'),
                             onTap: () {
                               c.end.remove(element);
-                              c.mapMarkers
-                                  .remove('end' + element.hashCode.toString());
+                              c.mapMarkers.remove('end${element.hashCode}');
                             },
                           ),
                         ));
@@ -497,18 +486,17 @@ class HomePage extends StatelessWidget {
               ),
               Obx(
                 () => TextButton(
-                  child: Text('stop'.tr),
                   onPressed: c.naviStatus.value
                       ? () {
                           c.naviStatus.value = false;
                           Get.back(result: true);
                         }
                       : null,
+                  child: Text('stop'.tr),
                 ),
               ),
               Obx(
                 () => TextButton(
-                  child: Text('start'.tr),
                   onPressed: (c.startOnUserLoc.value || c.start.isNotEmpty) &&
                           c.end.isNotEmpty
                       ? () {
@@ -516,6 +504,7 @@ class HomePage extends StatelessWidget {
                           Get.back(result: true);
                         }
                       : null,
+                  child: Text('start'.tr),
                 ),
               ),
             ],
@@ -525,11 +514,11 @@ class HomePage extends StatelessWidget {
   }
 
   ///展示导航路线函数，先对终点列表进行排序：当前点从起点开始，在未排序的点中寻找与当前点直线
-  ///距离最短的点，设为当前点的下一个点。坐标类型的点以本身为特征坐标，建筑类型的点则以一种平
-  ///均算法得到的点作为排序特质点。排序结束后，逐个使用狄杰斯特拉算法生成路线并绘制在地图上。
-  ///对建筑类型的点此时将会遍历选择路程最近的门作为狄杰斯特拉点。当路程跨校区时，将在地图数据
+  ///距离最短的点，设为当前点的下一个点坐标类型的点以本身为特征坐标，建筑类型的点则以一种平
+  ///均算法得到的点作为排序特质点排序结束后，逐个使用狄杰斯特拉算法生成路线并绘制在地图上
+  ///对建筑类型的点此时将会遍历选择路程最近的门作为狄杰斯特拉点当路程跨校区时，将在地图数据
   ///提供的交通工具信息中智能选择校区间导航方法，导航采用最短路程策略则确保人行走时间最短，最
-  ///短时间策略则确保交通耗时最短。
+  ///短时间策略则确保交通耗时最短
   Future<void> _showRoute() async {
     //清空线列表和路线长度
     c.mapPolylines.clear();
@@ -538,21 +527,11 @@ class HomePage extends StatelessWidget {
     if (c.naviStatus.value) {
       //导航开始时的日期时间，用于智能选择校区间导航方法
       DateTime routeBeginTime = DateTime.now();
-      if (c.logEnabled.value) {
-        logSink.writeln(routeBeginTime.toString() + ': 开始导航，开始计算路线。');
-        logSink.writeln(DateTime.now().toString() +
-            ': ' +
-            '实时导航' +
-            (c.realTime.value ? '开启' : '关闭') +
-            '\t骑车' +
-            (c.onbike.value ? '开启' : '关闭'));
-        logSink.writeln(DateTime.now().toString() +
-            ': ' +
-            '最短时间' +
-            (c.minTime.value ? '开启' : '关闭') +
-            '\t拥挤度' +
-            (c.crowding.value ? '开启' : '关闭'));
-      }
+      logger.rawlog('${routeBeginTime.toString()}: 开始导航，开始计算路线');
+      logger.log(
+          '实时导航${c.realTime.value ? '开启' : '关闭'}\t骑车${c.onbike.value ? '开启' : '关闭'}');
+      logger.log(
+          '最短时间${c.minTime.value ? '开启' : '关闭'}\t拥挤度${c.crowding.value ? '开启' : '关闭'}');
       //如果是选择以用户当前位置为起点，则判断是否有定位权限，定位是否正常，在不在校区内
       if (c.startOnUserLoc.value) {
         if (NaviUtil.stateLocationReqiurement(c)) {
@@ -560,9 +539,7 @@ class HomePage extends StatelessWidget {
               mapData.locationInCampus(c.userLocation.value.latLng);
           if (startCampus >= 0) {
             c.start.add(c.userLocation.value.latLng);
-            if (c.logEnabled.value) {
-              logSink.writeln(DateTime.now().toString() + ': 以用户坐标为起点。');
-            }
+            logger.log('以用户坐标为起点');
           } else {
             /*Get.dialog(AlertDialog(
               title: Text('tip'.tr),
@@ -576,23 +553,17 @@ class HomePage extends StatelessWidget {
             ));*/
             Get.snackbar('tip'.tr, 'notincampus'.tr,
                 snackPosition: SnackPosition.BOTTOM);
-            if (c.logEnabled.value) {
-              logSink.writeln(DateTime.now().toString() + ': 您不在任何校区内，停止导航。');
-            }
+            logger.log('您不在任何校区内，停止导航');
             c.naviStatus.value = false;
             return;
           }
         } else {
-          if (c.logEnabled.value) {
-            logSink.writeln(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止导航。');
-          }
+          logger.log('没有定位权限或定位不正常，停止导航');
           c.naviStatus.value = false;
           return;
         }
       }
-      if (c.logEnabled.value) {
-        logSink.writeln(DateTime.now().toString() + ': 开始目的地排序。');
-      }
+      logger.log('开始目的地排序');
       try {
         //排序所用新列表
         List naviOrder = [c.start.first];
@@ -618,17 +589,15 @@ class HomePage extends StatelessWidget {
         }
         int transmethod = c.onbike.value ? 1 : 0;
         c.crowding.value ? mapData.randomCrowding() : mapData.disableCrowding();
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 完成目的地排序。');
+        logger.log('完成目的地排序');
+        if (logger.getLogState()) {
           for (var element in naviOrder) {
-            logSink.writeln(DateTime.now().toString() +
-                ': ' +
-                (element.runtimeType == LatLng
-                    ? '坐标: ' + element.toJson().toString()
-                    : '建筑: ' + (element as Building).description.first));
+            logger.log(element.runtimeType == LatLng
+                ? '坐标 ${element.toJson().toString()}'
+                : '建筑 ${(element as Building).description.first}');
           }
-          logSink.writeln(DateTime.now().toString() + ': 开始狄杰斯特拉算法。');
         }
+        logger.log('开始狄杰斯特拉算法');
         //将排好序的列表中的元素一一绘制虚线，使用狄杰斯特拉算法得到路径，绘制实线
         for (int i = 0; i < naviOrder.length; ++i) {
           int campusNum = 0;
@@ -823,13 +792,8 @@ class HomePage extends StatelessWidget {
               }
               await Get.dialog(AlertDialog(
                 title: Text('tip'.tr),
-                content: Text('from'.tr +
-                    startCampusName +
-                    'to'.tr +
-                    endCampusName +
-                    '\n' +
-                    'by'.tr +
-                    toPrint),
+                content: Text(
+                    '${'from'.tr}$startCampusName${'to'.tr}$endCampusName\n${'by'.tr}$toPrint'),
                 actions: <Widget>[
                   TextButton(
                     child: Text('cancel'.tr),
@@ -850,10 +814,7 @@ class HomePage extends StatelessWidget {
             c.routeLength.value += juncLength;
           }
         }
-        if (c.logEnabled.value) {
-          logSink
-              .writeln(DateTime.now().toString() + ': 狄杰斯特拉算法结束，路线计算函数正常结束。');
-        }
+        logger.log('狄杰斯特拉算法结束，路线计算函数正常结束');
       } catch (_) {
         /*Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -867,17 +828,14 @@ class HomePage extends StatelessWidget {
         ));*/
         Get.snackbar('tip'.tr, 'mapdataerr'.tr,
             snackPosition: SnackPosition.BOTTOM);
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 未找到路线。停止导航。');
-        } //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
+        logger.log('未找到路线，停止导航');
+        //路线绘制出现错误，将导航状态设为停止同时清空路线和长度
         c.naviStatus.value = false;
         c.mapPolylines.clear();
         c.routeLength.value = 0;
       }
     } else {
-      if (c.logEnabled.value) {
-        logSink.writeln(DateTime.now().toString() + ': 停止导航。');
-      }
+      logger.log('停止导航');
     }
   }
 
@@ -900,7 +858,7 @@ class HomePage extends StatelessWidget {
                 () => AMapWidget(
                   //高德api Key
                   apiKey: amapApiKeys,
-                  //创建地图回调函数，获得controller。
+                  //创建地图回调函数，获得controller
                   onMapCreated: (controller) =>
                       c.mapController = controller.obs,
                   //地图初始视角
@@ -914,7 +872,7 @@ class HomePage extends StatelessWidget {
                   ),
                   //地图点击回调函数
                   onTap: _onMapTapped,
-                  //地图视角移动回调函数，移除点击添加的标志。
+                  //地图视角移动回调函数，移除点击添加的标志
                   onCameraMove: (_) => c.mapMarkers.remove('onTap'),
                   //地图视角移动结束回调函数
                   onCameraMoveEnd: _onCameraMoveEnd,
@@ -931,6 +889,8 @@ class HomePage extends StatelessWidget {
                   markers: Set<Marker>.of(c.mapMarkers.values),
                   //地图上的线
                   polylines: Set<Polyline>.of(c.mapPolylines),
+                  privacyStatement: const AMapPrivacyStatement(
+                      hasContains: true, hasShow: true, hasAgree: true),
                 ),
               ),
               Obx(
@@ -958,8 +918,8 @@ class HomePage extends StatelessWidget {
           heroTag: UniqueKey(),
           onPressed: _setCameraPosition,
           tooltip: 'scp'.tr,
-          child: const Icon(Icons.location_searching),
           mini: true,
+          child: const Icon(Icons.location_searching),
         ),
         //避免被屏幕键盘改变形状
         resizeToAvoidBottomInset: false,
@@ -985,7 +945,7 @@ class HomePage extends StatelessWidget {
             heroTag: UniqueKey(),
             onPressed: _setNavigation,
             tooltip:
-                'navi'.tr + ' ' + (c.naviStatus.value ? 'stop'.tr : 'start'.tr),
+                '${'navi'.tr} ${c.naviStatus.value ? 'stop'.tr : 'start'.tr}',
             child: c.naviStatus.value
                 ? const Icon(Icons.stop)
                 : const Icon(Icons.play_arrow),

@@ -15,14 +15,14 @@ class LogicDataPage extends StatelessWidget {
   static MainController c = Get.find();
 
   static String customLogicLocPath =
-      applicationDataDir.path + '/CustomLogicLoc/';
+      '${applicationDataDir.path}/CustomLogicLoc/';
 
   static Directory customLogicLocDir = Directory(customLogicLocPath);
 
   static int prefixLength = customLogicLocPath.length;
 
-  ///导入逻辑位置文件函数。调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行
-  ///测试，不可用则提示用户，可用则存储在软件私有存储空间中并设为默认逻辑位置数据，立即应用。
+  ///导入逻辑位置文件函数调用Android系统的文件选择器选择文件，并对文件中的数据的有效性进行
+  ///测试，不可用则提示用户，可用则存储在软件私有存储空间中并设为默认逻辑位置数据，立即应用
 
   void _setNewLogicLoc() {
     c.searchResult.clear();
@@ -35,7 +35,7 @@ class LogicDataPage extends StatelessWidget {
     }
     List<FileSystemEntity> listLogicLocFiles;
     List<Widget> listLogicLocFileChoose;
-    return StatefulBuilder(builder: (context, _setState) {
+    return StatefulBuilder(builder: (context, setState) {
       listLogicLocFiles = customLogicLocDir.listSync();
       bool isDefault = prefs.read<String>('logicLocFile') == null;
       listLogicLocFileChoose = [
@@ -59,13 +59,10 @@ class LogicDataPage extends StatelessWidget {
                             onPressed: () async {
                               Get.back();
                               await prefs.remove('logicLocFile');
-                              _setState(() {});
+                              setState(() {});
                               mapLogicLoc = LogicLoc();
                               _setNewLogicLoc();
-                              if (c.logEnabled.value) {
-                                logSink.writeln(
-                                    DateTime.now().toString() + ': 不使用逻辑位置。');
-                              }
+                              logger.log('不使用逻辑位置');
                             },
                           ),
                         ],
@@ -101,12 +98,8 @@ class LogicDataPage extends StatelessWidget {
                               _setNewLogicLoc();
                             }
                             await element.delete();
-                            _setState(() {});
-                            if (c.logEnabled.value) {
-                              logSink.writeln(DateTime.now().toString() +
-                                  ': 删除逻辑位置 ' +
-                                  fileName);
-                            }
+                            setState(() {});
+                            logger.log('删除逻辑位置 $fileName');
                           },
                         ),
                         TextButton(
@@ -114,17 +107,13 @@ class LogicDataPage extends StatelessWidget {
                           onPressed: () async {
                             Get.back();
                             prefs.write('logicLocFile', fileName);
-                            _setState(() {});
+                            setState(() {});
                             File logicLocFile =
                                 File(customLogicLocPath + fileName);
                             mapLogicLoc = LogicLoc.fromJson(
                                 jsonDecode(await logicLocFile.readAsString()));
                             _setNewLogicLoc();
-                            if (c.logEnabled.value) {
-                              logSink.writeln(DateTime.now().toString() +
-                                  ': 应用逻辑位置 ' +
-                                  fileName);
-                            }
+                            logger.log('应用逻辑位置 $fileName');
                           },
                         ),
                       ],
@@ -162,7 +151,7 @@ class LogicDataPage extends StatelessWidget {
                   allowMultiple: false,
                   allowedExtensions: ['json']);
             } catch (_) {
-              Get.snackbar('tip'.tr, '导入文件功能需要存储权限。',
+              Get.snackbar('tip'.tr, '导入文件功能需要存储权限',
                   snackPosition: SnackPosition.BOTTOM);
             }
             if (pickedFile != null) {
@@ -173,7 +162,7 @@ class LogicDataPage extends StatelessWidget {
                     LogicLoc.fromJson(jsonDecode(await iptFile.readAsString()));
                 if (newData.logicLoc.isEmpty) throw '!';
               } catch (_) {
-                Get.snackbar('tip'.tr, '逻辑位置数据格式不正确，请检查逻辑位置数据。',
+                Get.snackbar('tip'.tr, '逻辑位置数据格式不正确，请检查逻辑位置数据',
                     snackPosition: SnackPosition.BOTTOM);
                 return;
               }
@@ -184,17 +173,13 @@ class LogicDataPage extends StatelessWidget {
                     await customLogicLocFile.create(recursive: true);
               }
               await customLogicLocFile.writeAsString(jsonEncode(newData));
-              _setState(() {});
+              setState(() {});
               prefs.write('logicLocFile', pickedFile.files.single.name);
               mapLogicLoc = newData;
               _setNewLogicLoc();
-              Get.snackbar('tip'.tr, '逻辑位置数据已成功应用。',
+              Get.snackbar('tip'.tr, '逻辑位置数据已成功应用',
                   snackPosition: SnackPosition.BOTTOM);
-              if (c.logEnabled.value) {
-                logSink.writeln(DateTime.now().toString() +
-                    ': 导入并应用新逻辑位置 ' +
-                    pickedFile.files.single.name);
-              }
+              logger.log('导入并应用新逻辑位置 ${pickedFile.files.single.name}');
             }
           },
           tooltip: '从文件导入',

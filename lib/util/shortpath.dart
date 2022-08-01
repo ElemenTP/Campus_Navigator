@@ -1,7 +1,7 @@
 import 'package:campnavi/global/global.dart';
 import 'package:campnavi/model/edge.dart';
 
-///最短路径类，输入路径矩阵和起点，终点，交通类型，得到一条最短路径。
+///最短路径类，输入路径矩阵和起点，终点，交通类型，得到一条最短路径
 class ShortPath {
   ///起始点ID
   final int startVertexID;
@@ -26,7 +26,7 @@ class ShortPath {
         edge.crowding;
   }
 
-  ///核心构造函数，读入一个记录着地图边信息的邻接矩阵，以及起点和终点信息。构建出一条最短路径，
+  ///核心构造函数，读入一个记录着地图边信息的邻接矩阵，以及起点和终点信息构建出一条最短路径，
   ///通过该构建方法构建出来一个实例的同时，也就获得了一条最短路径
   ShortPath(List<List<Edge>> mapMatrix, this.startVertexID, this.endVertexID,
       this.transMethod) {
@@ -35,7 +35,7 @@ class ShortPath {
     List<double> dist = List.filled(mapMatrix.length, double.infinity);
     //记录各点到起点的距离
     List<int> path = List.filled(mapMatrix.length, -1);
-    //存放各个节点到起点的路径的前驱。
+    //存放各个节点到起点的路径的前驱
     double min;
     //最小值，之后计算使用
     int pointTemp = -1;
@@ -79,7 +79,7 @@ class ShortPath {
       relativeLen = double.infinity;
       throw 'noroute';
     }
-    //发现如何都到不了终点。
+    //发现如何都到不了终点
     else {
       relativeLen = dist[pointTemp];
       route.add(endVertexID);
@@ -93,7 +93,7 @@ class ShortPath {
     }
   }
 
-  ///返回最短路径，该路径由一个地图点集来定义，即该路径上的所有点。
+  ///返回最短路径，该路径由一个地图点集来定义，即该路径上的所有点
   List<int> getRoute() {
     return route.reversed.toList();
   }

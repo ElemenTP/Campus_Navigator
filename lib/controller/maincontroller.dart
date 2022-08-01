@@ -70,7 +70,7 @@ class MainController extends GetxController {
   RxBool logEnabled = (prefs.read<bool>('logEnabled') ?? false).obs;
 
   ///日志存在
-  RxBool logExisted = logFile.existsSync().obs;
+  RxBool logExisted = logger.fileExists().obs;
 
   ///指南针开关
   RxBool compassEnabled = (prefs.read<bool>('compassEnabled') ?? true).obs;

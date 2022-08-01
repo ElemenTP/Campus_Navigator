@@ -24,9 +24,7 @@ class SearchPage extends StatelessWidget {
     c.textFocusNode.unfocus();
     c.searchResult.clear();
     String toSearch = c.textController.text;
-    if (c.logEnabled.value) {
-      logSink.writeln(DateTime.now().toString() + ': 搜索开始，关键字：$toSearch。');
-    }
+    logger.log('搜索开始，关键字 $toSearch');
     for (int i = 0; i < mapData.mapCampus.length; ++i) {
       String curCampusName = mapData[i].name;
       if (c.campusFilter[i]) {
@@ -66,9 +64,7 @@ class SearchPage extends StatelessWidget {
         }
       }
     }
-    if (c.logEnabled.value) {
-      logSink.writeln(DateTime.now().toString() + ': 搜索结束。');
-    }
+    logger.log('搜索结束');
   }
 
   ///列表元素点击回调函数，弹窗询问用户将该建筑设为起点或终点
@@ -107,8 +103,8 @@ class SearchPage extends StatelessWidget {
             child: Text('deleteend'.tr),
             onPressed: () {
               c.end.remove(c.searchResult[index].result);
-              c.mapMarkers.remove(
-                  'end' + c.searchResult[index].result.hashCode.toString());
+              c.mapMarkers
+                  .remove('end${c.searchResult[index].result.hashCode}');
               Get.back();
             },
           ),
@@ -124,7 +120,6 @@ class SearchPage extends StatelessWidget {
             onPressed: () => Get.back(),
           ),
           TextButton(
-            child: Text('startpoint'.tr),
             onPressed: c.startOnUserLoc.value
                 ? null
                 : () {
@@ -155,12 +150,13 @@ class SearchPage extends StatelessWidget {
                     );
                     Get.back();
                   },
+            child: Text('startpoint'.tr),
           ),
           TextButton(
             child: Text('endpoint'.tr),
             onPressed: () {
               c.end.add(curResult);
-              String markerId = 'end' + curResult.hashCode.toString();
+              String markerId = 'end${curResult.hashCode}';
               c.mapMarkers[markerId] = Marker(
                 position: curResult.getApproxLocation(),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
@@ -196,7 +192,7 @@ class SearchPage extends StatelessWidget {
 
   ///搜索附近建筑函数，让用户输入搜索半径，使用NaviTools中的绘制圆形功能绘制一个该半径的圆，
   ///在当前校区的所有建筑的所有门中寻找在圆内的，并将有门在圆内的建筑添加到结果列表中，并附加
-  ///上使用狄杰斯特拉算法得到的当前位置到该建筑的最短路线长度。
+  ///上使用狄杰斯特拉算法得到的当前位置到该建筑的最短路线长度
   void _searchNearBuilding() async {
     c.textFocusNode.unfocus();
     if (NaviUtil.stateLocationReqiurement(c)) {
@@ -243,8 +239,8 @@ class SearchPage extends StatelessWidget {
                     },
                   ),
                   TextButton(
-                    child: Text('ok'.tr),
                     onPressed: nbc.inputRadix.value > 0 ? onInputEnd : null,
+                    child: Text('ok'.tr),
                   ),
                 ],
               );
@@ -252,9 +248,7 @@ class SearchPage extends StatelessWidget {
             true) {
           return;
         }
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 开始搜索附近建筑。');
-        }
+        logger.log('开始搜索附近建筑');
         try {
           mapData[campusNum].disableCrowding();
           List<LatLng> circlePolygon =
@@ -285,9 +279,7 @@ class SearchPage extends StatelessWidget {
                 ),
               ],
             ));
-            if (c.logEnabled.value) {
-              logSink.writeln(DateTime.now().toString() + ': 未搜索到附近建筑。');
-            }
+            logger.log('未搜索到附近建筑');
           } else {
             c.searchResult.clear();
             for (Building element in nearBuilding) {
@@ -330,14 +322,10 @@ class SearchPage extends StatelessWidget {
           ));*/
           Get.snackbar('tip'.tr, 'mapdataerr'.tr,
               snackPosition: SnackPosition.BOTTOM);
-          if (c.logEnabled.value) {
-            logSink.writeln(DateTime.now().toString() + ': 未找到路线。停止搜索附近建筑。');
-          }
+          logger.log('未找到路线，停止搜索附近建筑');
           return;
         }
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 附近建筑搜索完毕。');
-        }
+        logger.log('附近建筑搜索完毕');
       } else {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -349,28 +337,22 @@ class SearchPage extends StatelessWidget {
             ),
           ],
         ));
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 您不在任何校区内，停止搜索附近建筑。');
-        }
+        logger.log('您不在任何校区内，停止搜索附近建筑');
       }
     } else {
-      if (c.logEnabled.value) {
-        logSink.writeln(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止搜索附近建筑。');
-      }
+      logger.log('没有定位权限或定位不正常，停止搜索附近建筑');
     }
   }
 
   ///食堂负载均衡函数，在当前校区的所有建筑的描述中匹配“食堂”关键字，将匹配到描述的建筑加入结果
   ///中，并附上使用CanteenArrange类随机生成的负载均衡指标信息和使用狄杰斯特拉算法得到的当前
-  ///位置与其的最短路线的距离。
+  ///位置与其的最短路线的距离
   void _onCanteenArrange() async {
     c.textFocusNode.unfocus();
     if (NaviUtil.stateLocationReqiurement(c)) {
       int campusNum = mapData.locationInCampus(c.userLocation.value.latLng);
       if (campusNum >= 0) {
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 开始食堂负载均衡。');
-        }
+        logger.log('开始食堂负载均衡');
         try {
           mapData[campusNum].disableCrowding();
           List<Building> canteens = [];
@@ -399,9 +381,7 @@ class SearchPage extends StatelessWidget {
                 ),
               ],
             ));
-            if (c.logEnabled.value) {
-              logSink.writeln(DateTime.now().toString() + ': 未搜索到符合条件的食堂。');
-            }
+            logger.log('未搜索到符合条件的食堂');
           } else {
             c.searchResult.clear();
             for (Building element in canteens) {
@@ -428,17 +408,8 @@ class SearchPage extends StatelessWidget {
                 distance += path.getRelativeLen();
               }
               CanteenArrange arrangeObject = CanteenArrange(distance);
-              c.searchResult.add(SearchResult(
-                  element,
-                  'about'.tr +
-                      distance.toStringAsFixed(0) +
-                      'm'.tr +
-                      'canteen1'.tr +
-                      arrangeObject.getPayload().toStringAsFixed(0) +
-                      '%' +
-                      'canteen2'.tr +
-                      (arrangeObject.getTime() / 60).toStringAsFixed(0) +
-                      'min'.tr));
+              c.searchResult.add(SearchResult(element,
+                  '${'about'.tr}${distance.toStringAsFixed(0)}${'m'.tr}${'canteen1'.tr}${arrangeObject.getPayload().toStringAsFixed(0)}%${'canteen2'.tr}${(arrangeObject.getTime() / 60).toStringAsFixed(0)}${'min'.tr}'));
             }
           }
         } catch (_) {
@@ -454,14 +425,10 @@ class SearchPage extends StatelessWidget {
           ));*/
           Get.snackbar('tip'.tr, 'mapdataerr'.tr,
               snackPosition: SnackPosition.BOTTOM);
-          if (c.logEnabled.value) {
-            logSink.writeln(DateTime.now().toString() + ': 未找到路线。停止食堂负载均衡。');
-          }
+          logger.log('未找到路线，停止食堂负载均衡');
           return;
         }
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 食堂负载均衡完毕。');
-        }
+        logger.log('食堂负载均衡完毕');
       } else {
         Get.dialog(AlertDialog(
           title: Text('tip'.tr),
@@ -473,14 +440,10 @@ class SearchPage extends StatelessWidget {
             ),
           ],
         ));
-        if (c.logEnabled.value) {
-          logSink.writeln(DateTime.now().toString() + ': 您不在任何校区内，停止食堂负载均衡。');
-        }
+        logger.log('您不在任何校区内，停止食堂负载均衡');
       }
     } else {
-      if (c.logEnabled.value) {
-        logSink.writeln(DateTime.now().toString() + ': 没有定位权限或定位不正常，停止食堂负载均衡。');
-      }
+      logger.log('没有定位权限或定位不正常，停止食堂负载均衡');
     }
   }
 
