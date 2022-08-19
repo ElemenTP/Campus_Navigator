@@ -14,43 +14,33 @@
             ],
             "gate": 0, //公共交通最方便的大门标注
             "busstop": 0, //乘坐校车位置
-            "name": "My Campus" //校区名称
-        }
-    ],
-    //校区内建筑对象列表，与校区对象列表中的对象一一对应
-    "mapBuilding": [
-        //某个校区内的所有建筑
-        {
-            "listBuilding": [ //建筑列表
+            "name": "My Campus", //校区名称
+            "listBuilding": [ //校区内建筑对象列表
                 //建筑对象
                 {
                     "doors": [ //建筑的大门列表
+                        //一个坐标对象
+                        {
+                            "latitude": 39.909187,
+                            "longitude": 116.39745099999999
+                        }
+                    ],
+                    "juncpoint": [ //建筑大门与道路的连接点
                         1
                     ],
                     "description": [ //建筑的描述列表，至少有一个，第一个是主要名称
                         "description"
                     ]
                 }
-            ]
-        }
-    ],
-    //校区内坐标点对象列表，与校区对象列表中的对象一一对应
-    "mapVertex": [
-        //某个校区内的所有关键点
-        {
-            "listVertex": [ //点坐标对象列表
+            ],
+            "listVertex": [ //校区内坐标点对象列表
+                //一个坐标对象
                 {
                     "latitude": 39.909187,
                     "longitude": 116.39745099999999
                 }
-            ]
-        }
-    ],
-    //校区内坐标间道路对象列表，与校区对象列表中的对象一一对应
-    "mapEdge": [
-        //某个校区内的所有道路
-        {
-            "listEdge": [ //道路对象列表
+            ],
+            "listEdge": [ //校区内坐标间道路对象列表
                 //一个道路对象
                 {
                     "pointa": 1, //道路连接的两个点的序号
@@ -58,19 +48,21 @@
                     "length": 1234.0, //道路的长度，采集数据时可以省略或者随意填，会用一个算法再算一次
                     "availmthod": 1 //可用交通方式，0是仅步行，1可骑车
                 }
-            ],
-            "squareSize": 1 //校区内点的数量，用于生成二维邻接矩阵
+            ]
         }
     ],
     //校车时间表，一个对象是一班次
     "busTimeTable": [
         //某班次的对象
         {
-            "campusFrom": 0, //发车校区，
+            "isSchoolBus": false, //是否是校车
+            "campusFrom": 1, //发车校区
             "campusTo": 0, //目的校区
-            "setOutHour": 0, //出发时
-            "setOutMinute": 0, //出发分
-            "dayOfWeek": 1 //出发星期
+            "setOutHour": -1, //出发时
+            "setOutMinute": -1, //出发分
+            "dayOfWeek": 0, //出发星期
+            "description": "description", //描述
+            "takeTime": 120 //耗时
         }
     ]
 }
