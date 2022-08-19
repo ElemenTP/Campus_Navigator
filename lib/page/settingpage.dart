@@ -311,7 +311,7 @@ class SettingPage extends StatelessWidget {
                 title: Text(
                   'managedata'.tr,
                 ),
-                subtitle: Text('manageimporteddata'.tr),
+                subtitle: Text('manageimportedmapdata'.tr),
                 onTap: () => Get.to(const MapDataPage()),
               ),
               ListTile(
@@ -324,7 +324,7 @@ class SettingPage extends StatelessWidget {
                 title: Text(
                   'managedata'.tr,
                 ),
-                subtitle: Text('manageimporteddata'.tr),
+                subtitle: Text('manageimportedlogiclocdata'.tr),
                 onTap: () => Get.to(const LogicDataPage()),
               ),
               ListTile(
