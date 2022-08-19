@@ -16,9 +16,12 @@ This project aims at improving the navigation experience in universities.
 6. Canteen suggestion
 7. Data import ability to support any universities
 ## Screenshots
-![ScreenShot1](https://github.com/ElemenTP/Campus_Navigator/raw/master/images/Screenshot1.jpg)
-![ScreenShot2](https://github.com/ElemenTP/Campus_Navigator/raw/master/images/Screenshot2.jpg)
-![ScreenShot3](https://github.com/ElemenTP/Campus_Navigator/raw/master/images/Screenshot3.jpg)
+<div align="center" style="height: 250;overflow-x: auto;overflow-y: hidden;white-space: nowrap;">
+<img src="https://github.com/ElemenTP/Campus_Navigator/raw/master/images/Screenshot1.jpg" alt="ScreenShot1" width="250">
+<img src="https://github.com/ElemenTP/Campus_Navigator/raw/master/images/Screenshot2.jpg" alt="ScreenShot2" width="250">
+<img src="https://github.com/ElemenTP/Campus_Navigator/raw/master/images/Screenshot3.jpg" alt="ScreenShot3" width="250">
+</div>
+
 ## Getting Started
 Download flutter SDK and build on your own, or download pre-build signed binary in release.  
 ### How to build
